@@ -4,6 +4,7 @@
 #include<time.h>
 #include "Instrucao.h"
 #include "ram.h"
+#include "cpu.h"
 
 
 struct cpu { 
@@ -33,40 +34,39 @@ void iniciar(RAM *r,CPU *c){
 		
         opcode = inst.opcode;
         case -1: {
-					System.out.println("programa terminou!!");
-					ram.imprimir();
+					println("programa terminou!!");
+					imprimirRAM(*r);
 					break;
 				}
 				//soma
 				case 0: {
-					registrador1 = ram.getDado(inst.add1);
-					registrador2 = ram.getDado(inst.add2);
+					registrador1 = getDado(inst.add1);
+					registrador2 = getDado(inst.add2);
 					registrador1 +=registrador2;
 					//salvar resultado
-					ram.setDado(inst.add3, registrador1);
-					System.out.println("Inst sum -> RAM posicao " + inst.add3 + " com conteudo " + registrador1);
+					setDado(inst.add3, registrador1);
+					printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,registrador1);
 					break;
 				}
 				//subtrai
 				case 1: {
-					registrador1 = ram.getDado(inst.add1);
-					registrador2 = ram.getDado(inst.add2);
+					registrador1 = getDado(inst.add1);
+					registrador2 = getDado(inst.add2);
 					registrador1 -=registrador2;
 					//salvar resultado
-					ram.setDado(inst.add3, registrador1);
-					System.out.println("Inst sub -> RAM posicao " + inst.add3 + " com conteudo " + registrador1);
-					break;
+					setDado(inst.add3, registrador1);
+					printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,registrador1);
 				}
 				//copia do registrador para RAM
 				//formato da instrucao [opcode,qual_registrador,end_ram,-1]
 				case 2: {
 					if(inst.add1==1) {
-						ram.setDado(inst.add2, registrador1);
-						System.out.println("Inst copy_reg_ram -> RAM posicao " + inst.add2 + " com conteudo " + registrador1);
+						setDado(inst.add2, registrador1);                        
+					    printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,registrador1);
 						
 					}else if(inst.add1==2) {
-						ram.setDado(inst.add2, registrador2);
-						System.out.println("Inst copy_reg_ram -> RAM posicao " + inst.add2 + " com conteudo " + registrador2);
+						setDado(inst.add2, registrador2);                        
+					    printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,registrador2);
 						
 					}
 					break;
@@ -76,11 +76,11 @@ void iniciar(RAM *r,CPU *c){
 				case 3: {
 					if(inst.add1==1) {
 						registrador1 = ram.getDado(inst.add2);
-						System.out.println("Inst copy_ram_reg -> Registrador1 com conteudo " + registrador1);
+                        printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n",registrador1);
 						
 					}else if(inst.add1==2) {
 						registrador2 = ram.getDado(inst.add2);
-						System.out.println("Inst copy_ram_reg -> Registrador2 com conteudo " + registrador2);
+						printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n",registrador2);
 					}
 					break;
 				}
@@ -89,11 +89,12 @@ void iniciar(RAM *r,CPU *c){
 				case 4: {
 					if(inst.add1==1) {
 						registrador1 = inst.add2;
-						System.out.println("Inst copy_ext_reg -> Registrador1 com conteudo " + registrador1);
+						printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n",registrador1);
+                        
 						
 					}else if(inst.add1==2) {
 						registrador2 = inst.add2;
-						System.out.println("Inst copy_ext_reg -> Registrador2 com conteudo " + registrador2);
+                        printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n",registrador2);
 					}
 					break;
 				}
@@ -104,11 +105,11 @@ void iniciar(RAM *r,CPU *c){
 				case 5: {
 					if(inst.add1==1) {
 						inst.add2 = registrador1;
-						System.out.println("Inst obtain_reg -> Registrador1 com conteudo " + registrador1);
+                        printf("Inst obtain_reg -> Registrador1 com conteudo %d\n",registrador1);
 						
 					}else if(inst.add1==2) {
 						inst.add2 = registrador2;
-						System.out.println("Inst obtain_reg -> Registrador2 com conteudo " + registrador2);
+						printf("Inst obtain_reg -> Registrador2 com conteudo %d\n",registrador2);
 					}
 					break;
 				}

@@ -46,7 +46,7 @@ int getDado(RAM *r,int endereco){
     return r->mem[endereco] ;
 }
 
-void imprimir(RAM *r){
+void imprimirRAM(RAM *r){
     printf("Conteudo da RAM\n");
     for(int i=0; i<r->tamanho; i++){
 			printf("%d ",r->mem[i]);
