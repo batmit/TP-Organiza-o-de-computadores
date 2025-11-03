@@ -3,19 +3,17 @@
 
 #define TAM 64
 
-typedef struct{
-
-    int *mem;
-    int tamanho;
-} RAM;
+typedef struct ram RAM;
 
 
 
 RAM* criarRAM(int tam);
 RAM* criarRAM_vazia(int tam);
 RAM* criarRAM_aleatoria(int tam);
-void setDado(int endereco, int conteudo);
-void getDado(int endereco);
+
+void setDado(RAM *r,int endereco, int conteudo);
+int getDado(RAM *r,int endereco);
+
 void imprimir(RAM *r);
 
 

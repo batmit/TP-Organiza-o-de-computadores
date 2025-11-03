@@ -5,6 +5,10 @@
 #include "Instrucao.h"
 #include "ram.h"
 
+struct ram { 
+    int *mem;
+    int tamanho;
+};
 
 RAM* criarRAM(int tam){
 
@@ -33,8 +37,14 @@ RAM* criarRAM_aleatoria(int tam){
     return r;
 
 }
-void setDado(int endereco, int conteudo);
-void getDado(int endereco);
+
+void setDado(RAM *r,int endereco, int conteudo){
+    r->mem[endereco] = conteudo;
+}
+
+int getDado(RAM *r,int endereco){
+    return r->mem[endereco] ;
+}
 
 void imprimir(RAM *r){
     printf("Conteudo da RAM\n");

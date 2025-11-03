@@ -5,7 +5,8 @@
 #include "Instrucao.h"
 #include "ram.h"
 
-int main(){
-    RAM *r = criarRAM_vazia(5);
-    imprimir(r);
-}
+
+struct cpu { 
+    int reg1;
+    int reg2;
+};
