@@ -9,6 +9,8 @@ typedef struct{
     int tamanho;
 } RAM;
 
+
+
 RAM* criarRAM(int tam);
 RAM* criarRAM_vazia(int tam);
 RAM* criarRAM_aleatoria(int tam);
