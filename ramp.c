@@ -5,9 +5,6 @@
 #include "Instrucao.h"
 #include "ram.h"
 
-RAM memoria;
-
-
 
 RAM* criarRAM(int tam){
 
@@ -30,14 +27,23 @@ RAM* criarRAM_vazia(int tam){
 
 RAM* criarRAM_aleatoria(int tam){
     srand(time(NULL));
-    RAM *r = malloc(sizeof(RAM));
-    r->mem = malloc(tam * sizeof(int));
+    RAM *r = criarRAM(tam);
     for(int i=0; i<tam; i++)
 			r->mem[i] =rand(); // cria memoria com endereco aleatorio
-    r->tamanho = tam;
     return r;
 
 }
 void setDado(int endereco, int conteudo);
 void getDado(int endereco);
-void imprimir(void);
+
+void imprimir(RAM *r){
+    printf("Conteudo da RAM\n");
+    for(int i=0; i<r->tamanho; i++){
+			printf("%d ",r->mem[i]);
+            if(i < r->tamanho - 1)
+                printf(", ");
+		
+    }
+    printf("\n");
+
+}

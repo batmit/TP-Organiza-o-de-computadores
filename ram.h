@@ -16,7 +16,7 @@ RAM* criarRAM_vazia(int tam);
 RAM* criarRAM_aleatoria(int tam);
 void setDado(int endereco, int conteudo);
 void getDado(int endereco);
-void imprimir(void);
+void imprimir(RAM *r);
 
 
 
