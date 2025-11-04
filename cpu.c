@@ -50,14 +50,19 @@ void iniciar(RAM *r,CPU *c){
 
     while(c->opcode!=-1){
 		c->programa = (Instrucao*) realloc(c->programa, (c->PC + 1) * sizeof(Instrucao));
-
-        Instrucao inst = c->programa[c->PC]; /******** */
-
+		c->programa[c->PC].opcode =c->PC;
+		c->programa[c->PC].add1 =c->PC; // para motivos de teste e compilação
+		if(c->PC == 2)
+			c->programa[c->PC].add1 =1;
+		if(c->PC == 3)
+			c->programa[c->PC].opcode = -1;
+        //Instrucao inst = c->programa[c->PC]; /******** */
+		Instrucao inst = c->programa[c->PC]; /******** */
 		
         c->opcode = inst.opcode;
         switch (c->opcode){
 			case -1: {
-				printf("programa terminou!!");
+				printf("Programa terminou!!\n");
 				imprimirRAM(r);
 				break;
 			}

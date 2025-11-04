@@ -11,8 +11,6 @@ int main(){
     RAM *r = criarRAM_vazia(10);
 
     iniciar(r,c);
-
-
     imprimirRAM(r);
 
     destroiRAM(r);
