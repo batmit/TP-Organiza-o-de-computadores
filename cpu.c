@@ -18,16 +18,16 @@ struct cpu {
 };
 
 void setPrograma(CPU *c, Instrucao *programaAux,int tam){
-    c->programa[]->add1 = programaAux[]->add1;
-    c->programa[]->add2 = programaAux[]->add2;
-    c->programa[]->add3 = programaAux[]->add3;
-    c->programa[]->opcode = programaAux[]->opcode;
+    c->programa[tam].add1 = programaAux[tam].add1;
+    c->programa[tam].add2 = programaAux[tam].add2;
+    c->programa[tam].add3 = programaAux[tam].add3;
+    c->programa[tam].opcode = programaAux[tam].opcode;
  }
 
 
 CPU* criar_cpu(void) {
     
-	CPU* nova_cpu = malloc(sizeof(cpu));
+	CPU* nova_cpu = malloc(sizeof(CPU));
    
     nova_cpu->registrador1 = 0;
     nova_cpu->registrador2 = 0;
@@ -38,53 +38,58 @@ CPU* criar_cpu(void) {
     return nova_cpu;
 }
 
+void destroiCPU(CPU *c){
+	free(c->programa);
+	free(c);
+}
+
 void iniciar(RAM *r,CPU *c){
     c->opcode = 0;
     c->PC = 0;
 	
 
-    while(opcode!=-1){
-		c->PC = (Instrucao*) realloc(cpu->programa, (pc + 1) * sizeof(Instrucao));
+    while(c->opcode!=-1){
+		c->programa = (Instrucao*) realloc(c->programa, (c->PC + 1) * sizeof(Instrucao));
 
-        Instrucao inst = programa[PC]; /******** */
+        Instrucao inst = c->programa[c->PC]; /******** */
 
 		
-        opcode = inst.opcode;
-        switch (opcode){
+        c->opcode = inst.opcode;
+        switch (c->opcode){
 			case -1: {
-				print("programa terminou!!");
-				imprimirRAM(*r);
+				printf("programa terminou!!");
+				imprimirRAM(r);
 				break;
 			}
 			//soma
 			case 0: {
-				registrador1 = getDado(inst.add1);
-				registrador2 = getDado(inst.add2);
-				registrador1 +=registrador2;
+				c->registrador1 = getDado(r,inst.add1);
+				c->registrador2 = getDado(r,inst.add2);
+				c->registrador1 +=c->registrador2;
 				//salvar resultado
-				setDado(inst.add3, registrador1);
-				printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,registrador1);
+				setDado(r,inst.add3, c->registrador1);
+				printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,c->registrador1);
 				break;
 			}
 			//subtrai
 			case 1: {
-				registrador1 = getDado(inst.add1);
-				registrador2 = getDado(inst.add2);
-				registrador1 -=registrador2;
+				c->registrador1 = getDado(r,inst.add1);
+				c->registrador2 = getDado(r,inst.add2);
+				c->registrador1 -= c->registrador2;
 				//salvar resultado
-				setDado(inst.add3, registrador1);
-				printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,registrador1);
+				setDado(r,inst.add3, c->registrador1);
+				printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,c->registrador1);
 			}
 			//copia do registrador para RAM
 			//formato da instrucao [opcode,qual_registrador,end_ram,-1]
 			case 2: {
 				if(inst.add1==1) {
-					setDado(inst.add2, registrador1);                        
-					printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,registrador1);
+					setDado(r,inst.add2, c->registrador1);                        
+					printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,c->registrador1);
 						
 				}else if(inst.add1==2) {
-					setDado(inst.add2, registrador2);                        
-					printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,registrador2);
+					setDado(r,inst.add2, c->registrador2);                        
+					printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n",inst.add2,c->registrador2);
 						
 				}
 				break;
@@ -93,12 +98,12 @@ void iniciar(RAM *r,CPU *c){
 			//formato da instrucao [opcode,qual_registrador,end_ram,-1]
 			case 3: {
 				if(inst.add1==1) {
-					registrador1 = ram.getDado(inst.add2);
-                    printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n",registrador1);
+					c->registrador1 = getDado(r,inst.add2);
+                    printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n",c->registrador1);
 					
 				}else if(inst.add1==2) {
-					registrador2 = ram.getDado(inst.add2);
-					printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n",registrador2);
+					c->registrador2 = getDado(r,inst.add2);
+					printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n",c->registrador2);
 				}
 				break;
 			}
@@ -106,12 +111,12 @@ void iniciar(RAM *r,CPU *c){
 			//formato da instrucao [opcode,qual_registrador,conteudo_externo,-1]
 			case 4: {
 				if(inst.add1==1) {
-					registrador1 = inst.add2;
-					printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n",registrador1);
+					c->registrador1 = inst.add2;
+					printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n",c->registrador1);
     
 				}else if(inst.add1==2) {
-					registrador2 = inst.add2;
-                    printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n",registrador2);
+					c->registrador2 = inst.add2;
+                    printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n",c->registrador2);
 		
 				}
 				break;
@@ -122,12 +127,12 @@ void iniciar(RAM *r,CPU *c){
 			//na posicao do 2o endereco, ou seja, [opcode,qual_registrador,conteudo_reg,-1]
 			case 5: {
 				if(inst.add1==1) {
-					inst.add2 = registrador1;
-                    printf("Inst obtain_reg -> Registrador1 com conteudo %d\n",registrador1);
+					inst.add2 = c->registrador1;
+                    printf("Inst obtain_reg -> Registrador1 com conteudo %d\n",c->registrador1);
 						
 				}else if(inst.add1==2) {
-					inst.add2 = registrador2;
-					printf("Inst obtain_reg -> Registrador2 com conteudo %d\n",registrador2);
+					inst.add2 = c->registrador2;
+					printf("Inst obtain_reg -> Registrador2 com conteudo %d\n",c->registrador2);
 				}
 				break;
 			}

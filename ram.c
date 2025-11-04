@@ -57,3 +57,8 @@ void imprimirRAM(RAM *r){
     printf("\n");
 
 }
+
+void destroiRAM(RAM *r){
+    free(r->mem);
+    free(r);
+}
