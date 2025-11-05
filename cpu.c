@@ -17,11 +17,8 @@ struct cpu {
 	
 };
 
-void setPrograma(CPU *c, Instrucao *programaAux,int tam){
-    c->programa[tam].add1 = programaAux[tam].add1;
-    c->programa[tam].add2 = programaAux[tam].add2;
-    c->programa[tam].add3 = programaAux[tam].add3;
-    c->programa[tam].opcode = programaAux[tam].opcode;
+void setPrograma(CPU *c, Instrucao *programaAux){
+    c->programa = programaAux;
  }
 
 
@@ -50,13 +47,7 @@ void iniciar(RAM *r,CPU *c){
 
     while(c->opcode!=-1){
 		c->programa = (Instrucao*) realloc(c->programa, (c->PC + 1) * sizeof(Instrucao));
-		c->programa[c->PC].opcode =c->PC;
-		c->programa[c->PC].add1 =c->PC; // para motivos de teste e compilação
-		if(c->PC == 2)
-			c->programa[c->PC].add1 =1;
-		if(c->PC == 3)
-			c->programa[c->PC].opcode = -1;
-        //Instrucao inst = c->programa[c->PC]; /******** */
+		
 		Instrucao inst = c->programa[c->PC]; /******** */
 		
         c->opcode = inst.opcode;
