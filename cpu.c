@@ -6,7 +6,6 @@
 #include "ram.h"
 #include "cpu.h"
 
-
 struct cpu { 
      int registrador1;
 	 int registrador2;
@@ -18,7 +17,12 @@ struct cpu {
 };
 
 void setPrograma(CPU *c, Instrucao *programaAux){
-    c->programa = programaAux;
+	/*if (c->programa != NULL)
+	{
+		free(c->programa);
+	}*/
+
+	c->programa = programaAux;
  }
 
 
@@ -36,7 +40,10 @@ CPU* criar_cpu(void) {
 }
 
 void destroiCPU(CPU *c){
-	free(c->programa);
+	/*if (c->programa != NULL)
+	{
+		free(c->programa);
+	}*/
 	free(c);
 }
 

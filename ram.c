@@ -46,7 +46,7 @@ RAM* criarRAM_aleatoria(int tam){
     srand(time(NULL));
     RAM *r = criarRAM(tam);
     for(int i=0; i<tam; i++)
-			r->mem[i] =rand(); // cria memoria com endereco aleatorio
+			r->mem[i] =rand() % 10; // cria memoria com endereco aleatorio
     return r;
 
 }

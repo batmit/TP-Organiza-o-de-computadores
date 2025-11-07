@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "Instrucao.h"
+#include "ram.h"
+#include "cpu.h"
+#include "programas.h"
+
+int main()
+{
+
+    srand(time(NULL));
+
+    RAM *r = criarRAM_vazia(50);
+    CPU *c = criar_cpu();
+
+    // programaAleatorio(r, c, 15);
+    // programaMult(r, c, 20, 5);
+    // programaDiv(r, c, 20, 4);
+    programaFat(r, c, 3);
+    //programaSomaMatriz(r, c, 2);
+
+    destroiRAM(r);
+    destroiCPU(c);
+
+    return 0;
+}
