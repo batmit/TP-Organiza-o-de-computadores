@@ -197,6 +197,9 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
     //  5 -> obtem conteudo externo do registrador
 
     // 10! = 10x9x8x7x6x5x4x3x2x1
+
+    reinicializarRAM(ram, 50);
+
     int j = 1;
 
     for (int i = 1; i <= fat; i++)
@@ -240,11 +243,12 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
     printf("O resultado do fatorial e: %d\n", trecho2[1].add2);
 }
 
-void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade){
+void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
+{
     // gerando as matrizes de forma aleatoria
     int matriz1[cardinalidade][cardinalidade];
     int matriz2[cardinalidade][cardinalidade];
-    int r = rand()  % 100;
+    int r = rand() % 100;
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
@@ -254,7 +258,7 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade){
         }
     }
 
-    imprimirMatriz(cardinalidade,cardinalidade,matriz1);
+    imprimirMatriz(cardinalidade, cardinalidade, matriz1);
     imprimirMatriz(cardinalidade, cardinalidade, matriz2);
 
     criarRAM_vazia(27);
@@ -288,12 +292,10 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade){
             trecho2[0].opcode = 4;
             trecho2[0].add1 = 1; // registrador1
             trecho2[0].add2 = matriz2[i][j];
-        
 
             trecho2[1].opcode = 2;
             trecho2[1].add1 = 1;      // registrador1
             trecho2[1].add2 = endRam; // ram[endRam]
-
 
             trecho2[2].opcode = -1;
 
