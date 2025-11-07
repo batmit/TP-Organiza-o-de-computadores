@@ -39,15 +39,15 @@ RAM* criarRAM_aleatoria(int tam){
 }
 
 void setDado(RAM *r,int endereco, int conteudo){
-    r->mem[endereco] = conteudo;
+    r->mem[endereco] = conteudo; // aqui voce manda o endereço, a ram e o conteudo , ai ela guarda o conteudo naquela posição da ram
 }
 
 int getDado(RAM *r,int endereco){
-    return r->mem[endereco] ;
+    return r->mem[endereco] ; // voce manda o endereco e a ram, e ele te retorna o que esta armazenado
 }
 
 void imprimirRAM(RAM *r){
-    printf("Conteudo da RAM\n");
+    printf("Conteudo da RAM\n"); // imrpime o conteudo da ram
     for(int i=0; i<r->tamanho; i++){
 			printf("%d ",r->mem[i]);
             if(i < r->tamanho - 1)
@@ -58,7 +58,7 @@ void imprimirRAM(RAM *r){
 
 }
 
-void destroiRAM(RAM *r){
+void destroiRAM(RAM *r){ // desalloca a memoria da ram
     free(r->mem);
     free(r);
 }

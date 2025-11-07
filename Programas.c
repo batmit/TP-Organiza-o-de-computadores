@@ -16,7 +16,7 @@
 
 };*/
 
-void programaAleatorio(RAM* ram, CPU* cpu, int qdeIntrucoes);
+void programaAleatorio(int qdeIntrucoes);
 
 int main(){
     /*struct programas{
@@ -24,13 +24,13 @@ int main(){
     }*/
 
 
-    CPU *c = criar_cpu();
-    RAM *r = criarRAM_vazia(10);
+    
+    
 
-    programaAleatorio(r,c,15);
+    programaAleatorio(15);
 
-    destroiRAM(r);
-    destroiCPU(c);
+    
+
 }
 
 /*PROGRAMAS criarPrograma(PROGRAMAS *p,int tam){
@@ -40,15 +40,16 @@ int main(){
 
 }*/
 
-void programaAleatorio(RAM* ram, CPU* cpu, int qdeIntrucoes) {
-    
-    Instrucao* umPrograma = (Instrucao*) malloc(qdeIntrucoes * sizeof(Instrucao));// criar um funçãoc riar instrucao
-    
+void programaAleatorio(int qdeIntrucoes) {
     int tamanhoRAM = 1000;
+    
+    RAM *r = criarRAM_vazia(tamanhoRAM);
+    CPU *c = criar_cpu();
 
+    Instrucao* umPrograma = (Instrucao*) malloc(qdeIntrucoes * sizeof(Instrucao));// criar um funçãoc riar instrucao
     srand(time(NULL));
 
-    criarRAM_aleatoria(tamanhoRAM);
+
 
     // Loop para preencher o array de instruções
     for (int i = 0; i < (qdeIntrucoes - 1); i++) {
@@ -62,7 +63,10 @@ void programaAleatorio(RAM* ram, CPU* cpu, int qdeIntrucoes) {
 
     umPrograma[qdeIntrucoes - 1].opcode = -1;
 
-    setPrograma(cpu, umPrograma);
-    iniciar(ram,cpu);
+    setPrograma(c, umPrograma);
+    iniciar(r,c);
+
+    destroiRAM(r);
+    destroiCPU(c);
 
 }

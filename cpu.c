@@ -46,8 +46,7 @@ void iniciar(RAM *r,CPU *c){
 	
 
     while(c->opcode!=-1){
-		c->programa = (Instrucao*) realloc(c->programa, (c->PC + 1) * sizeof(Instrucao));
-		
+
 		Instrucao inst = c->programa[c->PC]; /******** */
 		
         c->opcode = inst.opcode;
@@ -74,7 +73,9 @@ void iniciar(RAM *r,CPU *c){
 				c->registrador1 -= c->registrador2;
 				//salvar resultado
 				setDado(r,inst.add3, c->registrador1);
-				printf("Inst sum -> RAM posicao %d com conteudo %d\n",inst.add3,c->registrador1);
+				printf("Inst sub -> RAM posicao %d com conteudo %d\n",inst.add3,c->registrador1);
+
+				break;
 			}
 			//copia do registrador para RAM
 			//formato da instrucao [opcode,qual_registrador,end_ram,-1]
@@ -123,13 +124,14 @@ void iniciar(RAM *r,CPU *c){
 			//na posicao do 2o endereco, ou seja, [opcode,qual_registrador,conteudo_reg,-1]
 			case 5: {
 				if(inst.add1==1) {
-					inst.add2 = c->registrador1;
+					c->programa[c->PC].add2 = c->registrador1;
                     printf("Inst obtain_reg -> Registrador1 com conteudo %d\n",c->registrador1);
 						
 				}else if(inst.add1==2) {
-					inst.add2 = c->registrador2;
+					c->programa[c->PC].add2 = c->registrador2;
 					printf("Inst obtain_reg -> Registrador2 com conteudo %d\n",c->registrador2);
 				}
+				
 				break;
 			}
 			
