@@ -19,6 +19,19 @@ RAM* criarRAM(int tam){
 
 }
 
+void reinicializarRAM(RAM *r, int tam){
+    if (r->mem != NULL) {
+        free(r->mem);
+    }
+    
+    r->mem = calloc(tam, sizeof(int)); 
+    if (r->mem == NULL) {
+        printf("ERRO FATAL: Falha ao alocar %d ints para a RAM.\n", tam);
+        exit(1);
+    }
+    r->tamanho = tam;
+}
+
 
 RAM* criarRAM_vazia(int tam){
 
