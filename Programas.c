@@ -269,9 +269,9 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         }
     }
 
-    printf("--- Matriz 1 (Original) ---\n");
+    printf("Matriz 1\n");
     imprimirMatriz(cardinalidade, cardinalidade, matriz1);
-    printf("--- Matriz 2 (Original) ---\n");
+    printf("Matriz 2\n");
     imprimirMatriz(cardinalidade, cardinalidade, matriz2);
 
     reinicializarRAM(ram, tamanhoRAM);
@@ -354,22 +354,168 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         }
     }
 
+    int (*matriz3)[cardinalidade] = malloc(sizeof(int[cardinalidade][cardinalidade]));
+    int k = 8;
+    for (int i = 0; i < cardinalidade; i++)
+    {
+        for (int j = 0; j < cardinalidade; j++)
+        {
+            matriz3[i][j] = getDado(ram,k);
+            k++;
+        }
+    }
+
+    printf("\nMatriz 3\n");
+    imprimirMatriz(cardinalidade, cardinalidade, matriz3);
+
     free(matriz1);
     free(matriz2);
+    free(matriz3);
 
-    printf("--- Conteúdo Final da RAM (M1, M2, M_Resultado) ---\n");
     imprimirRAM(ram);
 }
 
-void imprimirMatriz(int rows, int cols, int matrix[rows][cols])
+void programaRaizQuadrada(RAM *ram, CPU *cpu, int numero)
 {
-    printf("--- Imprimindo Matriz (%dx%d) ---\n", rows, cols);
-    for (int i = 0; i < rows; i++)
+    // utilizar teoria dos numeros primos
+
+    // RAM[0]: N , o resto
+    // RAM[1]: O ímpar atual 
+    // RAM[2]: O contador , que é or esultado
+    // RAM[3]: Constante '1' para incrementar o contador, igual o joubert fez
+    // RAM[4]: Constante '2' para incrementar o ímpar
+
+    reinicializarRAM(ram, 5);
+
+    
+    Instrucao* trecho1 = (Instrucao*) malloc(9 * sizeof(Instrucao));
+
+    // colocar o n na posilçao 0
+    trecho1[0].opcode = 4; // ext->reg
+    trecho1[0].add1 = 1;
+    trecho1[0].add2 = numero; // passo o valor pra registrador
+
+    trecho1[1].opcode = 2; // reg->RAM
+    trecho1[1].add1 = 1; // registrador para ram
+    trecho1[1].add2 = 0; // RAM[0]
+
+    // colcoar '1' 
+    trecho1[2].opcode = 4; // ext->reg
+    trecho1[2].add1 = 1; 
+    trecho1[2].add2 = 1; //passo valor pra registrador
+
+    trecho1[3].opcode = 2; // reg->RAM
+    trecho1[3].add1 = 1;
+    trecho1[3].add2 = 1; // RAM[1]
+
+    trecho1[4].opcode = 2; // reg->RAM 
+    trecho1[4].add1 = 1; // aproveito o registrador e mando para a ram[3]
+    trecho1[4].add2 = 3; // RAM[3]
+
+    //  coloco o 2 agr
+    trecho1[5].opcode = 4; // ext->reg
+    trecho1[6].add1 = 1;
+    trecho1[6].add2 = 2;
+    trecho1[7].opcode = 2; // reg->RAM
+    trecho1[7].add1 = 1;
+    trecho1[7].add2 = 4; // RAM[4]
+
+    trecho1[8].opcode = -1;
+
+    setPrograma(cpu, trecho1);
+    iniciar(ram, cpu);
+
+
+    int restante = numero;
+    int impar = 1;
+
+    while (restante >= impar)
     {
-        for (int j = 0; j < cols; j++)
+        // joao, é nessa parte que acontece os calculos
+
+        Instrucao* trecho2 = (Instrucao*) malloc(4 * sizeof(Instrucao));
+
+        // RAM[0] = RAM[0] - RAM[1] (N -= ímpar)
+        trecho2[0].opcode = 1;
+        trecho2[0].add1 = 0; 
+        trecho2[0].add2 = 1;
+        trecho2[0].add3 = 0;
+
+        // RAM[1] = RAM[1] + RAM[4] (ímpar += 2)
+        trecho2[1].opcode = 0;
+        trecho2[1].add1 = 1;
+        trecho2[1].add2 = 4;
+        trecho2[1].add3 = 1;
+
+        // RAM[2] = RAM[2] + RAM[3] (resultado += 1)
+        trecho2[2].opcode = 0;
+        trecho2[2].add1 = 2;
+        trecho2[2].add2 = 3;
+        trecho2[2].add3 = 2;
+
+        trecho2[3].opcode = -1;
+
+        setPrograma(cpu, trecho2);
+        iniciar(ram, cpu);
+
+        Instrucao* trecho3 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+
+        trecho3[0].opcode = 3; // RAM[0] -> reg1
+        trecho3[0].add1 = 1;
+        trecho3[0].add2 = 0;
+
+        trecho3[1].opcode = 5; // reg1 -> instrução
+        trecho3[1].add1 = 1;
+        trecho3[1].add2 = -1;
+        trecho3[2].opcode = -1;
+
+        setPrograma(cpu, trecho3);
+        iniciar(ram, cpu);
+
+        restante = trecho3[1].add2;
+
+        Instrucao* trecho4 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+
+        trecho4[0].opcode = 3; // RAM[1] -> reg1
+        trecho4[0].add1 = 1;
+        trecho4[0].add2 = 1;
+
+        trecho4[1].opcode = 5; // reg1 -> instrução
+        trecho4[1].add1 = 1;
+        trecho4[1].add2 = -1;
+        trecho4[2].opcode = -1;
+
+        setPrograma(cpu, trecho4);
+        iniciar(ram, cpu);
+        impar = trecho4[1].add2;
+    }
+
+    // buscar o resultado que está em RAM[2] 
+    Instrucao* trecho5 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+    trecho5[0].opcode = 3; // RAM[2] -> reg1
+    trecho5[0].add1 = 1;
+    trecho5[0].add2 = 2;
+
+    trecho5[1].opcode = 5; // reg1 -> instrução
+    trecho5[1].add1 = 1;
+    trecho5[1].add2 = -1;
+    trecho5[2].opcode = -1;
+
+    setPrograma(cpu, trecho5);
+    iniciar(ram, cpu);
+
+    printf("A raiz quadrada (inteira) de %d e: %d\n", numero, trecho5[1].add2);
+}
+
+void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+{
+    printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
+    for (int i = 0; i < linhas; i++)
+    {
+        for (int j = 0; j < colunas; j++)
         {
             // Imprime o número e um 'tab' para alinhamento
-            printf("%d\t", matrix[i][j]);
+            printf("%d\t", matriz[i][j]);
         }
         // Pula uma linha no final de cada linha da matriz
         printf("\n");
