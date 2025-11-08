@@ -18,8 +18,8 @@ int main()
     // programaAleatorio(r, c, 15);
     // programaMult(r, c, 20, 5);
     // programaDiv(r, c, 20, 4);
-    //programaFat(r, c, 3);
-    //programaSomaMatriz(r, c, 2);
+    // programaFat(r, c, 4);
+    // programaSomaMatriz(r, c, 2);
 
     destroiRAM(r);  
     destroiCPU(c);

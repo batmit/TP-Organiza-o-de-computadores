@@ -35,7 +35,9 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 
 void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 {
-    Instrucao trecho1[3];
+    reinicializarRAM(ram, 2);
+
+    Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
 
     // salva o multiplicando na RAM[1]
     trecho1[0].opcode = 4;
@@ -56,7 +58,7 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
     {
         // soma a ram[1] em ram[0]
 
-        Instrucao trecho2[2];
+        Instrucao* trecho2 = (Instrucao*) malloc(2 * sizeof(Instrucao));
 
         // soma ram[0] + ram[1]
         trecho2[0].opcode = 0;
@@ -72,7 +74,7 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
     }
 
     // traz o resultado pra fora da cpu
-    Instrucao trecho3[3];
+    Instrucao* trecho3 = (Instrucao*) malloc(3 * sizeof(Instrucao));
 
     // copia da ram[0] (resultado) para o registrador 1
     trecho3[0].opcode = 3; //
@@ -98,7 +100,9 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 
 void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
 {
-    Instrucao trecho1[5];
+    reinicializarRAM(ram, 4);
+
+    Instrucao* trecho1 = (Instrucao*) malloc(5 * sizeof(Instrucao));
 
     trecho1[0].opcode = 4;
     trecho1[0].add1 = 1; // registrador1
@@ -121,7 +125,8 @@ void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
     setPrograma(cpu, trecho1);
     iniciar(ram, cpu);
 
-    Instrucao trecho2[3];
+    Instrucao* trecho2 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+
     trecho2[0].opcode = 4;
     trecho2[0].add1 = 1; // registrador1
     trecho2[0].add2 = 1; // num 1
@@ -137,7 +142,8 @@ void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
 
     while (dividendo >= divisor)
     {
-        Instrucao trecho3[5];
+        Instrucao* trecho3 = (Instrucao*) malloc(5 * sizeof(Instrucao));
+
         trecho3[0].opcode = 1; // sub
         trecho3[0].add1 = 0;   // ram[0]
         trecho3[0].add2 = 1;   // ram[1]
@@ -166,8 +172,8 @@ void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
         dividendo = trecho3[3].add2;
     }
 
-    Instrucao trecho4[3];
-    trecho4[0].opcode = 3;
+    Instrucao* trecho4 = (Instrucao*) malloc(3 * sizeof(Instrucao));    trecho4[0].opcode = 3;
+    
     trecho4[0].add1 = 1; // registrador1
     trecho4[0].add2 = 3; // ram[3]
     trecho4[0].add3 = -1;
@@ -206,7 +212,8 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
     {
         programaMult(ram, cpu, j, i);
 
-        Instrucao trecho1[3];
+        Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+
         trecho1[0].opcode = 3;
         trecho1[0].add1 = 1; // registrador1
         trecho1[0].add2 = 0; // RAM[0]
@@ -224,7 +231,8 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
         j = trecho1[1].add2;
     }
 
-    Instrucao trecho2[3];
+    Instrucao* trecho2 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+
     trecho2[0].opcode = 3;
     trecho2[0].add1 = 1; // registrador1
     trecho2[0].add2 = 0; // ram[0]
@@ -245,29 +253,39 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
 
 void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
 {
-    // gerando as matrizes de forma aleatoria
-    int matriz1[cardinalidade][cardinalidade];
-    int matriz2[cardinalidade][cardinalidade];
-    int r = rand() % 100;
+    // Calcula o tamanho necessário para a RAM
+    int n_elementos = cardinalidade * cardinalidade;
+    int tamanhoRAM = n_elementos * 3; // matriz1, matriz2, resultado
+
+    int (*matriz1)[cardinalidade] = malloc(sizeof(int[cardinalidade][cardinalidade]));
+    int (*matriz2)[cardinalidade] = malloc(sizeof(int[cardinalidade][cardinalidade]));
+
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
         {
-            matriz1[i][j] = r;
-            matriz2[i][j] = r;
+            matriz1[i][j] = rand() % 100;
+            matriz2[i][j] = rand() % 100;
         }
     }
 
+    printf("--- Matriz 1 (Original) ---\n");
     imprimirMatriz(cardinalidade, cardinalidade, matriz1);
+    printf("--- Matriz 2 (Original) ---\n");
     imprimirMatriz(cardinalidade, cardinalidade, matriz2);
 
-    criarRAM_vazia(27);
+    reinicializarRAM(ram, tamanhoRAM);
+    
     int endRam = 0;
+    
+    // carrega Matriz 1 na RAM
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
         {
-            Instrucao trecho1[3];
+            
+            Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+            
             trecho1[0].opcode = 4;
             trecho1[0].add1 = 1; // registrador1
             trecho1[0].add2 = matriz1[i][j];
@@ -284,11 +302,14 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         }
     }
 
+    // carrega Matriz 2 na RAM  endRam continua de onde parou
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
         {
-            Instrucao trecho2[3];
+            
+            Instrucao* trecho2 = (Instrucao*) malloc(3 * sizeof(Instrucao));
+            
             trecho2[0].opcode = 4;
             trecho2[0].add1 = 1; // registrador1
             trecho2[0].add2 = matriz2[i][j];
@@ -305,17 +326,24 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
             endRam++;
         }
     }
-    endRam = 0;
-    int delta = 9; // valor a ser respeitado entre matriz 1 e 2
+    
+    // soma dentro ad ram
+    
+    endRam = 0; // Reinicia o contador de endereço
+    
+    int delta = n_elementos; 
+
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
         {
-            Instrucao trecho3[2];
+            
+            Instrucao* trecho3 = (Instrucao*) malloc(2 * sizeof(Instrucao));
+            
             trecho3[0].opcode = 0;                  // sum
-            trecho3[0].add1 = endRam;               // ram[endRam]
-            trecho3[0].add2 = endRam + delta;       // ram[endRam+delta]
-            trecho3[0].add3 = endRam + (2 * delta); // ram[endRam+(2*delta)]
+            trecho3[0].add1 = endRam;               // ram[M1]
+            trecho3[0].add2 = endRam + delta;       // ram[M2]
+            trecho3[0].add3 = endRam + (2 * delta); // ram[M_Resultado]
 
             trecho3[1].opcode = -1;
 
@@ -326,8 +354,11 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         }
     }
 
-    imprimirMatriz(cardinalidade, cardinalidade, matriz1);
-    imprimirMatriz(cardinalidade, cardinalidade, matriz2);
+    free(matriz1);
+    free(matriz2);
+
+    printf("--- Conteúdo Final da RAM (M1, M2, M_Resultado) ---\n");
+    imprimirRAM(ram);
 }
 
 void imprimirMatriz(int rows, int cols, int matrix[rows][cols])

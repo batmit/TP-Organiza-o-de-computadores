@@ -17,10 +17,10 @@ struct cpu {
 };
 
 void setPrograma(CPU *c, Instrucao *programaAux){
-	/*if (c->programa != NULL)
+	if (c->programa != NULL)
 	{
 		free(c->programa);
-	}*/
+	}
 
 	c->programa = programaAux;
  }
@@ -40,10 +40,10 @@ CPU* criar_cpu(void) {
 }
 
 void destroiCPU(CPU *c){
-	/*if (c->programa != NULL)
+	if (c->programa != NULL)
 	{
 		free(c->programa);
-	}*/
+	}
 	free(c);
 }
 
