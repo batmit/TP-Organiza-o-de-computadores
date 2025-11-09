@@ -20,7 +20,10 @@ int main()
     // programaDiv(r, c, 20, 4);
     // programaFat(r, c, 4);
     // programaSomaMatriz(r, c, 2);
-    programaRaizQuadrada(r, c, 49);
+    // programaRaizQuadrada(r, c, 49);
+    // programaRaizCubica(r, c, 27);
+    // programaRaioEsfera(r, c, 108);
+
 
     destroiRAM(r);  
     destroiCPU(c);
