@@ -766,12 +766,12 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
     {
         char bit_atual = binario[i];
 
-        // Se o digito for '1', somamos o "peso" ao "total"
+        // Se o digito for 1, somamos o peso ao total
         if (bit_atual == '1')
         {
             Instrucao *trecho2 = (Instrucao *)malloc(2 * sizeof(Instrucao));
 
-            // RAM[0] = RAM[0] + RAM[1] (Total = Total + Peso)
+            // RAM[0] = RAM[0] + RAM[1] ; Total = Total + Peso
             trecho2[0].opcode = 0;
             trecho2[0].add1 = 0;
             trecho2[0].add2 = 1;
@@ -783,11 +783,10 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
             iniciar(ram, cpu);
         }
 
-        // Dobra o "peso" para a proxima iteracao
+        // dobra  para a proxima iteracao
         Instrucao *trecho3 = (Instrucao *)malloc(2 * sizeof(Instrucao));
 
-        // RAM[1] = RAM[1] + RAM[1] (Peso = Peso * 2)
-        trecho3[0].opcode = 0;
+        // RAM[1] = RAM[1] + RAM[1] ; peso = peso *2 
         trecho3[0].add1 = 1;
         trecho3[0].add2 = 1;
         trecho3[0].add3 = 1;
@@ -796,11 +795,9 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
 
         setPrograma(cpu, trecho3);
         iniciar(ram, cpu);
-
-        printf(">>> O resultado decimal de '%s' e: %d\n", binario_str, trecho_final[1].add2);
     }
 
-    // --- Trecho 3: Buscar o Resultado (que está em RAM[0]) ---
+    //pegar o result
     Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
 
     trecho4[0].opcode = 3; // RAM[0] -> reg1
@@ -811,7 +808,7 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
     trecho4[1].add1 = 1;
     trecho4[1].add2 = -1;
 
-    trecho4[2].opcode = -1; // Halt
+    trecho4[2].opcode = -1; 
 
     setPrograma(cpu, trecho4);
     iniciar(ram, cpu);
@@ -819,18 +816,18 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
     printf("O resultado decimal de '%s' e: %d\n", binario, trecho4[1].add2);
 }
 
-    void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+{
+    printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
+    for (int i = 0; i < linhas; i++)
     {
-        printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
-        for (int i = 0; i < linhas; i++)
+        for (int j = 0; j < colunas; j++)
         {
-            for (int j = 0; j < colunas; j++)
-            {
-                // Imprime o número e um 'tab' para alinhamento
-                printf("%d\t", matriz[i][j]);
-            }
-            // Pula uma linha no final de cada linha da matriz
-            printf("\n");
+             // Imprime o número e um 'tab' para alinhamento
+            printf("%d\t", matriz[i][j]);
         }
-        printf("----------------------------------\n");
+        // Pula uma linha no final de cada linha da matriz
+        printf("\n");
+    }
+    printf("----------------------------------\n");
     }
