@@ -10,6 +10,16 @@
 
 #define TAM_RAM 50
 
+/* OPCODE
+    -1 = Halt
+    0 soma
+    1 subtrai
+    2 copia do registrador para RAM
+    3 copia da RAM para o registrador
+    4 salva conteudo externo no registrador
+    5 obtem conteudo externo do registrador
+    */
+
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
     destroiRAM(ram);
@@ -714,18 +724,113 @@ void programaRaioEsfera(RAM *ram, CPU *cpu, int volume)
     printf("O raio com PI = 3  da esfera com o volume de %d e: %d\n", volume, trecho2[1].add2);
 }
 
-void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque ai ja tenho ele separado, 
+//dava pra passar um numero e usar o codigo de separar, mas nao tem necessidade
 {
-    printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
-    for (int i = 0; i < linhas; i++)
+    /* OPCODE
+    -1 = Halt
+    0 soma
+    1 subtrai
+    2 copia do registrador para RAM
+    3 copia da RAM para o registrador
+    4 salva conteudo externo no registrador
+    5 obtem conteudo externo do registrador
+    */
+
+    // Layout da RAM:
+    // RAM[0]: O "Total" (Resultado, comeca em 0)
+    // RAM[1]: O "Peso" (Comeca em 1, depois 2, 4, 8...)
+    reinicializarRAM(ram, 2);
+
+    // --- Trecho 1: Setup (Colocar '1' na RAM[1]) ---
+    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+
+    trecho1[0].opcode = 4; // ext->reg1
+    trecho1[0].add1 = 1;
+    trecho1[0].add2 = 1; // O número 1
+
+    trecho1[1].opcode = 2; // reg1->RAM[1]
+    trecho1[1].add1 = 1;
+    trecho1[1].add2 = 1;
+
+    trecho1[2].opcode = -1; // Halt
+
+    setPrograma(cpu, trecho1);
+    iniciar(ram, cpu);
+
+
+    int tamanho = strlen(binario);
+
+    // pega  do fim da string para o comeo
+    for (int i = (tamanho - 1); i >= 0; i--)
     {
-        for (int j = 0; j < colunas; j++)
+        char bit_atual = binario[i];
+
+        // Se o digito for '1', somamos o "peso" ao "total"
+        if (bit_atual == '1')
         {
-            // Imprime o número e um 'tab' para alinhamento
-            printf("%d\t", matriz[i][j]);
+            Instrucao *trecho2 = (Instrucao *)malloc(2 * sizeof(Instrucao));
+
+            // RAM[0] = RAM[0] + RAM[1] (Total = Total + Peso)
+            trecho2[0].opcode = 0;
+            trecho2[0].add1 = 0;
+            trecho2[0].add2 = 1;
+            trecho2[0].add3 = 0;
+
+            trecho2[1].opcode = -1; // Halt
+
+            setPrograma(cpu, trecho2);
+            iniciar(ram, cpu);
         }
-        // Pula uma linha no final de cada linha da matriz
-        printf("\n");
+
+        // Dobra o "peso" para a proxima iteracao
+        Instrucao *trecho3 = (Instrucao *)malloc(2 * sizeof(Instrucao));
+
+        // RAM[1] = RAM[1] + RAM[1] (Peso = Peso * 2)
+        trecho3[0].opcode = 0;
+        trecho3[0].add1 = 1;
+        trecho3[0].add2 = 1;
+        trecho3[0].add3 = 1;
+
+        trecho3[1].opcode = -1; // Halt
+
+        setPrograma(cpu, trecho3);
+        iniciar(ram, cpu);
+
+        printf(">>> O resultado decimal de '%s' e: %d\n", binario_str, trecho_final[1].add2);
     }
-    printf("----------------------------------\n");
+
+    // --- Trecho 3: Buscar o Resultado (que está em RAM[0]) ---
+    Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+
+    trecho4[0].opcode = 3; // RAM[0] -> reg1
+    trecho4[0].add1 = 1;
+    trecho4[0].add2 = 0;
+
+    trecho4[1].opcode = 5; // reg1 -> instrução
+    trecho4[1].add1 = 1;
+    trecho4[1].add2 = -1;
+
+    trecho4[2].opcode = -1; // Halt
+
+    setPrograma(cpu, trecho4);
+    iniciar(ram, cpu);
+
+    printf("O resultado decimal de '%s' e: %d\n", binario, trecho4[1].add2);
 }
+
+    void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+    {
+        printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
+        for (int i = 0; i < linhas; i++)
+        {
+            for (int j = 0; j < colunas; j++)
+            {
+                // Imprime o número e um 'tab' para alinhamento
+                printf("%d\t", matriz[i][j]);
+            }
+            // Pula uma linha no final de cada linha da matriz
+            printf("\n");
+        }
+        printf("----------------------------------\n");
+    }

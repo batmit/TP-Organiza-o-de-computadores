@@ -48,7 +48,17 @@ void destroiCPU(CPU *c){
 }
 
 void iniciar(RAM *r,CPU *c){
-    c->opcode = 0;
+	/* OPCODE
+	-1 = Halt
+	0 soma
+	1 subtrai
+	2 copia do registrador para RAM
+	3 copia da RAM para o registrador
+	4 salva conteudo externo no registrador
+	5 obtem conteudo externo do registrador
+	*/
+
+	c->opcode = 0;
     c->PC = 0;
 	
 

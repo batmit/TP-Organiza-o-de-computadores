@@ -23,9 +23,9 @@ int main()
     // programaRaizQuadrada(r, c, 49);
     // programaRaizCubica(r, c, 27);
     // programaRaioEsfera(r, c, 108);
+    programaBinParaDec(r, c, 10)
 
-
-    destroiRAM(r);  
+        destroiRAM(r);
     destroiCPU(c);
 
     return 0;
