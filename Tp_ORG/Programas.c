@@ -487,27 +487,29 @@ void programaBin_Hex(RAM *ram, CPU *cpu,char *binario) {
     int tam = strlen(binario);
     
     // olha zero a esquerda pra multiplo de 4
-    int preenchimento = (4 - (tam % 4)) % 4;
+    int preenchimento = (4 - (tam % 4)) % 4; // haxadecimais funcionam em multiplos de 5
     
-    char binPreenchido[tam + preenchimento + 1];
+    char binPreenchido[tam + preenchimento + 1]; // pra ter o tamanho total
 
     //  ele salva o novo numero q varia do preenchumaneto, coloca zeros antes 
     sprintf(binPreenchido, "%.*s%s", preenchimento, "0000", binario); // Ex: "00110101"
     
     char resultaHex[strlen(binPreenchido) / 4 + 1];
+    
     int indiceHex = 0;
 
 
     for(int i = 0; i < strlen(binPreenchido); i += 4) {
         
         char pedaco[5];
-        strncpy(pedaco, &binPreenchido[i], 4);
+        strncpy(pedaco, &binPreenchido[i], 4); // ele salvar os pedaços de i + 3 posições em 'pedaco'
         pedaco[4] = '\0'; // Termina a string do pedaço
         
-        programaBin_Dec(ram,cpu,pedaco);
+        programaBin_Dec(ram,cpu,pedaco);// trasnforma
+
         int valorInt = pegarResultado(ram, cpu, 0);
         
-        resultaHex[indiceHex] =  DecParaHex(valorInt);
+        resultaHex[indiceHex] =  DecParaHex(valorInt);// e tranforma denovo
         indiceHex++;
     }
     
