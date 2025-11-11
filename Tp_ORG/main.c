@@ -35,6 +35,8 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
+    programaLog(r, c, 2, 8);
+
     // programaPG(r, c, 2, 2, 6);
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);

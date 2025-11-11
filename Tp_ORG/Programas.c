@@ -122,24 +122,7 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
         j = pegarMult(ram, cpu);
     }
 
-    Instrucao *trecho2 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho2[0].opcode = 3;
-    trecho2[0].add1 = 1; // registrador1
-    trecho2[0].add2 = 0; // ram[0]
-    trecho2[0].add3 = -1;
-
-    trecho2[1].opcode = 5;
-    trecho2[1].add1 = 1; // registrador1
-    trecho2[1].add2 = -1;
-    trecho2[1].add3 = -1;
-
-    trecho2[2].opcode = -1;
-
-    setPrograma(cpu, trecho2);
-    iniciar(ram, cpu);
-
-    printf("O resultado do fatorial e: %d\n", trecho2[1].add2);
+    printf("O resultado do fatorial e: %d\n",j);
 }
 
 void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
@@ -467,6 +450,39 @@ void programaDec_Bin(RAM *ram, CPU *cpu, int decimal)
 
     printf("O resultado binario e: %s\n", bitsInvertidos);
 }
+
+void programaHex_Bin(RAM *ram, CPU *cpu,char *hex) {
+    
+    // cada hex * 4 + \0
+    char resultadoBin[strlen(hex) * 4 + 1];
+    
+    // para pd concatenar
+    resultadoBin[0] = '\0'; 
+
+    for(int i = 0; i < strlen(hex); i++) {
+        // Pega o caractere atual (ex: 'A')
+        char charAtual = hex[i];
+        
+        // Mapeia para os 4 bits (ex: "1010")
+        char* bits = HexParaBin(charAtual);
+        
+        //colca de tras pra frente
+        strcat(resultadoBin, bits);
+    }
+
+    programaBin_Dec(ram,cpu,resultadoBin);
+
+    printf("O resultado binario e: %s\n", resultadoBin);
+}
+
+void programaHex_Dec(RAM *ram, CPU *cpu,char *hex){
+    programaHex_Bin(hex);
+    printf("O resultado decimal e: %d\n",pegarResultado(ram, cpu, 0));
+}
+
+
+
+
 
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 {
@@ -881,17 +897,32 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
 
 void programaLog(RAM *ram, CPU *cpu, int base, int valor)
 {       /*
+        0 - resultado exp
         5 - base
         6 - valor
         7 = chute
+        8 - 1
         */
 
     reinicializarRAM(10);
 
     colocarNaRam(ram, cpu, 5, base);
     colocarNaRam(ram, cpu, 6, valor);
-    colocarNaRam(ram, cpu, 5, 1);
+    colocarNaRam(ram, cpu, 7, 1);
+    colocarNaRam(ram, cpu, 8, 1);
     
+    programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
+    soma(ram, cpu, 7, 8, 7);
+
+
+    while(pegarMult(cpu, ram) < pegarResultado(cpu, ram, 6)){
+
+        programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
+
+        soma(ram, cpu, 7, 8, 7);
+    }
+    
+    printf("Resultado aproximado: %d", pegarResultado(ram, cpu, 7));
 
 
 }
