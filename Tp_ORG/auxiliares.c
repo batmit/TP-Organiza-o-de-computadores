@@ -192,6 +192,17 @@ char* HexParaBin(char hex) {
     }
 }
 
+char DecParaHex(int resto) {
+
+    if (resto < 10) {
+        return resto + '0'; 
+    } 
+
+    else {
+        return (resto - 10) + 'A';
+    }
+}
+
 int maiusucla(int c) {
 
     if (c >= 'a' && c <= 'z') {
@@ -200,3 +211,4 @@ int maiusucla(int c) {
         return c;
     }
 }
+

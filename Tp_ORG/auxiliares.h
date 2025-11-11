@@ -27,6 +27,7 @@ int pegarDiv(RAM *ram, CPU *cpu);
 void multPosicoesRAM(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);
 
 char* HexParaBin(char hex);
+char DecParaHex(int resto);
 int maiusucla(int c);
 
 #endif

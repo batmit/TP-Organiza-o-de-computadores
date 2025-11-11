@@ -481,6 +481,46 @@ void programaHex_Dec(RAM *ram, CPU *cpu,char *hex){
 }
 
 
+void programaBin_Hex(RAM *ram, CPU *cpu,char *binario) {
+
+
+    int tam = strlen(binario);
+    
+    // olha zero a esquerda pra multiplo de 4
+    int preenchimento = (4 - (tam % 4)) % 4;
+    
+    char binPreenchido[tam + preenchimento + 1];
+
+    //  ele salva o novo numero q varia do preenchumaneto, coloca zeros antes 
+    sprintf(binPreenchido, "%.*s%s", preenchimento, "0000", binario); // Ex: "00110101"
+    
+    char resultaHex[strlen(binPreenchido) / 4 + 1];
+    int indiceHex = 0;
+
+
+    for(int i = 0; i < strlen(binPreenchido); i += 4) {
+        
+        char pedaco[5];
+        strncpy(pedaco, &binPreenchido[i], 4);
+        pedaco[4] = '\0'; // Termina a string do pedaço
+        
+        programaBin_Dec(ram,cpu,pedaco);
+        int valorInt = pegarResultado(ram, cpu, 0);
+        
+        resultaHex[indiceHex] =  DecParaHex(valorInt);
+        indiceHex++;
+    }
+    
+    resultaHex[indiceHex] = '\0'; // Termina a string final
+
+    printf("O resultado hexadecimal e: %s\n", resultaHex);
+}
+
+/*void programaDec_Hex(RAM *ram, CPU *cpu,char *binario){
+
+}*/
+
+
 
 
 

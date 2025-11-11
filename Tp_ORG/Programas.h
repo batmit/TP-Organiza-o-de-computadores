@@ -26,6 +26,8 @@ void programaDec_Bin(RAM *ram, CPU *cpu, int decimal);
 void programaHex_Bin(RAM *ram, CPU *cpu,char *hex);
 void programaHex_Dec(RAM *ram, CPU *cpu,char *hex);
 
+void programaBin_Hex(RAM *ram, CPU *cpu,char *binario);
+
 
 void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);

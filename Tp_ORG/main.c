@@ -31,15 +31,16 @@ int main()
     //  programaDec_Bin(r, c, 5);
     // programaHex_Bin(r,c,"0x5");
     // programaHex_Dec(r,c,"0x44A");
+    programaBin_Hex(r,c,"101000100101010");
 
     // programaPA(r, c, 1, 2, 5);
     // programaPotencia(r, c, 3, 4);
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
-    // programaLog(r, c, 2, 8); AINDA NÃO FUNCIONAL
+    // programaLog(r, c, 2, 8); nao fucn
+    // programaPG(r, c, 2, 2, 6);nao fun
 
-    // programaPG(r, c, 2, 2, 6); AINDA NÃO FUNCIONAL
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
     // programaAreaQuadrado(r, c, 5);
