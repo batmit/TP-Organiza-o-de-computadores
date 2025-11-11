@@ -14,7 +14,6 @@ void reinicializarRAM(RAM *r, int tam);
 
 void setDado(RAM *r,int endereco, int conteudo);
 int getDado(RAM *r,int endereco);
-
 void imprimirRAM(RAM *r);
 void destroiRAM(RAM *r);
 

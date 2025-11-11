@@ -12,6 +12,13 @@ void programaRaioEsfera(RAM *ram, CPU *cpu, int volume);
 void programaBin_Dec(RAM *ram, CPU *cpu, char *binario);
 void programaBin_Dec(RAM *ram, CPU *cpu, char *binario);
 
-void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas]);
+
+
+
+void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
+void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura);
+void programaAreaCirculo(RAM *ram, CPU *cpu, int raio);
+void programaCircunferenciaCirculo(RAM *ram, CPU *cpu, int raio);
+
 
 #endif

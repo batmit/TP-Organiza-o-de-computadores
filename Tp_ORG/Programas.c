@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +6,7 @@
 #include "ram.h"
 #include "cpu.h"
 #include "programas.h"
+#include "auxiliares.h"
 
 #define TAM_RAM 50
 
@@ -222,23 +222,7 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
     {
         programaMult(ram, cpu, j, i);
 
-        Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
-
-        trecho1[0].opcode = 3;
-        trecho1[0].add1 = 1; // registrador1
-        trecho1[0].add2 = 0; // RAM[0]
-
-        trecho1[1].opcode = 5;
-        trecho1[1].add1 = 1; // registrador1
-        trecho1[1].add2 = -1;
-        trecho1[1].add3 = -1;
-
-        trecho1[2].opcode = -1;
-
-        setPrograma(cpu, trecho1);
-        iniciar(ram, cpu);
-
-        j = trecho1[1].add2;
+        j = pegarMult(ram,cpu);
     }
 
     Instrucao* trecho2 = (Instrucao*) malloc(3 * sizeof(Instrucao));
@@ -682,26 +666,8 @@ void programaRaioEsfera(RAM *ram, CPU *cpu, int volume)
 
     programaDiv(ram, cpu, volume, 4);
 
-    // o resultado ta na ram 3
-    // agr tem q acessar la
-    
-    Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
-
-    trecho1[0].opcode = 3; // RAM[3] -> reg1
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = 3; // Posição do resultado da divisão
-
-    trecho1[1].opcode = 5; // reg1 -> instrução
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = -1;
-    
-    trecho1[2].opcode = -1;
-    
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
-    
     // agora calcular a raiz do volume dividido
-    programaRaizCubica(ram, cpu, trecho1[1].add2);
+    programaRaizCubica(ram, cpu, pegarDiv(ram,cpu));
 
     // o resultado ta na ram 
     // agr tem q acessar la dnv   
@@ -816,18 +782,104 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
     printf("O resultado decimal de '%s' e: %d\n", binario, trecho4[1].add2);
 }
 
-void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 {
-    printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
-    for (int i = 0; i < linhas; i++)
-    {
-        for (int j = 0; j < colunas; j++)
-        {
-             // Imprime o número e um 'tab' para alinhamento
-            printf("%d\t", matriz[i][j]);
-        }
-        // Pula uma linha no final de cada linha da matriz
-        printf("\n");
-    }
-    printf("----------------------------------\n");
-    }
+    programaMult(ram, cpu, lado, lado);
+    
+    printf(">>> A area do quadrado e: %d\n", pegarMult(ram,cpu));
+}
+
+
+// --- 2. Área do Triângulo ((base * altura) / 2) ---
+void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura)
+{
+    programaMult(ram, cpu, base, altura);
+    
+    int produto = pegarMult(ram,cpu)
+    
+    //  (produto / 2)
+    programaDiv(ram, cpu, produto, 2);
+    
+    printf(">>> A area do triangulo e: %d\n", pegarDiv(ram,cpu));
+}
+
+
+// --- 3. Área do Círculo (PI * r^2) ---
+void programaAreaCirculo(RAM *ram, CPU *cpu, int raio)
+{
+    programaMult(ram, cpu, raio, raio);
+    
+    int raioQuadrado = pegarMult(ram,cpu);
+
+    programaMult(ram, cpu, 3, raioQuadrado);
+        
+    printf("A area aproximada do circulo e: %d\n", pegarMult(ram,cpu));
+}
+
+
+
+void programaCircunferenciaCirculo(RAM *ram, CPU *cpu, int raio)
+{
+    // 2 *3 = 6        6* raio = c
+    programaMult(ram, cpu, 6, raio);
+
+    printf("A circunferencia aproximada do circulo e: %d\n", pegarMult(ram,cpu));
+}

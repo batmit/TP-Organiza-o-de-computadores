@@ -25,6 +25,11 @@ int main()
     // programaRaioEsfera(r, c, 108);
     // programaBin_Dec(r, c, "1010");
 
+    // programaAreaQuadrado(r, c, 5);
+    // programaAreaTriangulo(r, c, 10, 5); 
+    // programaAreaCirculo(r, c, 10); 
+    // programaCircunferenciaCirculo(r, c, 10); 
+
     destroiRAM(r);
     destroiCPU(c);
 
