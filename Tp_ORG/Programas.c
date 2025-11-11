@@ -20,6 +20,8 @@
     5 obtem conteudo externo do registrador
     */
 
+
+
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
     destroiRAM(ram);
@@ -45,6 +47,10 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 
 void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 {
+
+    /*  RAM[0]: resultado
+        RAM[1]: multiplicando */
+
     reinicializarRAM(ram, 2);
 
     Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
@@ -66,42 +72,10 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 
     for (int i = 0; i < multiplicador; i++) // repete "multiplicador" vezes
     {
-        // soma a ram[1] em ram[0]
-
-        Instrucao* trecho2 = (Instrucao*) malloc(2 * sizeof(Instrucao));
-
-        // soma ram[0] + ram[1]
-        trecho2[0].opcode = 0;
-        trecho2[0].add1 = 0; // ram[0]
-        trecho2[0].add2 = 1; // ram[1]
-        trecho2[0].add3 = 0; // ram[0]
-
-        trecho2[1].opcode = -1; // opcode halt
-
-        // executa o programa
-        setPrograma(cpu, trecho2);
-        iniciar(ram, cpu);
+        Soma(ram,cpu,0,1,0);
     }
 
-    // traz o resultado pra fora da cpu
-    Instrucao* trecho3 = (Instrucao*) malloc(3 * sizeof(Instrucao));
-
-    // copia da ram[0] (resultado) para o registrador 1
-    trecho3[0].opcode = 3; //
-    trecho3[0].add1 = 1;   // registrador1
-    trecho3[0].add2 = 0;   //
-
-    trecho3[1].opcode = 5; //
-    trecho3[1].add1 = 1;   // registrador1
-    trecho3[1].add2 = -1;  //
-    trecho3[1].add3 = -1;  //
-
-    trecho3[2].opcode = -1;
-
-    setPrograma(cpu, trecho3);
-    iniciar(ram, cpu);
-
-    printf("O resultado da multiplicacao e: %d\n", trecho3[1].add2);
+    printf("O resultado da multiplicacao e: %d\n", pegarMult(ram,cpu));
 }
 
 // gcc -g -o exe *. c - Wall
@@ -110,6 +84,13 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 
 void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
 {
+    /*
+        Ram 0 = dividendo
+        ram 1 = divisor
+        ram 2 = 1 (para somar resultado)
+        ram 3 = resultado
+    */
+
     reinicializarRAM(ram, 4);
 
     Instrucao* trecho1 = (Instrucao*) malloc(5 * sizeof(Instrucao));
@@ -152,53 +133,32 @@ void programaDiv(RAM *ram, CPU *cpu, int dividendo, int divisor)
 
     while (dividendo >= divisor)
     {
-        Instrucao* trecho3 = (Instrucao*) malloc(5 * sizeof(Instrucao));
+        
+        Subtrai(ram,cpu,0,1,0);
+        
+        Soma(ram,cpu,2,3,3);
+        
+        Instrucao* trecho3 = (Instrucao*) malloc(3 * sizeof(Instrucao));
 
-        trecho3[0].opcode = 1; // sub
-        trecho3[0].add1 = 0;   // ram[0]
-        trecho3[0].add2 = 1;   // ram[1]
-        trecho3[0].add3 = 0;   // ram[0]
+        trecho3[0].opcode = 3;
+        trecho3[0].add1 = 1;  // registrador1
+        trecho3[0].add2 = 0;  // ram[0]
+        trecho3[0].add3 = -1; // ram[1]
 
-        trecho3[1].opcode = 0; // sum
-        trecho3[1].add1 = 2;   // ram[2]
-        trecho3[1].add2 = 3;   // ram[3]
-        trecho3[1].add3 = 3;   // ram[3]
+        trecho3[1].opcode = 5;
+        trecho3[1].add1 = 1; // registrador1
+        trecho3[1].add2 = -1;
+        trecho3[1].add3 = -1;
 
-        trecho3[2].opcode = 3;
-        trecho3[2].add1 = 1;  // registrador1
-        trecho3[2].add2 = 0;  // ram[0]
-        trecho3[2].add3 = -1; // ram[1]
-
-        trecho3[3].opcode = 5;
-        trecho3[3].add1 = 1; // registrador1
-        trecho3[3].add2 = -1;
-        trecho3[3].add3 = -1;
-
-        trecho3[4].opcode = -1;
+        trecho3[2].opcode = -1;
 
         setPrograma(cpu, trecho3);
         iniciar(ram, cpu);
 
-        dividendo = trecho3[3].add2;
+        dividendo = trecho3[1].add2;
     }
 
-    Instrucao* trecho4 = (Instrucao*) malloc(3 * sizeof(Instrucao));    trecho4[0].opcode = 3;
-    
-    trecho4[0].add1 = 1; // registrador1
-    trecho4[0].add2 = 3; // ram[3]
-    trecho4[0].add3 = -1;
-
-    trecho4[1].opcode = 5;
-    trecho4[1].add1 = 1; // registrador1
-    trecho4[1].add2 = -1;
-    trecho4[1].add3 = -1;
-
-    trecho4[2].opcode = -1;
-
-    setPrograma(cpu, trecho4);
-    iniciar(ram, cpu);
-
-    printf("O resultado da divisao e: %d\n", trecho4[1].add2);
+    printf("O resultado da divisao e: %d\n", pegarDiv(ram,cpu));
 }
 
 void programaFat(RAM *ram, CPU *cpu, int fat)
@@ -430,32 +390,15 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int numero)
 
     while (restante >= impar)
     {
-        // joao, é nessa parte que acontece os calculos
-
-        Instrucao* trecho2 = (Instrucao*) malloc(4 * sizeof(Instrucao));
+        // joao, é nessa parte que acontece os calculos     
 
         // RAM[0] = RAM[0] - RAM[1] (N -= ímpar)
-        trecho2[0].opcode = 1;
-        trecho2[0].add1 = 0; 
-        trecho2[0].add2 = 1;
-        trecho2[0].add3 = 0;
-
-        // RAM[1] = RAM[1] + RAM[4] (ímpar += 2)
-        trecho2[1].opcode = 0;
-        trecho2[1].add1 = 1;
-        trecho2[1].add2 = 4;
-        trecho2[1].add3 = 1;
-
+        Subtrai(ram,cpu,0,1,0);
+        
+        Soma(ram,cpu,1,4,1);
+       
         // RAM[2] = RAM[2] + RAM[3] (resultado += 1)
-        trecho2[2].opcode = 0;
-        trecho2[2].add1 = 2;
-        trecho2[2].add2 = 3;
-        trecho2[2].add3 = 2;
-
-        trecho2[3].opcode = -1;
-
-        setPrograma(cpu, trecho2);
-        iniciar(ram, cpu);
+        Soma(ram,cpu,2,3,1);
 
         Instrucao* trecho3 = (Instrucao*) malloc(3 * sizeof(Instrucao));
 
@@ -839,7 +782,6 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
 
 
 
-
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 {
     programaMult(ram, cpu, lado, lado);
@@ -848,21 +790,19 @@ void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 }
 
 
-// --- 2. Área do Triângulo ((base * altura) / 2) ---
+
 void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura)
 {
     programaMult(ram, cpu, base, altura);
     
-    int produto = pegarMult(ram,cpu)
+    int produto = pegarMult(ram,cpu);
     
-    //  (produto / 2)
     programaDiv(ram, cpu, produto, 2);
     
-    printf(">>> A area do triangulo e: %d\n", pegarDiv(ram,cpu));
+    printf("A area do triangulo e: %d\n", pegarDiv(ram,cpu));
 }
 
 
-// --- 3. Área do Círculo (PI * r^2) ---
 void programaAreaCirculo(RAM *ram, CPU *cpu, int raio)
 {
     programaMult(ram, cpu, raio, raio);
@@ -874,8 +814,6 @@ void programaAreaCirculo(RAM *ram, CPU *cpu, int raio)
     printf("A area aproximada do circulo e: %d\n", pegarMult(ram,cpu));
 }
 
-
-
 void programaCircunferenciaCirculo(RAM *ram, CPU *cpu, int raio)
 {
     // 2 *3 = 6        6* raio = c
@@ -883,3 +821,45 @@ void programaCircunferenciaCirculo(RAM *ram, CPU *cpu, int raio)
 
     printf("A circunferencia aproximada do circulo e: %d\n", pegarMult(ram,cpu));
 }
+
+void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int altura)
+{
+   
+    programaMult(ram, cpu, comprimento, largura);
+
+    int areaBase = pegarMult(ram, cpu);
+
+    programaMult(ram, cpu, areaBase, altura);
+    
+    printf("O volume da caixa e: %d\n", pegarMult(ram, cpu));
+}
+
+
+void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura)
+{   
+    int produto_soma = (baseMaior + baseMenor) * altura;
+
+    programaDiv(ram, cpu, produto_soma, 2);
+
+    printf("A area do trapezio e: %d\n", pegarDiv(ram, cpu));
+}
+
+
+
+void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura)
+{
+
+    programaMult(ram, cpu, raio, raio);
+
+    int raioQuadrado = pegarMult(ram, cpu);
+
+    programaMult(ram, cpu, raioQuadrado, 3);
+
+    int areaBase = pegarMult(ram, cpu);
+
+    programaMult(ram, cpu, areaBase, altura);
+    
+    printf("O volume aproximado do cilindro e: %d\n", pegarMult(ram, cpu));
+}
+
+

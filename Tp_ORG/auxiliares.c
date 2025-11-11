@@ -19,6 +19,38 @@
     4 salva conteudo externo no registrador
     5 obtem conteudo externo do registrador
     */
+
+void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
+{
+
+    Instrucao* trecho_soma = (Instrucao*) malloc(2 * sizeof(Instrucao));
+
+    trecho_soma[0].opcode = 0;      // Soma
+    trecho_soma[0].add1 = pos1;     // Pega da RAM[end1]
+    trecho_soma[0].add2 = pos2;     // Pega da RAM[end2]
+    trecho_soma[0].add3 = posFinal;  // Salva na RAM[endDest]
+
+    trecho_soma[1].opcode = -1;     // Halt
+
+    setPrograma(cpu, trecho_soma);
+    iniciar(ram, cpu);
+}
+
+void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
+{
+
+    Instrucao* trecho_soma = (Instrucao*) malloc(2 * sizeof(Instrucao));
+
+    trecho_soma[0].opcode = 1;      // Subtração
+    trecho_soma[0].add1 = pos1;     // Pega da RAM[end1]
+    trecho_soma[0].add2 = pos2;     // Pega da RAM[end2]
+    trecho_soma[0].add3 = posFinal;  // Salva na RAM[endDest]
+
+    trecho_soma[1].opcode = -1;     // Halt
+
+    setPrograma(cpu, trecho_soma);
+    iniciar(ram, cpu);
+}
 void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
 {
     printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
@@ -75,3 +107,33 @@ int pegarDiv(RAM *ram, CPU *cpu)
     
     return trecho1[1].add2;
 }
+
+
+/*
+ Formula funcional, mas por enquanto nao tem necessidade, 
+ pra nao abandonar a alma dos trechoe se das intruções visiveis
+ mas que seria de grande praticidade
+
+int pegarResultadoGenerico(RAM *ram, CPU *cpu, int endereco)
+{
+    
+    Instrucao* trecho_busca = (Instrucao*) malloc(3 * sizeof(Instrucao));
+    
+    
+    trecho_busca[0].opcode = 3; // opcode: RAM -> Registrador
+    trecho_busca[0].add1 = 1; // registrador1
+    trecho_busca[0].add2 = endereco; // Posição da RAM a ser lida
+
+
+    trecho_busca[1].opcode = 5; // opcode: Registrador -> Instrução
+    trecho_busca[1].add1 = 1; // registrador1
+    trecho_busca[1].add2 = -1; // Espaço reservado para o resultado
+    trecho_busca[1].add3 = -1;
+
+    trecho_busca[2].opcode = -1; 
+    
+    setPrograma(cpu, trecho_busca);
+    iniciar(ram, cpu);
+    
+    return trecho_busca[1].add2;
+}*/

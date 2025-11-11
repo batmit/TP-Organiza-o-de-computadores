@@ -28,7 +28,10 @@ int main()
     // programaAreaQuadrado(r, c, 5);
     // programaAreaTriangulo(r, c, 10, 5); 
     // programaAreaCirculo(r, c, 10); 
-    // programaCircunferenciaCirculo(r, c, 10); 
+    // programaCircunferenciaCirculo(r, c, 10);
+    // programaVolumeCaixa(r, c, 3, 4, 5); 
+    // programaAreaTrapezio(r, c, 10, 6, 5); 
+    // programaVolumeCilindro(r, c, 10, 5); 
 
     destroiRAM(r);
     destroiCPU(c);
