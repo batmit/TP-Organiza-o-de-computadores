@@ -2,8 +2,10 @@
 #include<stdlib.h>
 #include<string.h>
 #include<time.h>
-#include "Instrucao.h"
 #include "ram.h"
+#include "auxiliares.h"
+#include "cpu.h"
+#include "programas.h"
 
 struct ram { 
     int *mem;

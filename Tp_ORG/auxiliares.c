@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "Instrucao.h"
 #include "ram.h"
 #include "cpu.h"
 #include "programas.h"
@@ -51,6 +50,7 @@ void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
     setPrograma(cpu, trecho_soma);
     iniciar(ram, cpu);
 }
+
 void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
 {
     printf("--- Imprimindo Matriz (%dx%d) ---\n", linhas, colunas);
@@ -70,41 +70,13 @@ void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
 int pegarMult(RAM *ram, CPU *cpu)
 {
     // O resultado da multiplicação fica na RAM[0]
-    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho1[0].opcode = 3; // RAM[0] -> reg1
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = 0;
-
-    trecho1[1].opcode = 5; // reg1 -> instrução
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = -1;
-    trecho1[2].opcode = -1;
-
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
-
-    return trecho1[1].add2;
+    return pegarResultado(ram, cpu, 0);
 }
 
 int pegarDiv(RAM *ram, CPU *cpu)
 {
     // O resultado da divisao fica na RAM[3]
-    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho1[0].opcode = 3; // RAM[3] -> reg1
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = 3;
-
-    trecho1[1].opcode = 5; // reg1 -> instrução
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = -1;
-    trecho1[2].opcode = -1;
-
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
-
-    return trecho1[1].add2;
+    return pegarResultado(ram, cpu, 3);
 }
 
 int pegarResultado(RAM *ram, CPU *cpu, int endereco)
@@ -127,4 +99,24 @@ int pegarResultado(RAM *ram, CPU *cpu, int endereco)
     iniciar(ram, cpu);
 
     return trecho1[1].add2;
+}
+
+void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor)
+{
+    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+
+    // reg[1] = valor
+    trecho1[0].opcode = 4;
+    trecho1[0].add1 = 1;     // registrador1
+    trecho1[0].add2 = valor; // O valor a ser carregado
+
+    // RAM[endereco] = reg[1]
+    trecho1[1].opcode = 2;
+    trecho1[1].add1 = 1;        // registrador1
+    trecho1[1].add2 = endereco; // Posicao da RAM
+
+    trecho1[2].opcode = -1;
+
+    setPrograma(cpu, trecho1);
+    iniciar(ram, cpu);
 }

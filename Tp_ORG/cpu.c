@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "Instrucao.h"
 #include "ram.h"
 #include "cpu.h"
+#include "auxiliares.h"
+#include "programas.h"
 
 struct cpu
 {
 	int registrador1;
 	int registrador2;
-
 	int PC;
 	Instrucao *programa;
 	int opcode;

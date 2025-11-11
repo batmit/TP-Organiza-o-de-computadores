@@ -18,6 +18,8 @@ void programaRaioEsfera(RAM *ram, CPU *cpu, int volume);
 void programaBin_Dec(RAM *ram, CPU *cpu, char *binario);
 
 void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
+void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
+void programaFibonacci(RAM *ram, CPU *cpu, int n); 
 
 // função com base em programas feito
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
@@ -27,5 +29,6 @@ void programaCircunferenciaCirculo(RAM *ram, CPU *cpu, int raio);
 void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int altura);
 void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura);
 void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura);
+void mdc(RAM *ram, CPU *cpu, int n, int k);
 
 #endif

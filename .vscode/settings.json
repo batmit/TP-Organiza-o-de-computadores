@@ -3,6 +3,11 @@
         "string.h": "c",
         "time.h": "c",
         "instrucao.h": "c",
-        "programas.h": "c"
+        "programas.h": "c",
+        "auxiliares.h": "c",
+        "cpu.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "ram.h": "c"
     }
 }
