@@ -23,14 +23,14 @@
 void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
 {
 
-    Instrucao* trecho_soma = (Instrucao*) malloc(2 * sizeof(Instrucao));
+    Instrucao *trecho_soma = (Instrucao *)malloc(2 * sizeof(Instrucao));
 
     trecho_soma[0].opcode = 0;      // Soma
     trecho_soma[0].add1 = pos1;     // Pega da RAM[end1]
     trecho_soma[0].add2 = pos2;     // Pega da RAM[end2]
-    trecho_soma[0].add3 = posFinal;  // Salva na RAM[endDest]
+    trecho_soma[0].add3 = posFinal; // Salva na RAM[endDest]
 
-    trecho_soma[1].opcode = -1;     // Halt
+    trecho_soma[1].opcode = -1; // Halt
 
     setPrograma(cpu, trecho_soma);
     iniciar(ram, cpu);
@@ -39,14 +39,14 @@ void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
 void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
 {
 
-    Instrucao* trecho_soma = (Instrucao*) malloc(2 * sizeof(Instrucao));
+    Instrucao *trecho_soma = (Instrucao *)malloc(2 * sizeof(Instrucao));
 
     trecho_soma[0].opcode = 1;      // Subtração
     trecho_soma[0].add1 = pos1;     // Pega da RAM[end1]
     trecho_soma[0].add2 = pos2;     // Pega da RAM[end2]
-    trecho_soma[0].add3 = posFinal;  // Salva na RAM[endDest]
+    trecho_soma[0].add3 = posFinal; // Salva na RAM[endDest]
 
-    trecho_soma[1].opcode = -1;     // Halt
+    trecho_soma[1].opcode = -1; // Halt
 
     setPrograma(cpu, trecho_soma);
     iniciar(ram, cpu);
@@ -58,7 +58,7 @@ void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
     {
         for (int j = 0; j < colunas; j++)
         {
-             // Imprime o número e um 'tab' para alinhamento
+            // Imprime o número e um 'tab' para alinhamento
             printf("%d\t", matriz[i][j]);
         }
         // Pula uma linha no final de cada linha da matriz
@@ -70,8 +70,8 @@ void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
 int pegarMult(RAM *ram, CPU *cpu)
 {
     // O resultado da multiplicação fica na RAM[0]
-    Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
-    
+    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+
     trecho1[0].opcode = 3; // RAM[0] -> reg1
     trecho1[0].add1 = 1;
     trecho1[0].add2 = 0;
@@ -80,19 +80,18 @@ int pegarMult(RAM *ram, CPU *cpu)
     trecho1[1].add1 = 1;
     trecho1[1].add2 = -1;
     trecho1[2].opcode = -1;
-    
+
     setPrograma(cpu, trecho1);
     iniciar(ram, cpu);
-    
+
     return trecho1[1].add2;
 }
-
 
 int pegarDiv(RAM *ram, CPU *cpu)
 {
     // O resultado da divisao fica na RAM[3]
-    Instrucao* trecho1 = (Instrucao*) malloc(3 * sizeof(Instrucao));
-    
+    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+
     trecho1[0].opcode = 3; // RAM[3] -> reg1
     trecho1[0].add1 = 1;
     trecho1[0].add2 = 3;
@@ -101,39 +100,31 @@ int pegarDiv(RAM *ram, CPU *cpu)
     trecho1[1].add1 = 1;
     trecho1[1].add2 = -1;
     trecho1[2].opcode = -1;
-    
+
     setPrograma(cpu, trecho1);
     iniciar(ram, cpu);
-    
+
     return trecho1[1].add2;
 }
 
-
-/*
- Formula funcional, mas por enquanto nao tem necessidade, 
- pra nao abandonar a alma dos trechoe se das intruções visiveis
- mas que seria de grande praticidade
-
-int pegarResultadoGenerico(RAM *ram, CPU *cpu, int endereco)
+int pegarResultado(RAM *ram, CPU *cpu, int endereco)
 {
-    
-    Instrucao* trecho_busca = (Instrucao*) malloc(3 * sizeof(Instrucao));
-    
-    
-    trecho_busca[0].opcode = 3; // opcode: RAM -> Registrador
-    trecho_busca[0].add1 = 1; // registrador1
-    trecho_busca[0].add2 = endereco; // Posição da RAM a ser lida
 
+    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
 
-    trecho_busca[1].opcode = 5; // opcode: Registrador -> Instrução
-    trecho_busca[1].add1 = 1; // registrador1
-    trecho_busca[1].add2 = -1; // Espaço reservado para o resultado
-    trecho_busca[1].add3 = -1;
+    trecho1[0].opcode = 3;      // opcode: RAM -> Registrador
+    trecho1[0].add1 = 1;        // registrador1
+    trecho1[0].add2 = endereco; // Posição da RAM a ser lida
 
-    trecho_busca[2].opcode = -1; 
-    
-    setPrograma(cpu, trecho_busca);
+    trecho1[1].opcode = 5; // opcode: Registrador -> Instrução
+    trecho1[1].add1 = 1;   // registrador1
+    trecho1[1].add2 = -1;  // Espaço reservado para o resultado
+    trecho1[1].add3 = -1;
+
+    trecho1[2].opcode = -1;
+
+    setPrograma(cpu, trecho1);
     iniciar(ram, cpu);
-    
-    return trecho_busca[1].add2;
-}*/
+
+    return trecho1[1].add2;
+}
