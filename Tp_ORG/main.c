@@ -37,9 +37,9 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
-    // programaLog(r, c, 2, 8);
+    // programaLog(r, c, 2, 8); AINDA NÃO FUNCIONAL
 
-    // programaPG(r, c, 2, 2, 6);
+    // programaPG(r, c, 2, 2, 6); AINDA NÃO FUNCIONAL
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
     // programaAreaQuadrado(r, c, 5);
