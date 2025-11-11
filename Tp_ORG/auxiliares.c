@@ -67,6 +67,17 @@ void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas])
     printf("----------------------------------\n");
 }
 
+void inverterString(char *str)
+{
+    int n = strlen(str);
+    for (int i = 0; i < n / 2; i++)
+    {
+        char temp = str[i];
+        str[i] = str[n - i - 1];
+        str[n - i - 1] = temp;
+    }
+}
+
 int pegarMult(RAM *ram, CPU *cpu)
 {
     // O resultado da multiplicação fica na RAM[0]
@@ -119,4 +130,39 @@ void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor)
 
     setPrograma(cpu, trecho1);
     iniciar(ram, cpu);
+}
+
+void multPosicoesRAM(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
+{
+    // Zera a posição final
+    colocarNaRam(ram, cpu, posFinal, 0);
+
+    // Pega o contador do loop da RAM[2]
+    int multiplicador = pegarResultado(ram, cpu, pos2);
+
+    // Loop 'multiplicador' times
+    for (int i = 0; i < multiplicador; i++)
+    {
+        // RAM[posFinal] = RAM[posFinal] + RAM[1]
+        Soma(ram, cpu, posFinal, pos1, posFinal);
+    }
+}
+
+void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
+{
+
+    /*  RAM[0]: resultado
+        RAM[1]: multiplicando */
+
+    reinicializarRAM(ram, 2);
+
+    /// salva o multiplicando na RAM[1]
+    colocarNaRam(ram, cpu, 1, multiplicando);
+
+    for (int i = 0; i < multiplicador; i++) // repete "multiplicador" vezes
+    {
+        Soma(ram, cpu, 0, 1, 0);
+    }
+
+    //printf("O resultado da multiplicacao e: %d\n", pegarMult(ram, cpu));
 }

@@ -50,22 +50,8 @@ void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador)
 
     reinicializarRAM(ram, 2);
 
-    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    // salva o multiplicando na RAM[1]
-    trecho1[0].opcode = 4;
-    trecho1[0].add1 = 1; // registrador1
-    trecho1[0].add2 = multiplicando;
-
-    trecho1[1].opcode = 2;
-    trecho1[1].add1 = 1; // registrador1
-    trecho1[1].add2 = 1; // ram[1]
-
-    trecho1[2].opcode = -1; // opcode halt
-
-    // envia e executa o primeiro trecho
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
+    /// salva o multiplicando na RAM[1]
+    colocarNaRam(ram, cpu, 1, multiplicando);
 
     for (int i = 0; i < multiplicador; i++) // repete "multiplicador" vezes
     {
@@ -189,20 +175,7 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         for (int j = 0; j < cardinalidade; j++)
         {
 
-            Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-            trecho1[0].opcode = 4;
-            trecho1[0].add1 = 1; // registrador1
-            trecho1[0].add2 = matriz1[i][j];
-
-            trecho1[1].opcode = 2;
-            trecho1[1].add1 = 1;      // registrador1
-            trecho1[1].add2 = endRam; // ram[endRam]
-
-            trecho1[2].opcode = -1;
-
-            setPrograma(cpu, trecho1);
-            iniciar(ram, cpu);
+            colocarNaRam(ram, cpu, endRam, matriz1[i][j]);
             endRam++;
         }
     }
@@ -213,28 +186,14 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         for (int j = 0; j < cardinalidade; j++)
         {
 
-            Instrucao *trecho2 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-            trecho2[0].opcode = 4;
-            trecho2[0].add1 = 1; // registrador1
-            trecho2[0].add2 = matriz2[i][j];
-
-            trecho2[1].opcode = 2;
-            trecho2[1].add1 = 1;      // registrador1
-            trecho2[1].add2 = endRam; // ram[endRam]
-
-            trecho2[2].opcode = -1;
-
-            setPrograma(cpu, trecho2);
-            iniciar(ram, cpu);
-
+            colocarNaRam(ram, cpu, endRam, matriz2[i][j]);
             endRam++;
         }
     }
 
     // soma dentro ad ram
 
-    endRam = 0; // Reinicia o contador de endereço
+    endRam = 0; // Reinicia o contador de endereco
 
     int delta = n_elementos;
 
@@ -243,18 +202,7 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
         for (int j = 0; j < cardinalidade; j++)
         {
 
-            Instrucao *trecho3 = (Instrucao *)malloc(2 * sizeof(Instrucao));
-
-            trecho3[0].opcode = 0;                  // sum
-            trecho3[0].add1 = endRam;               // ram[M1]
-            trecho3[0].add2 = endRam + delta;       // ram[M2]
-            trecho3[0].add3 = endRam + (2 * delta); // ram[M_Resultado]
-
-            trecho3[1].opcode = -1;
-
-            setPrograma(cpu, trecho3);
-            iniciar(ram, cpu);
-
+            Soma(ram, cpu, endRam, endRam + delta, endRam + (2 * delta));
             endRam++;
         }
     }
@@ -289,49 +237,19 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int numero)
 
     // RAM[0]: N , o resto
     // RAM[1]: O ímpar atual
-    // RAM[2]: O contador , que é or esultado
+    // RAM[2]: O contador , que é o esultado
     // RAM[3]: Constante '1' para incrementar o contador, igual o joubert fez
     // RAM[4]: Constante '2' para incrementar o ímpar
 
     reinicializarRAM(ram, 5);
 
-    Instrucao *trecho1 = (Instrucao *)malloc(8 * sizeof(Instrucao));
+    colocarNaRam(ram, cpu, 0, numero); // N em RAM[0]
 
-    // colocar o n na posilçao 0
-    trecho1[0].opcode = 4; // ext->reg
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = numero; // passo o valor pra registrador
+    colocarNaRam(ram, cpu, 1, 1); // 1 em RAM[1] (impar)
 
-    trecho1[1].opcode = 2; // reg->RAM
-    trecho1[1].add1 = 1;   // registrador para ram
-    trecho1[1].add2 = 0;   // RAM[0]
+    colocarNaRam(ram, cpu, 3, 1); // 1 em RAM[3]
 
-    // colcoar '1'
-    trecho1[2].opcode = 4; // ext->reg
-    trecho1[2].add1 = 1;
-    trecho1[2].add2 = 1; // passo valor pra registrador
-
-    trecho1[3].opcode = 2; // reg->RAM
-    trecho1[3].add1 = 1;
-    trecho1[3].add2 = 1; // RAM[1]
-
-    trecho1[4].opcode = 2; // reg->RAM
-    trecho1[4].add1 = 1;   // aproveito o registrador e mando para a ram[3]
-    trecho1[4].add2 = 3;   // RAM[3]
-
-    //  coloco o 2 agr
-    trecho1[5].opcode = 4; // ext->reg
-    trecho1[5].add1 = 1;
-    trecho1[5].add2 = 2;
-
-    trecho1[6].opcode = 2; // reg->RAM
-    trecho1[6].add1 = 1;
-    trecho1[6].add2 = 4; // RAM[4]
-
-    trecho1[7].opcode = -1;
-
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
+    colocarNaRam(ram, cpu, 4, 2); // 2 em RAM[4]
 
     int restante = numero;
     int impar = 1;
@@ -342,59 +260,18 @@ void programaRaizQuadrada(RAM *ram, CPU *cpu, int numero)
 
         // RAM[0] = RAM[0] - RAM[1] (N -= ímpar)
         Subtrai(ram, cpu, 0, 1, 0);
-
+        // aumentando o impar
         Soma(ram, cpu, 1, 4, 1);
 
         // RAM[2] = RAM[2] + RAM[3] (resultado += 1)
-        Soma(ram, cpu, 2, 3, 1);
+        Soma(ram, cpu, 2, 3, 2);
 
-        Instrucao *trecho3 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+        restante = pegarResultado(ram, cpu, 0);
 
-        trecho3[0].opcode = 3; // RAM[0] -> reg1
-        trecho3[0].add1 = 1;
-        trecho3[0].add2 = 0;
-
-        trecho3[1].opcode = 5; // reg1 -> instrução
-        trecho3[1].add1 = 1;
-        trecho3[1].add2 = -1;
-        trecho3[2].opcode = -1;
-
-        setPrograma(cpu, trecho3);
-        iniciar(ram, cpu);
-
-        restante = trecho3[1].add2;
-
-        Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-        trecho4[0].opcode = 3; // RAM[1] -> reg1
-        trecho4[0].add1 = 1;
-        trecho4[0].add2 = 1;
-
-        trecho4[1].opcode = 5; // reg1 -> instrução
-        trecho4[1].add1 = 1;
-        trecho4[1].add2 = -1;
-        trecho4[2].opcode = -1;
-
-        setPrograma(cpu, trecho4);
-        iniciar(ram, cpu);
-        impar = trecho4[1].add2;
+        impar = pegarResultado(ram, cpu, 1);
     }
 
-    // buscar o resultado que está em RAM[2]
-    Instrucao *trecho5 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-    trecho5[0].opcode = 3; // RAM[2] -> reg1
-    trecho5[0].add1 = 1;
-    trecho5[0].add2 = 2;
-
-    trecho5[1].opcode = 5; // reg1 -> instrução
-    trecho5[1].add1 = 1;
-    trecho5[1].add2 = -1;
-    trecho5[2].opcode = -1;
-
-    setPrograma(cpu, trecho5);
-    iniciar(ram, cpu);
-
-    printf("A raiz quadrada de %d e: %d\n", numero, trecho5[1].add2);
+    printf("A raiz quadrada de %d e: %d\n", numero, pegarResultado(ram, cpu, 2));
 }
 
 void programaRaizCubica(RAM *ram, CPU *cpu, int numero)
@@ -414,47 +291,15 @@ void programaRaizCubica(RAM *ram, CPU *cpu, int numero)
 
     reinicializarRAM(ram, 6);
 
-    Instrucao *trecho1 = (Instrucao *)malloc(9 * sizeof(Instrucao));
+    colocarNaRam(ram, cpu, 0, numero); // N em RAM[0]
 
-    // numero em RAM[0]
-    trecho1[0].opcode = 4; // ext->reg
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = numero;
+    colocarNaRam(ram, cpu, 1, 1); // 1 em RAM[1]
 
-    trecho1[1].opcode = 2; // reg->RAM
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = 0; // RAM[0]
+    colocarNaRam(ram, cpu, 5, 1); // 1 em RAM[5]
 
-    // 1 em RAM[1] que é o decremento ,RAM[5]  1, constante de aumento do resultado
-    trecho1[2].opcode = 4; // ext->reg
-    trecho1[2].add1 = 1;
-    trecho1[2].add2 = 1;
+    colocarNaRam(ram, cpu, 2, 6); // 6 em RAM[2]
 
-    trecho1[3].opcode = 2; // reg->RAM
-    trecho1[3].add1 = 1;
-    trecho1[3].add2 = 1; // RAM[1]
-
-    trecho1[4].opcode = 2; // reg->RAM
-    trecho1[4].add1 = 1;   // aproveita o msm registrador
-    trecho1[4].add2 = 5;   // RAM[5]
-
-    // 6 em RAM[2] que é a primeira diferença,  e RAM[3]  6 a constante que aumenta a diferença
-    trecho1[5].opcode = 4; // ext->reg
-    trecho1[5].add1 = 1;
-    trecho1[5].add2 = 6;
-    trecho1[6].opcode = 2; // reg->RAM
-    trecho1[6].add1 = 1;
-    trecho1[6].add2 = 2; // RAM[2]
-
-    trecho1[7].opcode = 2; // reg->RAM
-    trecho1[7].add1 = 1;   // aproveitamos o msm dnv
-    trecho1[7].add2 = 3;   // RAM[3]
-
-    // Resultado que ficaria em ram 4, ja é zero peloc calloc
-    trecho1[8].opcode = -1;
-
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
+    colocarNaRam(ram, cpu, 3, 6); // 6 em RAM[3]
 
     int restante = numero;
     int decremento = 1;
@@ -462,90 +307,22 @@ void programaRaizCubica(RAM *ram, CPU *cpu, int numero)
     while (restante >= decremento)
     {
         // dentro do while que de fato sao feito as operações
-
-        Instrucao *trecho2 = (Instrucao *)malloc(5 * sizeof(Instrucao));
-
         // RAM[0] = RAM[0] - RAM[1] (N -= decremento)
-        trecho2[0].opcode = 1;
-        trecho2[0].add1 = 0;
-        trecho2[0].add2 = 1;
-        trecho2[0].add3 = 0;
+        Subtrai(ram, cpu, 0, 1, 0);
 
         // RAM[1] = RAM[1] + RAM[2] (decremento += diferença )
-        trecho2[1].opcode = 0;
-        trecho2[1].add1 = 1; // [add1=1]
-        trecho2[1].add2 = 2; // [add2=2]
-        trecho2[1].add3 = 1; // [add3=1]
-
-        // RAM[2] = RAM[2] + RAM[3] (difenreça += 6) que vai ser a proxima diferemça
-        trecho2[2].opcode = 0;
-        trecho2[2].add1 = 2; // [add1=2]
-        trecho2[2].add2 = 3; // [add2=3]
-        trecho2[2].add3 = 2; // [add3=2]
-
+        Soma(ram, cpu, 1, 2, 1);
+        // RAM[2] = RAM[2] + RAM[3] (diferença += 6)
+        Soma(ram, cpu, 2, 3, 2);
         // RAM[4] = RAM[4] + RAM[5] (Resultado += 1)
-        trecho2[3].opcode = 0;
-        trecho2[3].add1 = 4;
-        trecho2[3].add2 = 5;
-        trecho2[3].add3 = 4;
+        Soma(ram, cpu, 4, 5, 4);
 
-        trecho2[4].opcode = -1;
+        restante = pegarResultado(ram, cpu, 0);
 
-        setPrograma(cpu, trecho2);
-        iniciar(ram, cpu);
-
-        Instrucao *trecho3 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-        trecho3[0].opcode = 3; // RAM[0] -> reg1
-        trecho3[0].add1 = 1;
-        trecho3[0].add2 = 0;
-
-        trecho3[1].opcode = 5; // reg1 -> instrução
-        trecho3[1].add1 = 1;
-        trecho3[1].add2 = -1;
-
-        trecho3[2].opcode = -1;
-
-        setPrograma(cpu, trecho3);
-        iniciar(ram, cpu);
-        // aqui eu rodei a cpu, pra epgar o valor do restante novo, pra testa no while
-        restante = trecho3[1].add2;
-
-        Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-        trecho4[0].opcode = 3; // RAM[1] -> reg1
-        trecho4[0].add1 = 1;
-        trecho4[0].add2 = 1;
-
-        trecho4[1].opcode = 5; // reg1 -> instrução
-        trecho4[1].add1 = 1;
-        trecho4[1].add2 = -1;
-
-        trecho4[2].opcode = -1;
-        setPrograma(cpu, trecho4);
-        iniciar(ram, cpu);
-
-        // aqui eu rodei a cpu, pra epgar o valor do decremento novo, pra testa no while
-
-        decremento = trecho4[1].add2;
+        decremento = pegarResultado(ram, cpu, 1);
     }
 
-    // aqui é pra tirar o resultado da ram
-    Instrucao *trecho5 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho5[0].opcode = 3; // RAM[4] -> reg1
-    trecho5[0].add1 = 1;
-    trecho5[0].add2 = 4;
-
-    trecho5[1].opcode = 5; // reg1 -> instrução
-    trecho5[1].add1 = 1;
-    trecho5[1].add2 = -1;
-
-    trecho5[2].opcode = -1;
-
-    setPrograma(cpu, trecho5);
-    iniciar(ram, cpu);
-
-    printf("A raiz cubica de %d e: %d\n", numero, trecho5[1].add2);
+    printf("A raiz cubica de %d e: %d\n", numero, pegarResultado(ram, cpu, 4));
 }
 
 void programaRaioEsfera(RAM *ram, CPU *cpu, int volume)
@@ -562,25 +339,53 @@ void programaRaioEsfera(RAM *ram, CPU *cpu, int volume)
     // o resultado ta na ram
     // agr tem q acessar la dnv
 
-    Instrucao *trecho2 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho2[0].opcode = 3; // RAM[4] -> reg1
-    trecho2[0].add1 = 1;
-    trecho2[0].add2 = 4; // Posição do resultado da raiz
-
-    trecho2[1].opcode = 5; // reg1 -> instrução
-    trecho2[1].add1 = 1;
-    trecho2[1].add2 = -1;
-
-    trecho2[2].opcode = -1;
-
-    setPrograma(cpu, trecho2);
-    iniciar(ram, cpu);
-
-    printf("O raio com PI = 3  da esfera com o volume de %d e: %d\n", volume, trecho2[1].add2);
+    printf("O raio com PI = 3  da esfera com o volume de %d e: %d\n", volume, pegarResultado(ram, cpu, 4));
 }
 
-void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque ai ja tenho ele separado,
+void programaDivFloat2(RAM *ram, CPU *cpu, int dividendo, int divisor)
+{
+
+    programaMult(ram, cpu, dividendo, 100);
+
+    int dividendo_100 = pegarMult(ram, cpu);
+
+    programaDiv(ram, cpu, dividendo_100, divisor);
+
+    int resultado_100 = pegarDiv(ram, cpu);
+
+    programaDiv(ram, cpu, resultado_100, 100);
+
+    int parte_inteira = pegarDiv(ram, cpu);
+
+    programaRestoDiv(ram, cpu, resultado_100, 100);
+
+    int parte_decimal = pegarResultado(ram, cpu, 0);
+
+    printf("O resultado da divisao e: %d.%02d\n", parte_inteira, parte_decimal);
+}
+
+void programaMMC(RAM *ram, CPU *cpu, int a, int b)
+{
+
+    // calcular a * b
+    programaMult(ram, cpu, a, b);
+
+    int produto = pegarMult(ram, cpu);
+
+    // calcular MDC(a, b) ---
+    programaMdc(ram, cpu, a, b);
+
+    int mdc = pegarResultado(ram, cpu, 8);
+
+    programaDiv(ram, cpu, produto, mdc);
+
+    int mmc = pegarDiv(ram, cpu);
+
+    printf("O MMC e: %d\n", mmc);
+}
+
+void programaBin_Dec(RAM *ram, CPU *cpu, char *binario)
+// passo em char porque ai ja tenho ele separado,
 // dava pra passar um numero e usar o codigo de separar, mas nao tem necessidade
 {
     /* OPCODE
@@ -596,27 +401,15 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
     // Layout da RAM:
     // RAM[0]: O "Total" (Resultado, comeca em 0)
     // RAM[1]: O "Peso" (Comeca em 1, depois 2, 4, 8...)
+
     reinicializarRAM(ram, 2);
 
-    // --- Trecho 1: Setup (Colocar '1' na RAM[1]) ---
-    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho1[0].opcode = 4; // ext->reg1
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = 1; // O número 1
-
-    trecho1[1].opcode = 2; // reg1->RAM[1]
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = 1;
-
-    trecho1[2].opcode = -1; // Halt
-
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
+    // Colocar '1' na RAM[1]) ---
+    colocarNaRam(ram, cpu, 1, 1);
 
     int tamanho = strlen(binario);
 
-    // pega  do fim da string para o comeo
+    // pega  do fim da string para o comeco
     for (int i = (tamanho - 1); i >= 0; i--)
     {
         char bit_atual = binario[i];
@@ -624,58 +417,62 @@ void programaBin_Dec(RAM *ram, CPU *cpu, char *binario) // passo em char porque 
         // Se o digito for 1, somamos o peso ao total
         if (bit_atual == '1')
         {
-            Instrucao *trecho2 = (Instrucao *)malloc(2 * sizeof(Instrucao));
-
             // RAM[0] = RAM[0] + RAM[1] ; Total = Total + Peso
-            trecho2[0].opcode = 0;
-            trecho2[0].add1 = 0;
-            trecho2[0].add2 = 1;
-            trecho2[0].add3 = 0;
-
-            trecho2[1].opcode = -1; // Halt
-
-            setPrograma(cpu, trecho2);
-            iniciar(ram, cpu);
+            Soma(ram, cpu, 0, 1, 0);
         }
 
         // dobra  para a proxima iteracao
-        Instrucao *trecho3 = (Instrucao *)malloc(2 * sizeof(Instrucao));
-
-        // RAM[1] = RAM[1] + RAM[1] ; peso = peso *2
-        trecho3[0].add1 = 1;
-        trecho3[0].add2 = 1;
-        trecho3[0].add3 = 1;
-
-        trecho3[1].opcode = -1; // Halt
-
-        setPrograma(cpu, trecho3);
-        iniciar(ram, cpu);
+        Soma(ram, cpu, 1, 1, 1);
     }
 
-    // pegar o result
-    Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
+    printf("O resultado decimal de '%s' e: %d\n", binario, pegarResultado(ram, cpu, 0));
+}
 
-    trecho4[0].opcode = 3; // RAM[0] -> reg1
-    trecho4[0].add1 = 1;
-    trecho4[0].add2 = 0;
+void programaDec_Bin(RAM *ram, CPU *cpu, int decimal)
+{
+    if (decimal == 0)
+    {
+        printf("O resultado binario e: 0\n");
+        return;
+    }
 
-    trecho4[1].opcode = 5; // reg1 -> instrução
-    trecho4[1].add1 = 1;
-    trecho4[1].add2 = -1;
+    char bitsInvertidos[65];
+    int i = 0;
 
-    trecho4[2].opcode = -1;
+    while (decimal > 0)
+    {
+        programaRestoDiv(ram, cpu, decimal, 2);
 
-    setPrograma(cpu, trecho4);
-    iniciar(ram, cpu);
+        int resto = pegarResultado(ram, cpu, 0);
 
-    printf("O resultado decimal de '%s' e: %d\n", binario, trecho4[1].add2);
+        if (resto == 1)
+        {
+            bitsInvertidos[i] = '1';
+        }
+        else
+        {
+            bitsInvertidos[i] = '0';
+        }
+
+        i++;
+
+        // resultado da divisao
+        decimal = pegarDiv(ram, cpu);
+    }
+
+    // Termina a string
+    bitsInvertidos[i] = '\0';
+
+    inverterString(bitsInvertidos);
+
+    printf("O resultado binario e: %s\n", bitsInvertidos);
 }
 
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 {
     programaMult(ram, cpu, lado, lado);
 
-    printf(">>> A area do quadrado e: %d\n", pegarMult(ram, cpu));
+    printf("A area do quadrado e: %d\n", pegarMult(ram, cpu));
 }
 
 void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura)
@@ -759,83 +556,39 @@ void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura)
 
 void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n)
 {
-    printf("Iniciando Calculo da PA: A(n) = %d +(%d-1)*%d\n", a1, n, razao); // imprime a conta a ser feita
+    printf("Iniciando Calculo da PA: A(n) = %d +(%d-1)*%d\n", a1, n, razao);
 
     // Calculando (n-1)
-
     reinicializarRAM(ram, 3); // limpa 3 posições da ram
 
     // RAM[0] = n
-    Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-    trecho1[0].opcode = 4; // ext->reg1
-    trecho1[0].add1 = 1;
-    trecho1[0].add2 = n;
-    trecho1[1].opcode = 2; // reg1->RAM[0]
-    trecho1[1].add1 = 1;
-    trecho1[1].add2 = 0;
-    trecho1[2].opcode = -1;
-    setPrograma(cpu, trecho1);
-    iniciar(ram, cpu);
+    colocarNaRam(ram, cpu, 0, n);
 
     // RAM[1] = 1
-    Instrucao *trecho2 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-    trecho2[0].opcode = 4; // ext->reg1
-    trecho2[0].add1 = 1;
-    trecho2[0].add2 = 1;
-    trecho2[1].opcode = 2; // reg1->RAM[1]
-    trecho2[1].add1 = 1;
-    trecho2[1].add2 = 1;
-    trecho2[2].opcode = -1;
-    setPrograma(cpu, trecho2);
-    iniciar(ram, cpu);
+    colocarNaRam(ram, cpu, 1, 1);
 
     // RAM[2]=(n-1)
     printf("Conta: (%d - 1)\n", n);
     Subtrai(ram, cpu, 0, 1, 2);
 
     // Pegando resultado de (n-1)
+    int resultado = pegarResultado(ram, cpu, 2);
 
-    Instrucao *trecho3 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-
-    trecho3[0].opcode = 3; // RAM[2] -> reg1
-    trecho3[0].add1 = 1;
-    trecho3[0].add2 = 2; // Endereço do resultado (n-1)
-
-    trecho3[1].opcode = 5; // reg1 -> inst
-    trecho3[1].add1 = 1;
-    trecho3[1].add2 = -1;
-
-    trecho3[2].opcode = -1; // Halt
-
-    setPrograma(cpu, trecho3);
-    iniciar(ram, cpu);
-
-    int resultado = trecho3[1].add2;
     printf("Resultado = %d\n", resultado);
 
     // Calculando (n-1) * razao
-
     printf("Conta: (%d * %d)\n", resultado, razao);
     programaMult(ram, cpu, resultado, razao); // RAM[0] = (n-1) * razao
 
     // RAM[1] = a1
-    Instrucao *trecho4 = (Instrucao *)malloc(3 * sizeof(Instrucao));
-    trecho4[0].opcode = 4; // ext->reg1
-    trecho4[0].add1 = 1;
-    trecho4[0].add2 = a1;
-    trecho4[1].opcode = 2; // reg1->RAM[1]
-    trecho4[1].add1 = 1;
-    trecho4[1].add2 = 1;
-    trecho4[2].opcode = -1;
-    setPrograma(cpu, trecho4);
-    iniciar(ram, cpu);
+    colocarNaRam(ram, cpu, 1, a1);
 
     printf("Conta: (%d + %d)\n", a1, pegarMult(ram, cpu)); // pegarMult lê RAM[0]
     Soma(ram, cpu, 0, 1, 0);                               // RAM[0] = RAM[0] + RAM[1]
 
-    int resultado_final = pegarMult(ram, cpu); // pegarMult lê RAM[0]
+    resultado = pegarMult(ram, cpu); // pegarMult lê RAM[0]
 
-    printf("O %d-esimo termo da PA e: %d\n", n, resultado_final);
+    printf("O %d-esimo termo da PA e: %d\n", n, resultado);
 }
 
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente)
@@ -848,20 +601,8 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente)
     {
         reinicializarRAM(ram, 1);
 
-        Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao)); // RAM[0] = 1
-
-        trecho1[0].opcode = 4; // ext->reg1
-        trecho1[0].add1 = 1;
-        trecho1[0].add2 = 1; // O valor '1'
-
-        trecho1[1].opcode = 2; // reg1->RAM[0]
-        trecho1[1].add1 = 1;
-        trecho1[1].add2 = 0; // Posição RAM[0]
-
-        trecho1[2].opcode = -1;
-
-        setPrograma(cpu, trecho1);
-        iniciar(ram, cpu);
+        // RAM[0] = 1
+        colocarNaRam(ram, cpu, 0, 1);
     }
     else
     {
@@ -873,7 +614,7 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente)
         }
     }
 
-    printf("O resultado de %d ^ %d eh: %d\n", base, expoente, resultado);
+    printf("O resultado de %d ^ %d e: %d\n", base, expoente, resultado);
 }
 
 void programaFibonacci(RAM *ram, CPU *cpu, int n)
@@ -888,20 +629,8 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n)
     }
     else if (n > 0) // quando n for 0, o resultado já é 0 e já está na RAM[0], quando for 1 RAM[0] = 1
     {
-        Instrucao *trecho1 = (Instrucao *)malloc(3 * sizeof(Instrucao)); // RAM[0] = 1
-
-        trecho1[0].opcode = 4; // ext->reg1
-        trecho1[0].add1 = 1;
-        trecho1[0].add2 = 1; // O valor '1'
-
-        trecho1[1].opcode = 2; // reg1->RAM[0]
-        trecho1[1].add1 = 1;
-        trecho1[1].add2 = 0; // Posição RAM[0]
-
-        trecho1[2].opcode = -1;
-
-        setPrograma(cpu, trecho1);
-        iniciar(ram, cpu);
+        // RAM[0] = 1
+        colocarNaRam(ram, cpu, 0, 1);
 
         // Layout inicial para calcular:
         // RAM[0] (Atual)
@@ -912,73 +641,207 @@ void programaFibonacci(RAM *ram, CPU *cpu, int n)
             {
                 Soma(ram, cpu, 0, 1, 2); // RAM[2] = RAM[0] + RAM[1]
 
-                Instrucao *trecho2 = (Instrucao *)malloc(3 * sizeof(Instrucao)); // Copiar RAM[0] -> RAM[1]
+                // Copiar RAM[0] -> RAM[1] (Atual -> Anterior)
+                int temp_atual = pegarResultado(ram, cpu, 0);
+                colocarNaRam(ram, cpu, 1, temp_atual);
 
-                trecho2[0].opcode = 3; // RAM[0] -> reg1
-                trecho2[0].add1 = 1;
-                trecho2[0].add2 = 0;
-
-                trecho2[1].opcode = 2; // reg1 -> RAM[1]
-                trecho2[1].add1 = 1;
-                trecho2[1].add2 = 1;
-
-                trecho2[2].opcode = -1;
-
-                setPrograma(cpu, trecho2);
-                iniciar(ram, cpu);
-
-                Instrucao *trecho3 = (Instrucao *)malloc(3 * sizeof(Instrucao)); // Copiar RAM[2] -> RAM[0]
-
-                trecho3[0].opcode = 3; // RAM[2] -> reg1
-                trecho3[0].add1 = 1;
-                trecho3[0].add2 = 2;
-
-                trecho3[1].opcode = 2; // reg1 -> RAM[0]
-                trecho3[1].add1 = 1;
-                trecho3[1].add2 = 0;
-
-                trecho3[2].opcode = -1;
-
-                setPrograma(cpu, trecho3);
-                iniciar(ram, cpu);
+                // Copiar RAM[2] -> RAM[0] (Soma_Temp -> Atual)
+                int temp_soma = pegarResultado(ram, cpu, 2);
+                colocarNaRam(ram, cpu, 0, temp_soma);
             }
         }
     }
 
     int resultado = pegarMult(ram, cpu); // lê RAM[0]
 
-    printf("O resultado de Fibonacci F(%d) eh: %d\n", n, resultado);
+    printf("O resultado de Fibonacci F(%d) e: %d\n", n, resultado);
+}
+
+void programaMultMatriz(RAM *ram, CPU *cpu, int N)
+{
+    printf("Iniciando Multiplicacao de Matrizes %d x %d\n", N, N);
+
+    // Criando e preenchendo matriz aleatoria
+
+    int (*matrizA)[N] = malloc(sizeof(int[N][N]));
+    int (*matrizB)[N] = malloc(sizeof(int[N][N]));
+
+    for (int i = 0; i < N; i++) // Preenchendo
+    {
+        for (int j = 0; j < N; j++)
+        {
+            matrizA[i][j] = rand() % 10;
+            matrizB[i][j] = rand() % 10;
+        }
+    }
+
+    // Imprimindo matrizes
+    printf("Matriz A (Gerada):\n");
+    imprimirMatriz(N, N, matrizA);
+    printf("Matriz B (Gerada):\n");
+    imprimirMatriz(N, N, matrizB);
+
+    int elementos = N * N;
+    int tamanhoRAM = (elementos * 3) + 1; // define tamanho da ram
+    int endereco_temp_produto = tamanhoRAM - 1;
+
+    int delta_A = 0;
+    int delta_B = elementos;
+    int delta_C = 2 * elementos;
+
+    reinicializarRAM(ram, tamanhoRAM);
+
+    printf("Carregando Matriz A na RAM...\n");
+    int endRam = delta_A; // endRam eh um endereço de ram
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            colocarNaRam(ram, cpu, endRam, matrizA[i][j]);
+            endRam++;
+        }
+    }
+
+    printf("Carregando Matriz B na RAM...\n");
+    // 3. Carrega Matriz B na RAM
+    endRam = delta_B;
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            colocarNaRam(ram, cpu, endRam, matrizB[i][j]);
+            endRam++;
+        }
+    }
+
+    printf("Calculando C = A * B ...\n");
+    // 4. Os Três Loops de Cálculo (controlados pelo C)
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            int end_C_ij = delta_C + (i * N) + j;
+            for (int k = 0; k < N; k++)
+            {
+                int end_A_ik = delta_A + (i * N) + k;
+                int end_B_kj = delta_B + (k * N) + j;
+
+                multPosicoesRAM(ram, cpu, end_A_ik, end_B_kj, endereco_temp_produto);
+                Soma(ram, cpu, end_C_ij, endereco_temp_produto, end_C_ij);
+            }
+        }
+    }
+
+    printf("...Calculo Concluido. Extraindo resultado da RAM.\n");
+
+    // 5. Extrair Matriz C da RAM para imprimir
+    int (*matrizC)[N] = malloc(sizeof(int[N][N]));
+
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            int end_C_ij = delta_C + (i * N) + j;
+            matrizC[i][j] = pegarResultado(ram, cpu, end_C_ij);
+        }
+    }
+
+    printf("Matriz C (Resultado):\n");
+    imprimirMatriz(N, N, matrizC);
+
+    // 6. Limpar a memória alocada
+    free(matrizA);
+    free(matrizB);
+    free(matrizC);
 }
 
 // Daniel
 
-void mdc(RAM *ram, CPU *cpu, int n, int k){
-    int result =0;
+void programaMdc(RAM *ram, CPU *cpu, int a, int b)
+{
+    // SEPARAR O DE 0 A 4
     /*
-    0 - 1
-    1 - n
-    2 - k
-    3 - resultado(inicia com o menor deles)
+    5 - 1
+    6 - a
+    7 - b
+    8 - resultado(inicia com o menor deles)
+    9 - menor deles
     */
 
-    reinicializarRAM(ram, 4);
+    // Casos triviais
+    // if (a == 0) return b;
+    // if (b == 0) return a;
 
-    colocarNaRam(ram, cpu, 0, 1);
-    colocarNaRam(ram, cpu, 1, n);
-    colocarNaRam(ram, cpu, 2, k);
-    colocarNaRam(ram, cpu, 3, result);
+    reinicializarRAM(ram, 10);
 
-    for(int i = 0; i< 10; i++){
+    colocarNaRam(ram, cpu, 5, 1);
 
-        
+    colocarNaRam(ram, cpu, 6, a);
 
+    colocarNaRam(ram, cpu, 7, b);
 
+    // Euclides por subtrações
+    while (pegarResultado(ram, cpu, 6) != pegarResultado(ram, cpu, 7))
+    {
+        // se a > b
+        if (pegarResultado(ram, cpu, 6) > pegarResultado(ram, cpu, 7))
+        {
 
+            Subtrai(ram, cpu, 6, 7, 6);
+            // a = a - b;
+        }
+        else
+        {
+
+            Subtrai(ram, cpu, 7, 6, 7);
+            // b = b - a;
+        }
     }
+    // (= b)
 
+    colocarNaRam(ram, cpu, 8, pegarResultado(ram, cpu, 6));
 
-    programaMult(ram, cpu, n, k);
-    pegarMult(ram, cpu);
+    // printf("Resultado do mdc: %d", pegarResultado(ram, cpu, 8));
+}
 
+void programaRestoDiv(RAM *ram, CPU *cpu, int n, int k)
+{
 
+    // Vou salvar na RAM 0
+
+    reinicializarRAM(ram, 6);
+
+    programaDiv(ram, cpu, n, k);
+
+    int resto = pegarResultado(ram, cpu, 0);
+
+    colocarNaRam(ram, cpu, 0, resto);
+
+    // printf("O resto da divisao e: %d", resto);
+}
+
+void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
+{
+
+    /*
+    5 - firstValue
+    6 - razao
+    7 - numValues
+    8 -
+    */
+
+    colocarNaRam(ram, cpu, 5, firstValue);
+    colocarNaRam(ram, cpu, 6, razao);
+    colocarNaRam(ram, cpu, 7, numValues);
+    // colocarNaRam(ram, cpu, 8, firstValue);
+
+    printf("\nPG: {");
+    for (int i = 0; i < pegarResultado(ram, cpu, 7); i++)
+    {
+
+        programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
+        colocarNaRam(ram, cpu, 5, pegarResultado(ram, cpu, 0));
+        printf("%d, ", pegarResultado(ram, cpu, 5));
+    }
+    printf("}");
 }

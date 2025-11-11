@@ -16,8 +16,14 @@ void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal); // conferir 
 int pegarResultado(RAM *ram, CPU *cpu, int endereco);
 void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor);
 
+void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
+
 void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas]);
+void inverterString(char *str);
+
 int pegarMult(RAM *ram, CPU *cpu);
 int pegarDiv(RAM *ram, CPU *cpu);
+
+void multPosicoesRAM(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);
 
 #endif
