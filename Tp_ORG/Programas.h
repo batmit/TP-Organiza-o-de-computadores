@@ -23,9 +23,10 @@ void programaMMC(RAM *ram, CPU *cpu, int a, int b);
 void programaBin_Dec(RAM *ram, CPU *cpu, char *binario);
 void programaDec_Bin(RAM *ram, CPU *cpu, int decimal);
 
-    void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
+void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
+void programaMultMatriz(RAM *ram, CPU *cpu, int N);
 
 // funcao com base em programas feito
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
@@ -40,5 +41,7 @@ void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura);
 void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues);
 void programaMdc(RAM *ram, CPU *cpu, int n, int k);
 void programaRestoDiv(RAM *ram, CPU *cpu, int n, int k);
+void programaLog(RAM *ram, CPU *cpu, int base, int valor);
+
 
 #endif

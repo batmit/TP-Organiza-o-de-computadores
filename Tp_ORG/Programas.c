@@ -685,26 +685,25 @@ void programaMultMatriz(RAM *ram, CPU *cpu, int N)
     int tamanhoRAM = (elementos * 3) + 1; // define tamanho da ram
     int endereco_temp_produto = tamanhoRAM - 1;
 
-    int delta_A = 0;
-    int delta_B = elementos;
-    int delta_C = 2 * elementos;
+    int matA = 0;
+    int matB = elementos;
+    int matC = 2 * elementos;
 
     reinicializarRAM(ram, tamanhoRAM);
 
     printf("Carregando Matriz A na RAM...\n");
-    int endRam = delta_A; // endRam eh um endereço de ram
+    int endRam = matA; // endRam eh um endereço de ram
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
             colocarNaRam(ram, cpu, endRam, matrizA[i][j]);
-            endRam++;
+            endRam++; // aumenta um no endereço pra avançar a posicao
         }
     }
 
     printf("Carregando Matriz B na RAM...\n");
-    // 3. Carrega Matriz B na RAM
-    endRam = delta_B;
+    endRam = matB;
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
@@ -715,16 +714,18 @@ void programaMultMatriz(RAM *ram, CPU *cpu, int N)
     }
 
     printf("Calculando C = A * B ...\n");
-    // 4. Os Três Loops de Cálculo (controlados pelo C)
+    // Três Loops de Cálculo
+
+    // os calculos com dados foram feitos na maquina
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            int end_C_ij = delta_C + (i * N) + j;
+            int end_C_ij = matC + (i * N) + j;
             for (int k = 0; k < N; k++)
             {
-                int end_A_ik = delta_A + (i * N) + k;
-                int end_B_kj = delta_B + (k * N) + j;
+                int end_A_ik = matA + (i * N) + k;
+                int end_B_kj = matB + (k * N) + j;
 
                 multPosicoesRAM(ram, cpu, end_A_ik, end_B_kj, endereco_temp_produto);
                 Soma(ram, cpu, end_C_ij, endereco_temp_produto, end_C_ij);
@@ -732,16 +733,14 @@ void programaMultMatriz(RAM *ram, CPU *cpu, int N)
         }
     }
 
-    printf("...Calculo Concluido. Extraindo resultado da RAM.\n");
-
-    // 5. Extrair Matriz C da RAM para imprimir
+    // Extrair Matriz C da RAM para imprimir
     int (*matrizC)[N] = malloc(sizeof(int[N][N]));
 
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            int end_C_ij = delta_C + (i * N) + j;
+            int end_C_ij = matC + (i * N) + j;
             matrizC[i][j] = pegarResultado(ram, cpu, end_C_ij);
         }
     }
@@ -749,10 +748,43 @@ void programaMultMatriz(RAM *ram, CPU *cpu, int N)
     printf("Matriz C (Resultado):\n");
     imprimirMatriz(N, N, matrizC);
 
-    // 6. Limpar a memória alocada
+    // Liberando a memória alocada
     free(matrizA);
     free(matrizB);
     free(matrizC);
+}
+
+void programaIMC(RAM *ram, CPU *cpu, int peso, int altura) // usando apenas numeros inteiros
+{
+    printf("Iniciando Calculo de IMC\n");
+    printf("Peso: %dkg, Altura: %dcm\n", peso, altura);
+
+    // calculando numerador
+    printf("Numerador: (%d * 10000)\n", peso);
+    programaMult(ram, cpu, peso, 10000);
+
+    // guardando na RAM
+    int numerador = pegarMult(ram, cpu);
+    printf("Numerador = %d\n", numerador);
+
+    // calculando denominador
+    printf("Denominador: (%d^2)\n", altura);
+    programaPotencia(ram, cpu, altura, 2);
+
+    // guardando na RAM
+    int denominador = pegarMult(ram, cpu);
+    printf("Denominador = %d\n", denominador);
+
+    // Numerador/Denominador
+    printf("Divisao: (%d / %d)\n", numerador, denominador);
+    programaDiv(ram, cpu, numerador, denominador);
+
+    // Obtendo resultado
+    int imc = pegarDiv(ram, cpu);
+
+    printf("O IMC (inteiro) eh: %d\n", imc);
+
+    // tentar divisão
 }
 
 // Daniel
@@ -827,7 +859,7 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
     5 - firstValue
     6 - razao
     7 - numValues
-    8 -
+    8 - resultado
     */
 
     colocarNaRam(ram, cpu, 5, firstValue);
@@ -835,13 +867,31 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
     colocarNaRam(ram, cpu, 7, numValues);
     // colocarNaRam(ram, cpu, 8, firstValue);
 
-    printf("\nPG: {");
+    programaMultSemPrint(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
     for (int i = 0; i < pegarResultado(ram, cpu, 7); i++)
     {
 
-        programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
-        colocarNaRam(ram, cpu, 5, pegarResultado(ram, cpu, 0));
-        printf("%d, ", pegarResultado(ram, cpu, 5));
+        programaMultSemPrint(ram, cpu, pegarMult(ram, cpu), pegarResultado(ram, cpu, 6));
+        colocarNaRam(ram, cpu, 8, pegarMult(ram, cpu));
+        // printf("\n(Razão: %d * %d)", pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
     }
-    printf("}");
+
+    printf("\nÚltimo valor da PG: %d", pegarResultado(ram, cpu, 8));
+}
+
+void programaLog(RAM *ram, CPU *cpu, int base, int valor)
+{       /*
+        5 - base
+        6 - valor
+        7 = chute
+        */
+
+    reinicializarRAM(10);
+
+    colocarNaRam(ram, cpu, 5, base);
+    colocarNaRam(ram, cpu, 6, valor);
+    colocarNaRam(ram, cpu, 5, 1);
+    
+
+
 }

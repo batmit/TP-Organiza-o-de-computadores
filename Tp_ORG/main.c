@@ -30,9 +30,10 @@ int main()
     //  programaBin_Dec(r, c, "1010");
     //  programaDec_Bin(r, c, 5);
 
-    //  programaPA(r, c, 1, 2, 5);
-    //  programaPotencia(r, c, 3, 4);
-    //  programaFibonacci(r, c, 0);
+    // programaPA(r, c, 1, 2, 5);
+    // programaPotencia(r, c, 3, 4);
+    // programaFibonacci(r, c, 0);
+    // programaMultMatriz(r, c, 3)
 
     // programaPG(r, c, 2, 2, 6);
     // programaRestoDiv(r, c, 7, 3);
