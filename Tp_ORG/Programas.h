@@ -27,14 +27,11 @@ void programaHex_Bin(RAM *ram, CPU *cpu,char *hex);
 void programaHex_Dec(RAM *ram, CPU *cpu,char *hex);
 
 void programaBin_Hex(RAM *ram, CPU *cpu,char *binario);
+void programaDec_Hex(RAM *ram, CPU *cpu, int decimal);
 
+void programaSomaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
+void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente);
 
-void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
-void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
-void programaFibonacci(RAM *ram, CPU *cpu, int n);
-void programaMultMatriz(RAM *ram, CPU *cpu, int N);
-
-// funcao com base em programas feito
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
 void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura);
 void programaAreaCirculo(RAM *ram, CPU *cpu, int raio);
@@ -43,11 +40,21 @@ void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int a
 void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura);
 void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura);
 
+
+
+
+void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
+void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
+void programaFibonacci(RAM *ram, CPU *cpu, int n);
+void programaMultMatriz(RAM *ram, CPU *cpu, int N);
+
+
 //Daniel
 void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues);
 void programaMdc(RAM *ram, CPU *cpu, int n, int k);
 void programaRestoDiv(RAM *ram, CPU *cpu, int n, int k);
 void programaLog(RAM *ram, CPU *cpu, int base, int valor);
+// void determinante(RAM *ram, CPU *cpu);
 
 
 #endif

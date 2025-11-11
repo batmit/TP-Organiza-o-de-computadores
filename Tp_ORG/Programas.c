@@ -339,8 +339,10 @@ void programaDivFloat2(RAM *ram, CPU *cpu, int dividendo, int divisor)
     programaDiv(ram, cpu, resultado_100, 100);
 
     int parte_inteira = pegarDiv(ram, cpu);
-
+    
     programaRestoDiv(ram, cpu, resultado_100, 100);
+
+    colocarNaRam(ram,cpu,1,parte_inteira);
 
     int parte_decimal = pegarResultado(ram, cpu, 0);
 
@@ -518,11 +520,96 @@ void programaBin_Hex(RAM *ram, CPU *cpu,char *binario) {
     printf("O resultado hexadecimal e: %s\n", resultaHex);
 }
 
-/*void programaDec_Hex(RAM *ram, CPU *cpu,char *binario){
+void programaDec_Hex(RAM *ram, CPU *cpu, int decimal)
+{
+    printf("Iniciando conversao de %d para hexadecimal:\n", decimal);
 
-}*/
+    if (decimal == 0) {
+        printf("O resultado hexadecimal e: 0\n");
+        return;
+    }
+    char bitsInvertidos[65];
+    int i = 0;
 
 
+    while (decimal > 0)
+    {
+        // msm logica do binario mas na base 16
+        programaRestoDiv(ram, cpu, decimal, 16);
+
+        int resto = pegarResultado(ram, cpu, 0);
+
+        bitsInvertidos[i] = DecParaHex(resto);
+        i++;
+
+        decimal = pegarDiv(ram, cpu);
+    }
+
+    bitsInvertidos[i] = '\0';
+
+    inverterString(bitsInvertidos);
+
+    printf("O resultado hexadecimal e: %s\n", bitsInvertidos);
+}
+
+void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente)
+{
+    
+    int resultado_C = 1;     // Guarda o resultado final
+  
+    if (expoente == 0)
+    {
+        printf("O resultado da exponenciacao e: 1\n");
+        return;
+    }
+
+    while (expoente > 0)
+        {
+           // 3 ^10 = 3 ^1010 = 3^8 * 3^2 que sao as posições dos binarios
+        programaDiv(ram, cpu, expoente, 2);
+       
+        int resto = pegarResultado(ram, cpu, 0); // Este é o bit (expoente % 2)
+        int novo_exp = pegarDiv(ram, cpu);      // Este é o novo expoente (expoente / 2)
+
+        // 3. Se o bit for 1 (expoente era ímpar)
+        if (resto == 1){ 
+            
+            programaMult(ram, cpu, resultado_C, base);
+            
+            resultado_C = pegarMult(ram, cpu); // C salva o novo resultado
+        }
+
+        programaMult(ram, cpu, base, base); //aqui é como se dobrassemos o expoente toda vez
+        base = pegarMult(ram, cpu); // C salva a nova base
+
+        expoente = novo_exp;
+    }
+
+    printf("O resultado da exponenciacao e: %d\n", resultado_C);
+}
+
+void programaSomaPA(RAM *ram, CPU *cpu, int a1, int razao, int n)
+{
+
+    programaPA(ram, cpu, a1, razao, n);
+    
+    int aN = pegarResultado(ram,cpu,0);
+
+    colocarNaRam(ram,cpu,0,a1);
+
+    colocarNaRam(ram,cpu,1,aN);
+    
+    Soma(ram,cpu,0,1,0);
+
+    programaMult(ram, cpu, pegarResultado(ram,cpu,0), n);
+
+    int produto = pegarMult(ram, cpu);
+  
+    programaDiv(ram, cpu, produto, 2);
+
+    printf("O Somatorio da PA e: = %d\n", pegarDiv(ram,cpu));
+
+}
 
 
 
@@ -577,11 +664,25 @@ void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int a
 
 void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura)
 {
-    int produto_soma = (baseMaior + baseMenor) * altura;
 
-    programaDiv(ram, cpu, produto_soma, 2);
+    reinicializarRAM(ram, 2); 
+    
+    colocarNaRam(ram, cpu, 0, baseMaior);
+    colocarNaRam(ram, cpu, 1, baseMenor);
+    
+    Soma(ram, cpu, 0, 1, 0);
+    
+    int somaBases = pegarResultado(ram, cpu, 0);
 
-    printf("A area do trapezio e: %d\n", pegarDiv(ram, cpu));
+    programaMult(ram, cpu, somaBases, altura);
+    
+    int produto = pegarMult(ram, cpu);
+    
+    programaDiv(ram, cpu, produto, 2);
+    
+    int area = pegarDiv(ram, cpu);
+
+    printf("A area do trapezio e: %d\n", area);
 }
 
 void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura)

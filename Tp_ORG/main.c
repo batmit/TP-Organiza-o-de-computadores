@@ -21,28 +21,21 @@ int main()
     // programaFat(r, c, 4);
     // programaSomaMatriz(r, c, 2);
     // programaRaizQuadrada(r, c, 49);
-
     //  programaRaizCubica(r, c, 27);
     //  programaRaioEsfera(r, c, 108);
-
     //  programaDivFloat2(r, c, 6, 10);
     //  programaMMC(r, c, 15, 10);
+     
     //  programaBin_Dec(r, c, "1010");
     //  programaDec_Bin(r, c, 5);
-    // programaHex_Bin(r,c,"0x5");
-    // programaHex_Dec(r,c,"0x44A");
-    programaBin_Hex(r,c,"101000100101010");
+    //  programaHex_Bin(r,c,"512A");
+    //  programaHex_Dec(r,c,"512A");
+    //  programaBin_Hex(r,c,"101000100101010");
+    //  programaDec_Hex(r, c, 20778);
 
-    // programaPA(r, c, 1, 2, 5);
-    // programaPotencia(r, c, 3, 4);
-    // programaFibonacci(r, c, 0);
-    // programaMultMatriz(r, c, 3)
+    //  programaSomaPA(r , c, 1,  1,  10);
+    //  programaExpBinaria(r,c,2,5);
 
-    // programaLog(r, c, 2, 8); nao fucn
-    // programaPG(r, c, 2, 2, 6);nao fun
-
-    // programaRestoDiv(r, c, 7, 3);
-    // programaMdc(r, c, 25, 60);
     // programaAreaQuadrado(r, c, 5);
     // programaAreaTriangulo(r, c, 10, 5);
     // programaAreaCirculo(r, c, 10);
@@ -50,6 +43,17 @@ int main()
     // programaVolumeCaixa(r, c, 3, 4, 5);
     // programaAreaTrapezio(r, c, 10, 6, 5);
     // programaVolumeCilindro(r, c, 10, 5);
+
+    //  programaPA(r, c, 1, 2, 5);
+    //  programaPotencia(r, c, 3, 4);
+    //  programaFibonacci(r, c, 0);
+    //  programaMultMatriz(r, c, 3)
+
+    // programaLog(r, c, 2, 8); nao fucn
+    // programaPG(r, c, 2, 2, 6);nao fun
+    // programaRestoDiv(r, c, 7, 3);
+    // programaMdc(r, c, 25, 60);
+    
 
     destroiRAM(r);
     destroiCPU(c);
