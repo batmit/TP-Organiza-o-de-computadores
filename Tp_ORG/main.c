@@ -29,13 +29,15 @@ int main()
     //  programaMMC(r, c, 15, 10);
     //  programaBin_Dec(r, c, "1010");
     //  programaDec_Bin(r, c, 5);
+    // programaHex_Bin(r,c,"0x5");
+    // programaHex_Dec(r,c,"0x44A");
 
     // programaPA(r, c, 1, 2, 5);
     // programaPotencia(r, c, 3, 4);
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
-    programaLog(r, c, 2, 8);
+    // programaLog(r, c, 2, 8);
 
     // programaPG(r, c, 2, 2, 6);
     // programaRestoDiv(r, c, 7, 3);

@@ -167,7 +167,7 @@ void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicad
     //printf("O resultado da multiplicacao e: %d\n", pegarMult(ram, cpu));
 }
 
-char* mapearHexParaBin(char hex) {
+char* HexParaBin(char hex) {
     
     hex = maiusucla(hex); 
 
@@ -193,7 +193,7 @@ char* mapearHexParaBin(char hex) {
 }
 
 int maiusucla(int c) {
-    /
+
     if (c >= 'a' && c <= 'z') {
         return c - 'a' + 'A';
     } else {

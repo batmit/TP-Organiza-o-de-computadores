@@ -476,7 +476,7 @@ void programaHex_Bin(RAM *ram, CPU *cpu,char *hex) {
 }
 
 void programaHex_Dec(RAM *ram, CPU *cpu,char *hex){
-    programaHex_Bin(hex);
+    programaHex_Bin(ram,cpu,hex);
     printf("O resultado decimal e: %d\n",pegarResultado(ram, cpu, 0));
 }
 
@@ -904,7 +904,7 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
         8 - 1
         */
 
-    reinicializarRAM(10);
+    reinicializarRAM(ram,10);
 
     colocarNaRam(ram, cpu, 5, base);
     colocarNaRam(ram, cpu, 6, valor);
@@ -912,14 +912,14 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     colocarNaRam(ram, cpu, 8, 1);
     
     programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
-    soma(ram, cpu, 7, 8, 7);
+    Soma(ram, cpu, 7, 8, 7);
 
 
-    while(pegarMult(cpu, ram) < pegarResultado(cpu, ram, 6)){
+    while(pegarMult(ram,cpu) < pegarResultado(ram,cpu, 6)){
 
         programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
 
-        soma(ram, cpu, 7, 8, 7);
+        Soma(ram, cpu, 7, 8, 7);
     }
     
     printf("Resultado aproximado: %d", pegarResultado(ram, cpu, 7));
