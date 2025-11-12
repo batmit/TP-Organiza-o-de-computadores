@@ -119,7 +119,7 @@ void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor)
     // reg[1] = valor
     trecho1[0].opcode = 4;
     trecho1[0].add1 = 1;     // registrador1
-    trecho1[0].add2 = valor; // O valor a ser carregado
+    trecho1[0].add2 = valor; // O valor a ser carregadoa
 
     // RAM[endereco] = reg[1]
     trecho1[1].opcode = 2;
@@ -212,21 +212,3 @@ int maiusucla(int c) {
     }
 }
 
-void programaMultTresValores(RAM *ram, CPU *cpu, int multiplicando, int multiplicador, int terceiroMult)
-{
-
-    //  RAM[0]: resultado
-
-    reinicializarRAM(ram, 3);
-
-    programaMult(ram, cpu, multiplicando, multiplicador);
-
-    programaMult(ram, cpu, pegarMult(ram, cpu), terceiroMult);
-
-    //inútil, mas boa prática
-    colocarNaRam(ram, cpu, 0, pegarMult(ram, cpu));
-
-    //printf("Resultado: %d", pegarMult(ram, cpu));
-    
-    
-}
