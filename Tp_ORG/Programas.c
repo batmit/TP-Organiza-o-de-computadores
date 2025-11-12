@@ -19,6 +19,7 @@
     5 obtem conteudo externo do registrador
     */
 
+srand(time(NULL));
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
     destroiRAM(ram);
@@ -1049,6 +1050,9 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
 
     reinicializarRAM(ram,10);
 
+
+
+
     colocarNaRam(ram, cpu, 5, base);
     colocarNaRam(ram, cpu, 6, valor);
     colocarNaRam(ram, cpu, 7, 1);
@@ -1066,6 +1070,92 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     }
     
     printf("Resultado aproximado: %d", pegarResultado(ram, cpu, 7));
+
+
+}
+
+void determinante(RAM *ram, CPU, *cpu){
+
+    /*
+
+    Os números em frente a posição referem-se a pares que serão multiplicados
+    e somados ou subtraídos para o cálculo do determinante.
+    
+    5 - ij(11) 1 2
+    6 - ij(12) 2 3
+    7 - ij(13) 3 1
+    8 - ij(21) 3 3
+    9 - ij(22) 1 1
+    10 -ij(23) 2 2
+    11 -ij(31) 2 1
+    12 -ij(32) 3 2
+    13 -ij(33) 1 3
+    14 - ordem da matriz
+    15 - resultado
+    16 - soma das diagonais principais
+    17 - soma das diagonais segundarias
+    */
+
+
+
+    reinicializarRAM(18);
+
+    if(rand()%2 == 0){
+        colocarNaRam(ram, cpu, 14, 2);
+        colocarNaRam(ram, cpu, 5, (rand()%100));
+        colocarNaRam(ram, cpu, 6, (rand()%100));
+        colocarNaRam(ram, cpu, 8, (rand()%100));
+        colocarNaRam(ram, cpu, 9, (rand()%100));
+    }else{
+
+        colocarNaRam(ram, cpu, 14, 3);
+
+        colocarNaRam(ram, cpu, 5, (rand()%100));
+        colocarNaRam(ram, cpu, 6, (rand()%100));
+        colocarNaRam(ram, cpu, 8, (rand()%100));
+        colocarNaRam(ram, cpu, 9, (rand()%100));
+        colocarNaRam(ram, cpu, 7, (rand()%100));
+        colocarNaRam(ram, cpu, 10, (rand()%100));
+        colocarNaRam(ram, cpu, 11, (rand()%100));
+        colocarNaRam(ram, cpu, 12, (rand()%100));
+        colocarNaRam(ram, cpu, 13, (rand()%100));
+    }
+
+
+    if(pegarResultado(ram, cpu, 14) == 2){
+
+        programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 9));
+
+        colocarNaRam(ram, cpu, 15, pegarMult(ram, cpu));
+        programaMult(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 8));
+        Subtrai(ram, cpu, 15, 0, 15);
+
+    }else if(pegarResultado(ram, cpu, 14) == 3){
+
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 9), pegarResultado(ram, cpu, 13));
+
+        colocarNaRam(ram, cpu, 16, pegarMult(ram, cpu));
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 10), pegarResultado(ram, cpu, 11));
+        Soma(ram, cpu, 16, 0, 16);
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 7), pegarResultado(ram, cpu, 8), pegarResultado(ram, cpu, 12));
+        Soma(ram, cpu, 16, 0, 16);    
+
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 7), pegarResultado(ram, cpu, 9), pegarResultado(ram, cpu, 11));
+        colocarNaRam(ram, cpu, 17, pegarMult(ram, cpu));
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 10), pegarResultado(ram, cpu, 12));
+        Soma(ram, cpu, 17, 0, 17);
+        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 8), pegarResultado(ram, cpu, 13));
+        Soma(ram, cpu, 17, 0, 17);
+        Subtrai(ram, cpu, 16, 17, 15);
+
+
+    }
+
+    colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 15));
+
+    printf("O determinante e: %d", pegarResultado(ram, cpu, 0));
+
+
 
 
 }

@@ -54,7 +54,7 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues);
 void programaMdc(RAM *ram, CPU *cpu, int n, int k);
 void programaRestoDiv(RAM *ram, CPU *cpu, int n, int k);
 void programaLog(RAM *ram, CPU *cpu, int base, int valor);
-// void determinante(RAM *ram, CPU *cpu);
+void determinante(RAM *ram, CPU *cpu);
 
 
 #endif

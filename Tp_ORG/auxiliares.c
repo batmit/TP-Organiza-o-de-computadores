@@ -212,3 +212,21 @@ int maiusucla(int c) {
     }
 }
 
+void programaMultTresValores(RAM *ram, CPU *cpu, int multiplicando, int multiplicador, int terceiroMult)
+{
+
+    //  RAM[0]: resultado
+
+    reinicializarRAM(ram, 3);
+
+    programaMult(ram, cpu, multiplicando, multiplicador);
+
+    programaMult(ram, cpu, pegarMult(ram, cpu), terceiroMult);
+
+    //inútil, mas boa prática
+    colocarNaRam(ram, cpu, 0, pegarMult(ram, cpu));
+
+    //printf("Resultado: %d", pegarMult(ram, cpu));
+    
+    
+}
