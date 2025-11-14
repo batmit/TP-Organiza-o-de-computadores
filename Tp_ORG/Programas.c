@@ -1041,49 +1041,56 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
 }
 
 void programaLog(RAM *ram, CPU *cpu, int base, int valor)
-{       /*
-        0 - resultado exp
-        5 - base
-        6 - valor
-        7 = chute
-        8 - 1
-        */
+{       
+    /*
+    Layout da RAM (Usado apenas para setup inicial):
+    5 - base
+    6 - valor
+    7 = chute
+    8 - 1 (constante)
+    */
 
     reinicializarRAM(ram,10);
 
-
-
-
+    // --- Setup Inicial (Carga na RAM) ---
     colocarNaRam(ram, cpu, 5, base);
     colocarNaRam(ram, cpu, 6, valor);
-    colocarNaRam(ram, cpu, 7, 1);
-    colocarNaRam(ram, cpu, 8, 1);
+    colocarNaRam(ram, cpu, 7, 1); // chute = 1
+    colocarNaRam(ram, cpu, 8, 1); // constante 1
 
-    int c_valor = pegarResultado(ram, cpu, 6);
-    int c_chute = pegarResultado(ram, cpu, 7);
+    int c_base = base;
+    int c_valor = valor;
+    int c_chute = 1;
     
-    programaPotencia(ram, cpu, base, c_chute);
-    int c_potencia = pegarResultado(ram, cpu,0);
+    // Calcula a primeira potência (ex: base^1)
+    programaPotencia(ram, cpu, c_base, c_chute);
+    int c_potencia = pegarMult(ram, cpu);
 
+    // --- Loop de Controle ---
+    while(c_potencia < c_valor)
+    {
+        colocarNaRam(ram, cpu, 0, 1);
+        colocarNaRam(ram, cpu, 1, c_chute);
+        Soma(ram,cpu,0,1,0);
+        c_chute = pegarResultado(ram,cpu,0);
 
-    while(c_potencia < c_valor){
-
-        Soma(ram, cpu, 7, 8, 7);
-        c_chute = pegarResultado(ram, cpu, 7);
-
-        programaPotencia(ram, cpu, base, c_chute);
+        programaPotencia(ram, cpu, c_base, c_chute);
 
         c_potencia = pegarMult(ram, cpu);
     }
 
+    // --- Verificação Final ---
+    // Se a potência (c_potencia) for EXATAMENTE igual ao valor,
+    // o 'c_chute' está correto.
+    // Mas se ela PASSOU (ex: log2(10) -> 2^4=16), o chute está 1 a mais.
     if(c_potencia > c_valor)
     {
-        Subtrai(ram, cpu, 7, 8, 7);
+        c_chute = c_chute - 1;
     }
     
-    printf("Resultado aproximado: %d", pegarResultado(ram, cpu, 7));
-
-
+    // (Opcional) Salva o resultado final na RAM[0] por padrão
+    colocarNaRam(ram, cpu, 0, c_chute);
+    printf("Resultado aproximado: %d\n", pegarResultado(ram, cpu, 0));
 }
 
 void determinante(RAM *ram, CPU *cpu){
@@ -1188,7 +1195,9 @@ void determinante(RAM *ram, CPU *cpu){
 
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
 {
-    programaPotencia(ram, cpu, b, 2);
+    int b_positivo = abs(b); 
+    programaPotencia(ram, cpu, b_positivo, 2);
+
     int b2 = pegarMult(ram, cpu);
 
     programaMult(ram, cpu, 4, a);

@@ -17,13 +17,13 @@ int main()
 
     // programaAleatorio(r, c, 15);
     // programaMult(r, c, 20, 5);
-    // programaDiv(r, c, 20, 4);
+     // programaDiv(r, c, 25, 3);
     // programaFat(r, c, 4);
     // programaSomaMatriz(r, c, 2);
     // programaRaizQuadrada(r, c, 49);
     // programaRaizCubica(r, c, 27);
     // programaRaioEsfera(r, c, 108);
-    // programaDivFloat2(r, c, 6, 10);
+    //  programaDivFloat2(r, c, 25, 3);
     // programaMMC(r, c, 15, 10);
      
     // programaBin_Dec(r, c, "1010");
@@ -39,7 +39,7 @@ int main()
     // programaPrimo(r, c , 643);
 
 
-    // programaBhaskara(r, c , 2,  -7 , 6); // nao
+    // programaBhaskara(r, c , 1,  5 , 3);
 
     // programaAreaQuadrado(r, c, 5);
     // programaAreaTriangulo(r, c, 10, 5);
@@ -54,12 +54,15 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
-     // programaLog(r, c, 2, 8); // nao funciona
-    //  programaPG(r, c, 2, 3, 4); // nao
+    // programaLog(r, c, 3, 27); 
+    
+    
+    // programaPG(r, c, 2, 3, 4); // nao funciona
+
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
 
-      // determinante(r , c); 
+    // determinante(r , c); 
 
     destroiRAM(r);
     destroiCPU(c);
