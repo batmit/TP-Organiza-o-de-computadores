@@ -19,7 +19,7 @@
     5 obtem conteudo externo do registrador
     */
 
-srand(time(NULL));
+
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
     destroiRAM(ram);
@@ -192,7 +192,7 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
     }
 
     int (*matriz3)[cardinalidade] = malloc(sizeof(int[cardinalidade][cardinalidade]));
-    int k = 8;
+    int k  = n_elementos * 2;
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
@@ -572,7 +572,7 @@ void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente)
         int resto = pegarResultado(ram, cpu, 0); // Este é o bit (expoente % 2)
         int novo_exp = pegarDiv(ram, cpu);      // Este é o novo expoente (expoente / 2)
 
-        // 3. Se o bit for 1 (expoente era ímpar)
+        // Se o bit for 1 (expoente era ímpar)
         if (resto == 1){ 
             
             programaMult(ram, cpu, resultado_C, base);
@@ -1025,15 +1025,16 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
     colocarNaRam(ram, cpu, 5, firstValue);
     colocarNaRam(ram, cpu, 6, razao);
     colocarNaRam(ram, cpu, 7, numValues);
-    // colocarNaRam(ram, cpu, 8, firstValue);
+    
+    colocarNaRam(ram, cpu, 8, firstValue);
 
-    programaMultSemPrint(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
-    for (int i = 0; i < pegarResultado(ram, cpu, 7); i++)
+    int n = pegarResultado(ram, cpu, 7);
+
+
+    for (int i = 1; i < n; i++)
+
     {
-
-        programaMultSemPrint(ram, cpu, pegarMult(ram, cpu), pegarResultado(ram, cpu, 6));
-        colocarNaRam(ram, cpu, 8, pegarMult(ram, cpu));
-        // printf("\n(Razão: %d * %d)", pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
+        multPosicoesRAM(ram, cpu, 8, 6, 8);
     }
 
     printf("\nÚltimo valor da PG: %d", pegarResultado(ram, cpu, 8));
@@ -1057,16 +1058,27 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     colocarNaRam(ram, cpu, 6, valor);
     colocarNaRam(ram, cpu, 7, 1);
     colocarNaRam(ram, cpu, 8, 1);
+
+    int c_valor = pegarResultado(ram, cpu, 6);
+    int c_chute = pegarResultado(ram, cpu, 7);
     
-    programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
-    Soma(ram, cpu, 7, 8, 7);
+    programaPotencia(ram, cpu, base, c_chute);
+    int c_potencia = pegarResultado(ram, cpu,0);
 
 
-    while(pegarMult(ram,cpu) < pegarResultado(ram,cpu, 6)){
-
-        programaPotencia(ram, cpu, base, pegarResultado(ram, cpu, 7));
+    while(c_potencia < c_valor){
 
         Soma(ram, cpu, 7, 8, 7);
+        c_chute = pegarResultado(ram, cpu, 7);
+
+        programaPotencia(ram, cpu, base, c_chute);
+
+        c_potencia = pegarMult(ram, cpu);
+    }
+
+    if(c_potencia > c_valor)
+    {
+        Subtrai(ram, cpu, 7, 8, 7);
     }
     
     printf("Resultado aproximado: %d", pegarResultado(ram, cpu, 7));
@@ -1074,7 +1086,7 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
 
 }
 
-void determinante(RAM *ram, CPU, *cpu){
+void determinante(RAM *ram, CPU *cpu){
 
     /*
 
@@ -1095,67 +1107,196 @@ void determinante(RAM *ram, CPU, *cpu){
     16 - soma das diagonais principais
     17 - soma das diagonais segundarias
     */
+   
+    reinicializarRAM(ram, 18);
+    int rascunho = 0; 
 
-
-
-    reinicializarRAM(18);
-
-    if(rand()%2 == 0){
+    if (rand() % 2 == 0)
+    {
         colocarNaRam(ram, cpu, 14, 2);
-        colocarNaRam(ram, cpu, 5, (rand()%100));
-        colocarNaRam(ram, cpu, 6, (rand()%100));
-        colocarNaRam(ram, cpu, 8, (rand()%100));
-        colocarNaRam(ram, cpu, 9, (rand()%100));
-    }else{
-
+        colocarNaRam(ram, cpu, 5, (rand() % 10));
+        colocarNaRam(ram, cpu, 6, (rand() % 10));
+        colocarNaRam(ram, cpu, 8, (rand() % 10));
+        colocarNaRam(ram, cpu, 9, (rand() % 10));
+    }
+    else
+    {
         colocarNaRam(ram, cpu, 14, 3);
-
-        colocarNaRam(ram, cpu, 5, (rand()%100));
-        colocarNaRam(ram, cpu, 6, (rand()%100));
-        colocarNaRam(ram, cpu, 8, (rand()%100));
-        colocarNaRam(ram, cpu, 9, (rand()%100));
-        colocarNaRam(ram, cpu, 7, (rand()%100));
-        colocarNaRam(ram, cpu, 10, (rand()%100));
-        colocarNaRam(ram, cpu, 11, (rand()%100));
-        colocarNaRam(ram, cpu, 12, (rand()%100));
-        colocarNaRam(ram, cpu, 13, (rand()%100));
+        colocarNaRam(ram, cpu, 5, (rand() % 10));
+        colocarNaRam(ram, cpu, 6, (rand() % 10));
+        colocarNaRam(ram, cpu, 8, (rand() % 10));
+        colocarNaRam(ram, cpu, 9, (rand() % 10));
+        colocarNaRam(ram, cpu, 7, (rand() % 10));
+        colocarNaRam(ram, cpu, 10, (rand() % 10));
+        colocarNaRam(ram, cpu, 11, (rand() % 10));
+        colocarNaRam(ram, cpu, 12, (rand() % 10));
+        colocarNaRam(ram, cpu, 13, (rand() % 10));
     }
 
 
-    if(pegarResultado(ram, cpu, 14) == 2){
 
-        programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 9));
+    if (pegarResultado(ram, cpu, 14) == 2) // Caso 2x2
+    {
+        // (M[5] * M[9]) -> Salva em RAM[15] (resultado)
+        multPosicoesRAM(ram, cpu, 5, 9, 15);
 
-        colocarNaRam(ram, cpu, 15, pegarMult(ram, cpu));
-        programaMult(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 8));
-        Subtrai(ram, cpu, 15, 0, 15);
+        // (M[6] * M[8]) -> Salva em RAM[0] 
+        multPosicoesRAM(ram, cpu, 6, 8, rascunho);
 
-    }else if(pegarResultado(ram, cpu, 14) == 3){
+        //  RAM[15] = RAM[15] - RAM[0]
+        Subtrai(ram, cpu, 15, rascunho, 15);
+    }
+    else if (pegarResultado(ram, cpu, 14) == 3) // Caso 3x3
+    {
+        //
 
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 9), pegarResultado(ram, cpu, 13));
+        //  (M[5] * M[9] * M[13])
+        multPosicoesRAM(ram, cpu, 5, 9, rascunho);   // RAM[0] = M[5] * M[9]
+        multPosicoesRAM(ram, cpu, rascunho, 13, 16); // RAM[16] = RAM[0] * M[13]
 
-        colocarNaRam(ram, cpu, 16, pegarMult(ram, cpu));
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 10), pegarResultado(ram, cpu, 11));
-        Soma(ram, cpu, 16, 0, 16);
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 7), pegarResultado(ram, cpu, 8), pegarResultado(ram, cpu, 12));
-        Soma(ram, cpu, 16, 0, 16);    
+        //  (M[6] * M[10] * M[11])
+        multPosicoesRAM(ram, cpu, 6, 10, rascunho);  // RAM[0] = M[6] * M[10]
+        multPosicoesRAM(ram, cpu, rascunho, 11, rascunho); // RAM[0] = RAM[0] * M[11]
+        Soma(ram, cpu, 16, rascunho, 16);            // RAM[16] += RAM[0]
 
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 7), pegarResultado(ram, cpu, 9), pegarResultado(ram, cpu, 11));
-        colocarNaRam(ram, cpu, 17, pegarMult(ram, cpu));
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 10), pegarResultado(ram, cpu, 12));
-        Soma(ram, cpu, 17, 0, 17);
-        programaMultTresValores(ram, cpu, pegarResultado(ram, cpu, 6), pegarResultado(ram, cpu, 8), pegarResultado(ram, cpu, 13));
-        Soma(ram, cpu, 17, 0, 17);
-        Subtrai(ram, cpu, 16, 17, 15);
+        //  (M[7] * M[8] * M[12])
+        multPosicoesRAM(ram, cpu, 7, 8, rascunho);   // RAM[0] = M[7] * M[8]
+        multPosicoesRAM(ram, cpu, rascunho, 12, rascunho); // RAM[0] = RAM[0] * M[12]
+        Soma(ram, cpu, 16, rascunho, 16);            // RAM[16] += RAM[0]
 
+        //  (M[7] * M[9] * M[11])
+        multPosicoesRAM(ram, cpu, 7, 9, rascunho);   // RAM[0] = M[7] * M[9]
+        multPosicoesRAM(ram, cpu, rascunho, 11, 17); // RAM[17] = RAM[0] * M[11]
 
+        //  (M[5] * M[10] * M[12])
+        multPosicoesRAM(ram, cpu, 5, 10, rascunho);  // RAM[0] = M[5] * M[10]
+        multPosicoesRAM(ram, cpu, rascunho, 12, rascunho); // RAM[0] = RAM[0] * M[12]
+        Soma(ram, cpu, 17, rascunho, 17);            // RAM[17] += RAM[0]
+
+        //  (M[6] * M[8] * M[13])
+        multPosicoesRAM(ram, cpu, 6, 8, rascunho);   // RAM[0] = M[6] * M[8]
+        multPosicoesRAM(ram, cpu, rascunho, 13, rascunho); // RAM[0] = RAM[0] * M[13]
+        Soma(ram, cpu, 17, rascunho, 17);            // RAM[17] += RAM[0]
+
+        Subtrai(ram, cpu, 16, 17, 15); // RAM[15] = RAM[16] - RAM[17]
     }
 
     colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 15));
 
     printf("O determinante e: %d", pegarResultado(ram, cpu, 0));
+}
+
+void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
+{
+    programaPotencia(ram, cpu, b, 2);
+    int b2 = pegarMult(ram, cpu);
+
+    programaMult(ram, cpu, 4, a);
+    int _4a = pegarMult(ram, cpu);
+
+    programaMult(ram, cpu, _4a, c);
+    int _4ac = pegarMult(ram, cpu);
+
+    int delta = b2 - _4ac;
+    if (delta < 0)
+    {
+        printf("Delta negativo. Nao ha raizes reais.\n");
+        return;
+    }
+
+    programaRaizQuadrada(ram, cpu, delta);
+    int raiz_delta = pegarResultado(ram, cpu, 2);
+    
+    // Verificação de segurança para raízes não-inteiras
+    if (raiz_delta * raiz_delta != delta)
+    {
+        printf("Raizes nao sao inteiras (Delta nao e quadrado perfeito).\n");
+        return;
+    }
+
+    programaMult(ram, cpu, 2, a);
+ 
+    int denominador = pegarMult(ram, cpu);
+
+    if (denominador == 0)
+    {
+        printf("Erro: Divisao por zero (a=0).\n");
+        return;
+    }
+
+    reinicializarRAM(ram, 10);
+    // Posições na RAM:
+    // RAM[0] = 0 (Constante)
+    // RAM[1] = b
+    // RAM[2] = sqrt_delta
+    // RAM[3] = temp (-b)
+    // RAM[4] = num1 (resultado x1)
+    // RAM[5] = num2 (resultado x2)
+
+    // RAM[6] = inteiro x1
+    // RAM[7] = decimal x1
+    // RAM[8] = inteiro x2
+    // RAM[9] = decimal x2
 
 
+    // 1. Carregar valores na RAM
+    colocarNaRam(ram, cpu, 0, 0);
+    colocarNaRam(ram, cpu, 1, b);
+    colocarNaRam(ram, cpu, 2, raiz_delta);
+
+    //  Calcular -b 
+    Subtrai(ram, cpu, 0, 1, 3); // RAM[3] = RAM[0] - RAM[1]
+
+    //Calcular num1 (RAM[4] = -b + raiz_delta)
+    Soma(ram, cpu, 3, 2, 4); // RAM[4] = RAM[3] + RAM[2]
+
+    //Calcular num2 (RAM[5] = -b - raiz_delta)
+    Subtrai(ram, cpu, 3, 2, 5); // RAM[5] = RAM[3] - RAM[2]
 
 
+    int num1 = pegarResultado(ram, cpu, 4);
+    int num2 = pegarResultado(ram, cpu, 5);
+
+    programaDivFloat2(ram, cpu, num1, denominador);
+    int x1Int = pegarResultado(ram, cpu, 1);
+    int x1Dec = abs(pegarResultado(ram, cpu, 0));
+
+    programaDivFloat2(ram, cpu, num2, denominador);
+    int x2Int = pegarResultado(ram, cpu, 1);
+    int x2Dec = abs(pegarResultado(ram, cpu, 0));
+
+    printf("As raizes sao: x1 = %d.%02d e x2 = %d.%02d\n", x1Int,x1Dec,x2Int,x2Dec);
+}
+
+void programaPrimo(RAM *ram, CPU *cpu, int n)
+{
+    if (n <= 1)
+    {
+        printf("%d nao e primo (menor ou igual a 1).\n", n);
+        return;
+    }
+    if (n <= 3)
+    {
+        printf("%d e primo.\n", n); 
+        return;
+    }
+
+    programaRaizQuadrada(ram, cpu, n);
+
+    int limite = pegarResultado(ram, cpu, 2);
+
+    for (int i = 2; i <= limite; i++)
+    {
+        programaRestoDiv(ram, cpu, n, i);
+        
+        int resto = pegarResultado(ram, cpu, 0);
+
+        if (resto == 0)
+        {
+            printf("%d nao e primo (divisivel por %d).\n", n, i);
+            return;
+        }
+    }
+
+    printf("%d e primo.\n", n);
 }

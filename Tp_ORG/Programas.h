@@ -32,6 +32,10 @@ void programaDec_Hex(RAM *ram, CPU *cpu, int decimal);
 void programaSomaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
 void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente);
 
+void programaPrimo(RAM *ram, CPU *cpu, int n);
+void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
+
+
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
 void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura);
 void programaAreaCirculo(RAM *ram, CPU *cpu, int raio);
@@ -40,14 +44,10 @@ void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int a
 void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura);
 void programaVolumeCilindro(RAM *ram, CPU *cpu, int raio, int altura);
 
-
-
-
 void programaPA(RAM *ram, CPU *cpu, int a1, int razao, int n);
 void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
 void programaMultMatriz(RAM *ram, CPU *cpu, int N);
-
 
 //Daniel
 void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues);

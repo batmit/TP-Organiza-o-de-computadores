@@ -30,6 +30,5 @@ char* HexParaBin(char hex);
 char DecParaHex(int resto);
 int maiusucla(int c);
 
-void programaMultTresValores(RAM *ram, CPU *cpu, int multiplicando, int multiplicador, int terceiroMult);
-
+void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp);
 #endif

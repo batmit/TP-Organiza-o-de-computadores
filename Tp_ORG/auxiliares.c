@@ -212,3 +212,20 @@ int maiusucla(int c) {
     }
 }
 
+void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp){
+
+    
+    // alcula (RAM[pos1] * RAM[pos2]) e salva em posTemp
+    multPosicoesRAM(ram, cpu, pos1, pos2, posTemp);
+    
+    // alcula (RAM[posTemp] * RAM[pos3]) e salva em posFinal
+    multPosicoesRAM(ram, cpu, posTemp, pos3, posFinal);
+
+    //inútil, mas boa prática
+    colocarNaRam(ram, cpu, 0, pegarMult(ram, cpu));
+
+    //printf("Resultado: %d", pegarMult(ram, cpu));
+    
+    
+}
+
