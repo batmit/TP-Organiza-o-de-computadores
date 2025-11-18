@@ -57,7 +57,7 @@ int main()
     // programaLog(r, c, 3, 27); 
     
     
-    // programaPG(r, c, 2, 3, 4); // nao funciona
+    programaPG(r, c, 2, 2, 4); // nao funciona
 
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);

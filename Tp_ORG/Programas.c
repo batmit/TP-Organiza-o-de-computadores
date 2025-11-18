@@ -1021,23 +1021,21 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
     7 - numValues
     8 - resultado
     */
-
+    int num = numValues;
+    reinicializarRAM(ram, 20);
     colocarNaRam(ram, cpu, 5, firstValue);
     colocarNaRam(ram, cpu, 6, razao);
     colocarNaRam(ram, cpu, 7, numValues);
-    
-    colocarNaRam(ram, cpu, 8, firstValue);
+    //int j = pegarResultado(ram, cpu, 7);
+    //printf("%d", j);
+    programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
 
-    int n = pegarResultado(ram, cpu, 7);
-
-
-    for (int i = 1; i < n; i++)
-
-    {
-        multPosicoesRAM(ram, cpu, 8, 6, 8);
+    for(int i = 0; i < num -2; i++){
+        programaMult(ram, cpu, pegarMult(ram, cpu), razao);
+        printf("Passou aqui");
     }
 
-    printf("\nÚltimo valor da PG: %d", pegarResultado(ram, cpu, 8));
+    printf("\nÚltimo valor da PG: %d", pegarResultado(ram, cpu, 0));
 }
 
 void programaLog(RAM *ram, CPU *cpu, int base, int valor)
