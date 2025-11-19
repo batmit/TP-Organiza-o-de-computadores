@@ -1495,3 +1495,112 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem)
 
     printf("O resultado e: %d.%02d\n", parte_inteira, abs(parte_decimal));
 }
+
+void programaCPF(RAM *ram, CPU *cpu, char *cpf) {
+    
+
+    if (strlen(cpf) != 11) {
+        printf("CPF INVALIDO: Deve ter 11 digitos.\n");
+        return;
+    }
+    
+    int digitos[11];
+    for (int i = 0; i < 11; i++) {
+        digitos[i] = charParaInt(cpf[i]);
+    }
+    
+
+    int digito1Total = 0;
+    int peso = 10;
+    
+    for (int i = 0; i < 9; i++) {
+
+        programaMult(ram, cpu, digitos[i], peso);
+        int produto = pegarMult(ram, cpu);
+        
+        colocarNaRam(ram, cpu, 0, digito1Total);
+        colocarNaRam(ram, cpu, 1, produto);
+
+        Soma(ram, cpu, 0, 1, 0);
+
+        digito1Total = pegarResultado(ram,cpu,0);
+
+        programaDecremento(ram, cpu, peso); 
+
+        peso = pegarResultado(ram, cpu, 0); 
+    }
+    
+
+    programaRestoDiv(ram, cpu, digito1Total, 11);
+    int resto1 = pegarResultado(ram, cpu, 0);
+    
+
+    int digito1;
+    if (resto1 < 2) {
+        digito1 = 0;
+    } else {
+        colocarNaRam(ram, cpu, 0, 11);
+
+        colocarNaRam(ram, cpu, 1, resto1);
+
+        Subtrai(ram, cpu, 0, 1, 2);
+
+        digito1 = pegarResultado(ram, cpu, 2);
+    }
+
+    
+    int digito2Total = 0;
+    peso = 11; 
+    
+    for (int i = 0; i < 10; i++) { 
+        int digito_atual;
+        
+        if (i < 9) {
+            digito_atual = digitos[i]; 
+        } else {
+            digito_atual = digito1; 
+        }
+        
+        programaMult(ram, cpu, digito_atual, peso);
+        int produto = pegarMult(ram, cpu);
+        
+        colocarNaRam(ram, cpu, 0, digito2Total);
+        colocarNaRam(ram, cpu, 1, produto);
+
+        Soma(ram, cpu, 0, 1, 0);
+
+        digito2Total = pegarResultado(ram,cpu,0);
+
+        programaDecremento(ram, cpu, peso); 
+
+        peso = pegarResultado(ram, cpu, 0); 
+    }
+    
+    programaRestoDiv(ram, cpu, digito2Total, 11);
+    int resto2 = pegarResultado(ram, cpu, 0);
+    
+
+    int digito2;
+    if (resto2 < 2) {
+        digito2 = 0;
+    } else {
+        colocarNaRam(ram, cpu, 0, 11);
+
+        colocarNaRam(ram, cpu, 1, resto2);
+
+        Subtrai(ram, cpu, 0, 1, 2);
+
+        digito2 = pegarResultado(ram, cpu, 2);
+    }
+    
+
+    int digito1V = digitos[9]; 
+    int digito2V = digitos[10]; 
+    
+    if (digito1 == digito1V && digito2 == digito2V) {
+        printf("CPF VALIDACAO: O CPF %s E VALIDO.\n", cpf);
+    } else {
+        printf("CPF VALIDACAO: O CPF %s E INVALIDO.\n", cpf);
+        printf("Digitos Verificadores Corretos Seriam: %d%d\n", digito1, digito2);
+    }
+}

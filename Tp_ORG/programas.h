@@ -36,7 +36,8 @@ void programaPrimo(RAM *ram, CPU *cpu, int n);
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c);
 void programaIncremento(RAM *ram, CPU *cpu, int n);
 void programaDecremento(RAM *ram, CPU *cpu, int n);
-
+void programaCPF(RAM *ram, CPU *cpu, char *cpf);
+void calcSeno(RAM *ram, CPU *cpu, int x);
 
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado);
 void programaAreaTriangulo(RAM *ram, CPU *cpu, int base, int altura);
@@ -58,7 +59,7 @@ void programaRestoDiv(RAM *ram, CPU *cpu, int n, int k);
 void programaLog(RAM *ram, CPU *cpu, int base, int valor);
 void determinante(RAM *ram, CPU *cpu);
 void programaGrausRadianos(RAM *ram, CPU *cpu, int graus);
-void calcSeno(RAM *ram, CPU *cpu, int x);
+
 void programaModulo(RAM *ram, CPU *cpu, int num);
 void calCosseno(RAM *ram, CPU *cpu, int x);
 
