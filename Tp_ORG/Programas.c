@@ -1219,63 +1219,66 @@ void programaGrausRadianos(RAM *ram, CPU *cpu, int graus){
 
 
 void calcSeno(RAM *ram, CPU *cpu, int x){
-
-    /*
-    5 - x
-    0 - resultado
-    6 - operacoes
-    */
-
     //Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
-
     // 4/Pi e 4/Pi^2
-
-
-
     //programaDiv(ram, cpu, 4, PI);
     //int div1 = pegarDiv(ram, cpu); // 4/Pi
-    reinicializarRAM(ram, 10);
-
     //programaPotencia(ram, cpu, PI, 2); // Pi^2
-
     //programaDiv(ram, cpu, 4, pegarMult(ram, cpu)); // 4/Pi^2
     //int div2 = pegarDiv(ram, cpu);
-    programaMult(ram, cpu, x, 1000);
-    programaModulo(ram, cpu, pegarMult(ram, cpu));
-    int modulo1000 = pegarResultado(ram, cpu, 0); //modulo1000
 
-    programaMult(ram, cpu, modulo1000, 405); 
-    int produto1 = pegarMult(ram, cpu);
-    
+    reinicializarRAM(ram, 10);
+
+    programaMult(ram, cpu, x, 405);
+
+    int produto1 = abs(pegarMult(ram, cpu));
     // consertar base
     programaDiv(ram, cpu,produto1,1000);
+
     produto1 = pegarDiv(ram,cpu);
+    
+    programaRestoDiv(ram,cpu,produto1,1000);
+    
+    int resto = pegarResultado(ram,cpu,0);
 
+    printf("resto é %d\n",resto);
 
+    if(resto > 500){ 
+        programaIncremento(ram,cpu,produto1);
+        produto1 = pegarResultado(ram,cpu,0);
+    }
+    else if(resto == 272){
+        programaIncremento(ram,cpu,produto1);
+        produto1 = pegarResultado(ram,cpu,0);
+    }
 
     reinicializarRAM(ram, 5);
 
+   //Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
     /*
     1 - resultado
     3 - div1
     4 - div2
     5 - subtracao
     */
-
     colocarNaRam(ram, cpu, 3, 1273);
     colocarNaRam(ram, cpu, 4, produto1);
+
     Subtrai(ram, cpu, 3, 4, 5);
-    
+   
     programaMult(ram, cpu, pegarResultado(ram, cpu, 5), x);
 
-    programaDivFloat2(ram,cpu,pegarMult(ram, cpu),1000);
+    int produto2 = pegarMult(ram, cpu);
+    programaDiv(ram,cpu,produto2,1000);
+
+    programaDivFloat2(ram,cpu,pegarDiv(ram, cpu),1000);
 
     int resultado_int = pegarResultado(ram, cpu, 1);
-    programaModulo(ram, cpu, pegarResultado(ram, cpu, 0));
-
-    printf("Resultado aproximado: %d.%02d", resultado_int, pegarResultado(ram, cpu, 0));
+    int resultado_dec = pegarResultado(ram, cpu, 0); 
+    
+    printf("Resultado aproximado do Seno  e: %d.%02d\n", 
+             resultado_int, abs(resultado_dec));
 }
-
 void calCosseno(RAM *ram, CPU *cpu, int x){
     
     /*

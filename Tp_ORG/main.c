@@ -23,7 +23,7 @@ int main()
     // programaRaizQuadrada(r, c, 49);
     // programaRaizCubica(r, c, 27);
     // programaRaioEsfera(r, c, 108);
-    //  programaDivFloat2(r, c, 25, 3);
+    //  programaDivFloat2(r, c, 25, 3); // legal
     // programaMMC(r, c, 15, 10);
      
     // programaBin_Dec(r, c, "1010");
@@ -31,7 +31,7 @@ int main()
     // programaHex_Bin(r,c,"512A");
     // programaHex_Dec(r,c,"512A");
     // programaBin_Hex(r,c,"101000100101010");
-    // programaDec_Hex(r, c, 20778);
+    // programaDec_Hex(r, c, 20778); // legais
 
     // programaSomaPA(r , c, 1,  1,  10);
     // programaExpBinaria(r,c,2,5);
@@ -54,19 +54,19 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
-    //programaModulo(r, c, -100);
-    calcSeno(r, c, 90);
+    // programaModulo(r, c, -100);
+    // calcSeno(r, c, 3142); / legal pra kct
 
-    //calCosseno(r, c, 90);
+    // calCosseno(r, c, 90);
     // programaLog(r, c, 3, 27); 
     
     
-    //programaPG(r, c, 2, 2, 4); // nao funciona
+    // programaPG(r, c, 3, 2, 5); 
 
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
-    //programaGrausRadianos(r, c, 90);
-    //determinante(r , c); 
+    // programaGrausRadianos(r, c, 135);
+    // determinante(r , c); 
 
     destroiRAM(r);
     destroiCPU(c);
