@@ -37,9 +37,9 @@ int main()
     // programaExpBinaria(r,c,2,5);
 
     // programaPrimo(r, c , 643);
-
-
     // programaBhaskara(r, c , 1,  5 , 3);
+    // programaIncremento(r,c, 5);
+    // programaDecremento(r,c, 5);
 
     // programaAreaQuadrado(r, c, 5);
     // programaAreaTriangulo(r, c, 10, 5);
@@ -54,15 +54,19 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
 
+    //programaModulo(r, c, -100);
+    calcSeno(r, c, 90);
+
+    //calCosseno(r, c, 90);
     // programaLog(r, c, 3, 27); 
     
     
-    programaPG(r, c, 2, 2, 4); // nao funciona
+    //programaPG(r, c, 2, 2, 4); // nao funciona
 
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
-
-    // determinante(r , c); 
+    //programaGrausRadianos(r, c, 90);
+    //determinante(r , c); 
 
     destroiRAM(r);
     destroiCPU(c);

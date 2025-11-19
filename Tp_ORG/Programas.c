@@ -6,7 +6,7 @@
 #include "cpu.h"
 #include "programas.h"
 #include "auxiliares.h"
-
+#define PI 3
 #define TAM_RAM 50
 
 /* OPCODE
@@ -346,6 +346,10 @@ void programaDivFloat2(RAM *ram, CPU *cpu, int dividendo, int divisor)
     colocarNaRam(ram,cpu,1,parte_inteira);
 
     int parte_decimal = pegarResultado(ram, cpu, 0);
+
+    /*
+    ram[0] = parte decimal
+    ram[1] = parte inteira*/
 
     printf("O resultado da divisao e: %d.%02d\n", parte_inteira, parte_decimal);
 }
@@ -1191,6 +1195,149 @@ void determinante(RAM *ram, CPU *cpu){
     printf("O determinante e: %d", pegarResultado(ram, cpu, 0));
 }
 
+void programaGrausRadianos(RAM *ram, CPU *cpu, int graus){
+    
+    /*
+    0 - resultado
+    5 - graus
+
+    
+    */
+
+    reinicializarRAM(ram, 6);
+
+    colocarNaRam(ram, cpu, 5, graus);
+
+    programaMult(ram, cpu, pegarResultado(ram, cpu, 5), 3);
+
+    programaDiv(ram, cpu, pegarMult(ram, cpu), 180);
+
+    printf("Valor: %d", pegarDiv(ram, cpu));
+    colocarNaRam(ram, cpu, 0, pegarDiv(ram, cpu));
+
+}
+
+
+void calcSeno(RAM *ram, CPU *cpu, int x){
+
+    /*
+    5 - x
+    0 - resultado
+    6 - operacoes
+    */
+
+    //Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
+
+    // 4/Pi e 4/Pi^2
+
+
+
+    //programaDiv(ram, cpu, 4, PI);
+    //int div1 = pegarDiv(ram, cpu); // 4/Pi
+    reinicializarRAM(ram, 10);
+
+    //programaPotencia(ram, cpu, PI, 2); // Pi^2
+
+    //programaDiv(ram, cpu, 4, pegarMult(ram, cpu)); // 4/Pi^2
+    //int div2 = pegarDiv(ram, cpu);
+    programaMult(ram, cpu, x, 1000);
+    programaModulo(ram, cpu, pegarMult(ram, cpu));
+    int modulo1000 = pegarResultado(ram, cpu, 0); //modulo1000
+
+    programaMult(ram, cpu, modulo1000, 405); 
+    int produto1 = pegarMult(ram, cpu);
+    
+    // consertar base
+    programaDiv(ram, cpu,produto1,1000);
+    produto1 = pegarDiv(ram,cpu);
+
+
+
+    reinicializarRAM(ram, 5);
+
+    /*
+    1 - resultado
+    3 - div1
+    4 - div2
+    5 - subtracao
+    */
+
+    colocarNaRam(ram, cpu, 3, 1273);
+    colocarNaRam(ram, cpu, 4, produto1);
+    Subtrai(ram, cpu, 3, 4, 5);
+    
+    programaMult(ram, cpu, pegarResultado(ram, cpu, 5), x);
+
+    programaDivFloat2(ram,cpu,pegarMult(ram, cpu),1000);
+
+    int resultado_int = pegarResultado(ram, cpu, 1);
+    programaModulo(ram, cpu, pegarResultado(ram, cpu, 0));
+
+    printf("Resultado aproximado: %d.%02d", resultado_int, pegarResultado(ram, cpu, 0));
+}
+
+void calCosseno(RAM *ram, CPU *cpu, int x){
+    
+    /*
+    0 - resultado
+    1 - x
+    2 - pi/2
+    3 - soma
+    */
+
+   // Cos(X) = sen(x + Pi/2)
+    programaDiv(ram, cpu, PI, 2);
+    int div1 = pegarDiv(ram, cpu);
+    reinicializarRAM(ram, 4);
+
+    colocarNaRam(ram, cpu, 1, x);
+    colocarNaRam(ram, cpu, 2, div1);
+    
+    Soma(ram, cpu, 1, 2, 3);
+    calcSeno(ram, cpu, pegarResultado(ram, cpu, 3));
+
+    colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 1));
+    printf("Valor do cosseno: %d", pegarResultado(ram, cpu, 0));
+
+}
+
+
+void programaModulo(RAM *ram, CPU *cpu, int num){
+
+    /*
+    0 - resultado
+    5 - valor
+    4 - contador
+    3 - 1
+    */
+
+
+    reinicializarRAM(ram, 10);
+    if(num >= 0){
+        colocarNaRam(ram, cpu, 0, num);
+    }else{
+
+        int count = 0;
+        colocarNaRam(ram, cpu, 5, num);
+        colocarNaRam(ram, cpu, 4, count);
+        colocarNaRam(ram, cpu, 3, 1);
+
+        while(pegarResultado(ram, cpu, 5) < 0){
+            Soma(ram, cpu, 5, 3, 5); // somando x++
+            Soma(ram, cpu, 4, 3, 4); // aumentando o contador
+        }   
+        
+        colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 4));
+
+
+    }
+
+    printf("\nValor do módulo: %d", pegarResultado(ram, cpu, 0));
+
+}
+
+
+
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
 {
     int b_positivo = abs(b); 
@@ -1306,4 +1453,42 @@ void programaPrimo(RAM *ram, CPU *cpu, int n)
     }
 
     printf("%d e primo.\n", n);
+}
+
+void programaIncremento(RAM *ram, CPU *cpu, int n){
+    
+    colocarNaRam(ram,cpu,1,1);
+    colocarNaRam(ram,cpu,0,n);
+    Soma(ram,cpu,0,1,0);
+
+    int result = pegarResultado(ram,cpu,0);
+
+    printf("O resultado é %d\n",result);
+
+}
+
+void programaDecremento(RAM *ram, CPU *cpu, int n)
+{
+
+    colocarNaRam(ram, cpu, 1, 1);
+    colocarNaRam(ram, cpu, 0, n);
+    Subtrai(ram, cpu, 0, 1, 0);
+
+    int result = pegarResultado(ram, cpu, 0);
+
+    printf("O resultado é %d\n", result);
+}
+
+void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem)
+{
+   
+    programaMult(ram, cpu, valor, porcentagem);
+    int produto = pegarMult(ram, cpu); // 
+
+    programaDivFloat2(ram, cpu, produto, 100);
+
+    int parte_inteira = pegarResultado(ram, cpu, 1);
+    int parte_decimal = pegarResultado(ram, cpu, 0);
+
+    printf("O resultado e: %d.%02d\n", parte_inteira, abs(parte_decimal));
 }

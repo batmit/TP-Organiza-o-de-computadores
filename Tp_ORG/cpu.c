@@ -74,8 +74,8 @@ void iniciar(RAM *r, CPU *c)
 		{
 		case -1:
 		{
-			printf("Programa terminou!!\n");
-			imprimirRAM(r);
+			// printf("Programa terminou!!\n");
+			// imprimirRAM(r);
 			break;
 		}
 		// soma
