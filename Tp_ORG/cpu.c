@@ -86,7 +86,7 @@ void iniciar(RAM *r, CPU *c)
 			c->registrador1 += c->registrador2;
 			// salvar resultado
 			setDado(r, inst.add3, c->registrador1);
-			//printf("Inst sum -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
+			// printf("Inst sum -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
 			break;
 		}
 		// subtrai
@@ -97,7 +97,7 @@ void iniciar(RAM *r, CPU *c)
 			c->registrador1 -= c->registrador2;
 			// salvar resultado
 			setDado(r, inst.add3, c->registrador1);
-			//printf("Inst sub -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
+			// printf("Inst sub -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
 
 			break;
 		}
@@ -108,12 +108,12 @@ void iniciar(RAM *r, CPU *c)
 			if (inst.add1 == 1)
 			{
 				setDado(r, inst.add2, c->registrador1);
-				//printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador1);
+				// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador1);
 			}
 			else if (inst.add1 == 2)
 			{
 				setDado(r, inst.add2, c->registrador2);
-				//printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador2);
+				// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador2);
 			}
 			break;
 		}
@@ -124,12 +124,12 @@ void iniciar(RAM *r, CPU *c)
 			if (inst.add1 == 1)
 			{
 				c->registrador1 = getDado(r, inst.add2);
-				//printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n", c->registrador1);
+				// printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n", c->registrador1);
 			}
 			else if (inst.add1 == 2)
 			{
 				c->registrador2 = getDado(r, inst.add2);
-				//printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+				// printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n", c->registrador2);
 			}
 			break;
 		}
@@ -140,12 +140,12 @@ void iniciar(RAM *r, CPU *c)
 			if (inst.add1 == 1)
 			{
 				c->registrador1 = inst.add2;
-				//printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n", c->registrador1);
+				// printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n", c->registrador1);
 			}
 			else if (inst.add1 == 2)
 			{
 				c->registrador2 = inst.add2;
-				//printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+				// printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n", c->registrador2);
 			}
 			break;
 		}
@@ -158,12 +158,12 @@ void iniciar(RAM *r, CPU *c)
 			if (inst.add1 == 1)
 			{
 				c->programa[c->PC].add2 = c->registrador1;
-				//printf("Inst obtain_reg -> Registrador1 com conteudo %d\n", c->registrador1);
+				// printf("Inst obtain_reg -> Registrador1 com conteudo %d\n", c->registrador1);
 			}
 			else if (inst.add1 == 2)
 			{
 				c->programa[c->PC].add2 = c->registrador2;
-				//printf("Inst obtain_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+				// printf("Inst obtain_reg -> Registrador2 com conteudo %d\n", c->registrador2);
 			}
 
 			break;

@@ -164,74 +164,100 @@ void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicad
         Soma(ram, cpu, 0, 1, 0);
     }
 
-    //printf("O resultado da multiplicacao e: %d\n", pegarMult(ram, cpu));
+    // printf("O resultado da multiplicacao e: %d\n", pegarMult(ram, cpu));
 }
 
-char* HexParaBin(char hex) {
-    
-    hex = maiusucla(hex); 
+char *HexParaBin(char hex)
+{
 
-    switch(hex) {
-        case '0': return "0000";
-        case '1': return "0001";
-        case '2': return "0010";
-        case '3': return "0011";
-        case '4': return "0100";
-        case '5': return "0101";
-        case '6': return "0110";
-        case '7': return "0111";
-        case '8': return "1000";
-        case '9': return "1001";
-        case 'A': return "1010";
-        case 'B': return "1011";
-        case 'C': return "1100";
-        case 'D': return "1101";
-        case 'E': return "1110";
-        case 'F': return "1111";
-        default:  return ""; // Retorna vazio se o caractere for inválido
+    hex = maiusucla(hex);
+
+    switch (hex)
+    {
+    case '0':
+        return "0000";
+    case '1':
+        return "0001";
+    case '2':
+        return "0010";
+    case '3':
+        return "0011";
+    case '4':
+        return "0100";
+    case '5':
+        return "0101";
+    case '6':
+        return "0110";
+    case '7':
+        return "0111";
+    case '8':
+        return "1000";
+    case '9':
+        return "1001";
+    case 'A':
+        return "1010";
+    case 'B':
+        return "1011";
+    case 'C':
+        return "1100";
+    case 'D':
+        return "1101";
+    case 'E':
+        return "1110";
+    case 'F':
+        return "1111";
+    default:
+        return ""; // Retorna vazio se o caractere for inválido
     }
 }
 
-char DecParaHex(int resto) {
+char DecParaHex(int resto)
+{
 
-    if (resto < 10) {
-        return resto + '0'; 
-    } 
+    if (resto < 10)
+    {
+        return resto + '0';
+    }
 
-    else {
+    else
+    {
         return (resto - 10) + 'A';
     }
 }
 
-int maiusucla(int c) {
+int maiusucla(int c)
+{
 
-    if (c >= 'a' && c <= 'z') {
+    if (c >= 'a' && c <= 'z')
+    {
         return c - 'a' + 'A';
-    } else {
+    }
+    else
+    {
         return c;
     }
 }
 
-void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp){
+void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp)
+{
 
-    
     // alcula (RAM[pos1] * RAM[pos2]) e salva em posTemp
     multPosicoesRAM(ram, cpu, pos1, pos2, posTemp);
-    
+
     // alcula (RAM[posTemp] * RAM[pos3]) e salva em posFinal
     multPosicoesRAM(ram, cpu, posTemp, pos3, posFinal);
 
-    //inútil, mas boa prática
+    // inútil, mas boa prática
     colocarNaRam(ram, cpu, 0, pegarMult(ram, cpu));
 
-    //printf("Resultado: %d", pegarMult(ram, cpu));
-    
-    
+    // printf("Resultado: %d", pegarMult(ram, cpu));
 }
 
-int charParaInt(char c) {
-    if (c >= '0' && c <= '9') {
+int charParaInt(char c)
+{
+    if (c >= '0' && c <= '9')
+    {
         return c - '0';
     }
-    return -1; 
+    return -1;
 }

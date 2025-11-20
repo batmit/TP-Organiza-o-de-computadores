@@ -17,7 +17,7 @@ int main()
 
     // programaAleatorio(r, c, 15);
     // programaMult(r, c, 20, 5);
-     // programaDiv(r, c, 25, 3);
+    // programaDiv(r, c, 25, 3);
     // programaFat(r, c, 4);
     // programaSomaMatriz(r, c, 2);
     // programaRaizQuadrada(r, c, 49);
@@ -25,7 +25,7 @@ int main()
     // programaRaioEsfera(r, c, 108);
     //  programaDivFloat2(r, c, 25, 3); // legal
     // programaMMC(r, c, 15, 10);
-     
+
     // programaBin_Dec(r, c, "1010");
     // programaDec_Bin(r, c, 5);
     // programaHex_Bin(r,c,"512A");
@@ -54,20 +54,21 @@ int main()
     // programaPotencia(r, c, 3, 4);
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
+    // programaIMC(r, c, 80, 177);
+    // fazer taxa metabolica basal
 
     // programaModulo(r, c, -100);
     // calcSeno(r, c, 3142); / legal pra kct
 
     // calCosseno(r, c, 90);
-    // programaLog(r, c, 3, 27); 
-    
-    
-    // programaPG(r, c, 3, 2, 5); 
+    // programaLog(r, c, 3, 27);
+
+    // programaPG(r, c, 3, 2, 5);
 
     // programaRestoDiv(r, c, 7, 3);
     // programaMdc(r, c, 25, 60);
     // programaGrausRadianos(r, c, 135);
-    // determinante(r , c); 
+    // determinante(r , c);
 
     destroiRAM(r);
     destroiCPU(c);

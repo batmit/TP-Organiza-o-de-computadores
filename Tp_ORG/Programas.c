@@ -19,7 +19,6 @@
     5 obtem conteudo externo do registrador
     */
 
-
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
     destroiRAM(ram);
@@ -123,7 +122,7 @@ void programaFat(RAM *ram, CPU *cpu, int fat)
         j = pegarMult(ram, cpu);
     }
 
-    printf("O resultado do fatorial e: %d\n",j);
+    printf("O resultado do fatorial e: %d\n", j);
 }
 
 void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
@@ -192,7 +191,7 @@ void programaSomaMatriz(RAM *ram, CPU *cpu, int cardinalidade)
     }
 
     int (*matriz3)[cardinalidade] = malloc(sizeof(int[cardinalidade][cardinalidade]));
-    int k  = n_elementos * 2;
+    int k = n_elementos * 2;
     for (int i = 0; i < cardinalidade; i++)
     {
         for (int j = 0; j < cardinalidade; j++)
@@ -340,10 +339,10 @@ void programaDivFloat2(RAM *ram, CPU *cpu, int dividendo, int divisor)
     programaDiv(ram, cpu, resultado_100, 100);
 
     int parte_inteira = pegarDiv(ram, cpu);
-    
+
     programaRestoDiv(ram, cpu, resultado_100, 100);
 
-    colocarNaRam(ram,cpu,1,parte_inteira);
+    colocarNaRam(ram, cpu, 1, parte_inteira);
 
     int parte_decimal = pegarResultado(ram, cpu, 0);
 
@@ -458,68 +457,70 @@ void programaDec_Bin(RAM *ram, CPU *cpu, int decimal)
     printf("O resultado binario e: %s\n", bitsInvertidos);
 }
 
-void programaHex_Bin(RAM *ram, CPU *cpu,char *hex) {
-    
+void programaHex_Bin(RAM *ram, CPU *cpu, char *hex)
+{
+
     // cada hex * 4 + \0
     char resultadoBin[strlen(hex) * 4 + 1];
-    
-    // para pd concatenar
-    resultadoBin[0] = '\0'; 
 
-    for(int i = 0; i < strlen(hex); i++) {
+    // para pd concatenar
+    resultadoBin[0] = '\0';
+
+    for (int i = 0; i < strlen(hex); i++)
+    {
         // Pega o caractere atual (ex: 'A')
         char charAtual = hex[i];
-        
+
         // Mapeia para os 4 bits (ex: "1010")
-        char* bits = HexParaBin(charAtual);
-        
-        //colca de tras pra frente
+        char *bits = HexParaBin(charAtual);
+
+        // colca de tras pra frente
         strcat(resultadoBin, bits);
     }
 
-    programaBin_Dec(ram,cpu,resultadoBin);
+    programaBin_Dec(ram, cpu, resultadoBin);
 
     printf("O resultado binario e: %s\n", resultadoBin);
 }
 
-void programaHex_Dec(RAM *ram, CPU *cpu,char *hex){
-    programaHex_Bin(ram,cpu,hex);
-    printf("O resultado decimal e: %d\n",pegarResultado(ram, cpu, 0));
+void programaHex_Dec(RAM *ram, CPU *cpu, char *hex)
+{
+    programaHex_Bin(ram, cpu, hex);
+    printf("O resultado decimal e: %d\n", pegarResultado(ram, cpu, 0));
 }
 
-
-void programaBin_Hex(RAM *ram, CPU *cpu,char *binario) {
-
+void programaBin_Hex(RAM *ram, CPU *cpu, char *binario)
+{
 
     int tam = strlen(binario);
-    
+
     // olha zero a esquerda pra multiplo de 4
     int preenchimento = (4 - (tam % 4)) % 4; // haxadecimais funcionam em multiplos de 5
-    
+
     char binPreenchido[tam + preenchimento + 1]; // pra ter o tamanho total
 
-    //  ele salva o novo numero q varia do preenchumaneto, coloca zeros antes 
+    //  ele salva o novo numero q varia do preenchumaneto, coloca zeros antes
     sprintf(binPreenchido, "%.*s%s", preenchimento, "0000", binario); // Ex: "00110101"
-    
+
     char resultaHex[strlen(binPreenchido) / 4 + 1];
-    
+
     int indiceHex = 0;
 
+    for (int i = 0; i < strlen(binPreenchido); i += 4)
+    {
 
-    for(int i = 0; i < strlen(binPreenchido); i += 4) {
-        
         char pedaco[5];
         strncpy(pedaco, &binPreenchido[i], 4); // ele salvar os pedaços de i + 3 posições em 'pedaco'
-        pedaco[4] = '\0'; // Termina a string do pedaço
-        
-        programaBin_Dec(ram,cpu,pedaco);// trasnforma
+        pedaco[4] = '\0';                      // Termina a string do pedaço
+
+        programaBin_Dec(ram, cpu, pedaco); // trasnforma
 
         int valorInt = pegarResultado(ram, cpu, 0);
-        
-        resultaHex[indiceHex] =  DecParaHex(valorInt);// e tranforma denovo
+
+        resultaHex[indiceHex] = DecParaHex(valorInt); // e tranforma denovo
         indiceHex++;
     }
-    
+
     resultaHex[indiceHex] = '\0'; // Termina a string final
 
     printf("O resultado hexadecimal e: %s\n", resultaHex);
@@ -529,13 +530,13 @@ void programaDec_Hex(RAM *ram, CPU *cpu, int decimal)
 {
     printf("Iniciando conversao de %d para hexadecimal:\n", decimal);
 
-    if (decimal == 0) {
+    if (decimal == 0)
+    {
         printf("O resultado hexadecimal e: 0\n");
         return;
     }
     char bitsInvertidos[65];
     int i = 0;
-
 
     while (decimal > 0)
     {
@@ -559,9 +560,9 @@ void programaDec_Hex(RAM *ram, CPU *cpu, int decimal)
 
 void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente)
 {
-    
-    int resultado_C = 1;     // Guarda o resultado final
-  
+
+    int resultado_C = 1; // Guarda o resultado final
+
     if (expoente == 0)
     {
         printf("O resultado da exponenciacao e: 1\n");
@@ -569,23 +570,24 @@ void programaExpBinaria(RAM *ram, CPU *cpu, int base, int expoente)
     }
 
     while (expoente > 0)
-        {
-           // 3 ^10 = 3 ^1010 = 3^8 * 3^2 que sao as posições dos binarios
+    {
+        // 3 ^10 = 3 ^1010 = 3^8 * 3^2 que sao as posições dos binarios
         programaDiv(ram, cpu, expoente, 2);
-       
+
         int resto = pegarResultado(ram, cpu, 0); // Este é o bit (expoente % 2)
-        int novo_exp = pegarDiv(ram, cpu);      // Este é o novo expoente (expoente / 2)
+        int novo_exp = pegarDiv(ram, cpu);       // Este é o novo expoente (expoente / 2)
 
         // Se o bit for 1 (expoente era ímpar)
-        if (resto == 1){ 
-            
+        if (resto == 1)
+        {
+
             programaMult(ram, cpu, resultado_C, base);
-            
+
             resultado_C = pegarMult(ram, cpu); // C salva o novo resultado
         }
 
-        programaMult(ram, cpu, base, base); //aqui é como se dobrassemos o expoente toda vez
-        base = pegarMult(ram, cpu); // C salva a nova base
+        programaMult(ram, cpu, base, base); // aqui é como se dobrassemos o expoente toda vez
+        base = pegarMult(ram, cpu);         // C salva a nova base
 
         expoente = novo_exp;
     }
@@ -597,26 +599,23 @@ void programaSomaPA(RAM *ram, CPU *cpu, int a1, int razao, int n)
 {
 
     programaPA(ram, cpu, a1, razao, n);
-    
-    int aN = pegarResultado(ram,cpu,0);
 
-    colocarNaRam(ram,cpu,0,a1);
+    int aN = pegarResultado(ram, cpu, 0);
 
-    colocarNaRam(ram,cpu,1,aN);
-    
-    Soma(ram,cpu,0,1,0);
+    colocarNaRam(ram, cpu, 0, a1);
 
-    programaMult(ram, cpu, pegarResultado(ram,cpu,0), n);
+    colocarNaRam(ram, cpu, 1, aN);
+
+    Soma(ram, cpu, 0, 1, 0);
+
+    programaMult(ram, cpu, pegarResultado(ram, cpu, 0), n);
 
     int produto = pegarMult(ram, cpu);
-  
+
     programaDiv(ram, cpu, produto, 2);
 
-    printf("O Somatorio da PA e: = %d\n", pegarDiv(ram,cpu));
-
+    printf("O Somatorio da PA e: = %d\n", pegarDiv(ram, cpu));
 }
-
-
 
 void programaAreaQuadrado(RAM *ram, CPU *cpu, int lado)
 {
@@ -670,21 +669,21 @@ void programaVolumeCaixa(RAM *ram, CPU *cpu, int comprimento, int largura, int a
 void programaAreaTrapezio(RAM *ram, CPU *cpu, int baseMaior, int baseMenor, int altura)
 {
 
-    reinicializarRAM(ram, 2); 
-    
+    reinicializarRAM(ram, 2);
+
     colocarNaRam(ram, cpu, 0, baseMaior);
     colocarNaRam(ram, cpu, 1, baseMenor);
-    
+
     Soma(ram, cpu, 0, 1, 0);
-    
+
     int somaBases = pegarResultado(ram, cpu, 0);
 
     programaMult(ram, cpu, somaBases, altura);
-    
+
     int produto = pegarMult(ram, cpu);
-    
+
     programaDiv(ram, cpu, produto, 2);
-    
+
     int area = pegarDiv(ram, cpu);
 
     printf("A area do trapezio e: %d\n", area);
@@ -939,16 +938,52 @@ void programaIMC(RAM *ram, CPU *cpu, int peso, int altura) // usando apenas nume
     int denominador = pegarMult(ram, cpu);
     printf("Denominador = %d\n", denominador);
 
-    // Numerador/Denominador
+    // numerador/denominador
     printf("Divisao: (%d / %d)\n", numerador, denominador);
     programaDiv(ram, cpu, numerador, denominador);
 
-    // Obtendo resultado
+    // resultado
     int imc = pegarDiv(ram, cpu);
 
     printf("O IMC (inteiro) eh: %d\n", imc);
 
-    // tentar divisão
+    programaRestoDiv(ram, cpu, numerador, denominador);
+    int resto = pegarResultado(ram, cpu, 0);
+
+    programaMult(ram, cpu, resto, 100);
+    resto = pegarResultado(ram, cpu, 0);
+
+    programaDiv(ram, cpu, resto, denominador);
+    int imc2 = pegarDiv(ram, cpu); // parte decimal
+
+    printf("Seu IMC: %d.%02d kg/m2\n", imc, abs(imc2));
+
+    printf("Classificacao: ");
+
+    if (imc < 18)
+    {
+        printf("Abaixo do Peso\n");
+    }
+    else if (imc >= 18 && imc < 25)
+    {
+        printf("Peso Normal\n");
+    }
+    else if (imc >= 25 && imc < 30)
+    {
+        printf("Sobrepeso\n");
+    }
+    else if (imc >= 30 && imc < 35)
+    {
+        printf("Obesidade Grau I\n");
+    }
+    else if (imc >= 35 && imc < 40)
+    {
+        printf("Obesidade Grau II\n");
+    }
+    else
+    {
+        printf("Obesidade Grau III (Morbida)\n");
+    }
 }
 
 // Daniel
@@ -1030,11 +1065,12 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
     colocarNaRam(ram, cpu, 5, firstValue);
     colocarNaRam(ram, cpu, 6, razao);
     colocarNaRam(ram, cpu, 7, numValues);
-    //int j = pegarResultado(ram, cpu, 7);
-    //printf("%d", j);
+    // int j = pegarResultado(ram, cpu, 7);
+    // printf("%d", j);
     programaMult(ram, cpu, pegarResultado(ram, cpu, 5), pegarResultado(ram, cpu, 6));
 
-    for(int i = 0; i < num -2; i++){
+    for (int i = 0; i < num - 2; i++)
+    {
         programaMult(ram, cpu, pegarMult(ram, cpu), razao);
         printf("Passou aqui");
     }
@@ -1043,7 +1079,7 @@ void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues)
 }
 
 void programaLog(RAM *ram, CPU *cpu, int base, int valor)
-{       
+{
     /*
     Layout da RAM (Usado apenas para setup inicial):
     5 - base
@@ -1052,7 +1088,7 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     8 - 1 (constante)
     */
 
-    reinicializarRAM(ram,10);
+    reinicializarRAM(ram, 10);
 
     // --- Setup Inicial (Carga na RAM) ---
     colocarNaRam(ram, cpu, 5, base);
@@ -1063,18 +1099,18 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     int c_base = base;
     int c_valor = valor;
     int c_chute = 1;
-    
+
     // Calcula a primeira potência (ex: base^1)
     programaPotencia(ram, cpu, c_base, c_chute);
     int c_potencia = pegarMult(ram, cpu);
 
     // --- Loop de Controle ---
-    while(c_potencia < c_valor)
+    while (c_potencia < c_valor)
     {
         colocarNaRam(ram, cpu, 0, 1);
         colocarNaRam(ram, cpu, 1, c_chute);
-        Soma(ram,cpu,0,1,0);
-        c_chute = pegarResultado(ram,cpu,0);
+        Soma(ram, cpu, 0, 1, 0);
+        c_chute = pegarResultado(ram, cpu, 0);
 
         programaPotencia(ram, cpu, c_base, c_chute);
 
@@ -1085,23 +1121,24 @@ void programaLog(RAM *ram, CPU *cpu, int base, int valor)
     // Se a potência (c_potencia) for EXATAMENTE igual ao valor,
     // o 'c_chute' está correto.
     // Mas se ela PASSOU (ex: log2(10) -> 2^4=16), o chute está 1 a mais.
-    if(c_potencia > c_valor)
+    if (c_potencia > c_valor)
     {
         c_chute = c_chute - 1;
     }
-    
+
     // (Opcional) Salva o resultado final na RAM[0] por padrão
     colocarNaRam(ram, cpu, 0, c_chute);
     printf("Resultado aproximado: %d\n", pegarResultado(ram, cpu, 0));
 }
 
-void determinante(RAM *ram, CPU *cpu){
+void determinante(RAM *ram, CPU *cpu)
+{
 
     /*
 
     Os números em frente a posição referem-se a pares que serão multiplicados
     e somados ou subtraídos para o cálculo do determinante.
-    
+
     5 - ij(11) 1 2
     6 - ij(12) 2 3
     7 - ij(13) 3 1
@@ -1116,9 +1153,9 @@ void determinante(RAM *ram, CPU *cpu){
     16 - soma das diagonais principais
     17 - soma das diagonais segundarias
     */
-   
+
     reinicializarRAM(ram, 18);
-    int rascunho = 0; 
+    int rascunho = 0;
 
     if (rand() % 2 == 0)
     {
@@ -1142,14 +1179,12 @@ void determinante(RAM *ram, CPU *cpu){
         colocarNaRam(ram, cpu, 13, (rand() % 10));
     }
 
-
-
     if (pegarResultado(ram, cpu, 14) == 2) // Caso 2x2
     {
         // (M[5] * M[9]) -> Salva em RAM[15] (resultado)
         multPosicoesRAM(ram, cpu, 5, 9, 15);
 
-        // (M[6] * M[8]) -> Salva em RAM[0] 
+        // (M[6] * M[8]) -> Salva em RAM[0]
         multPosicoesRAM(ram, cpu, 6, 8, rascunho);
 
         //  RAM[15] = RAM[15] - RAM[0]
@@ -1164,28 +1199,28 @@ void determinante(RAM *ram, CPU *cpu){
         multPosicoesRAM(ram, cpu, rascunho, 13, 16); // RAM[16] = RAM[0] * M[13]
 
         //  (M[6] * M[10] * M[11])
-        multPosicoesRAM(ram, cpu, 6, 10, rascunho);  // RAM[0] = M[6] * M[10]
+        multPosicoesRAM(ram, cpu, 6, 10, rascunho);        // RAM[0] = M[6] * M[10]
         multPosicoesRAM(ram, cpu, rascunho, 11, rascunho); // RAM[0] = RAM[0] * M[11]
-        Soma(ram, cpu, 16, rascunho, 16);            // RAM[16] += RAM[0]
+        Soma(ram, cpu, 16, rascunho, 16);                  // RAM[16] += RAM[0]
 
         //  (M[7] * M[8] * M[12])
-        multPosicoesRAM(ram, cpu, 7, 8, rascunho);   // RAM[0] = M[7] * M[8]
+        multPosicoesRAM(ram, cpu, 7, 8, rascunho);         // RAM[0] = M[7] * M[8]
         multPosicoesRAM(ram, cpu, rascunho, 12, rascunho); // RAM[0] = RAM[0] * M[12]
-        Soma(ram, cpu, 16, rascunho, 16);            // RAM[16] += RAM[0]
+        Soma(ram, cpu, 16, rascunho, 16);                  // RAM[16] += RAM[0]
 
         //  (M[7] * M[9] * M[11])
         multPosicoesRAM(ram, cpu, 7, 9, rascunho);   // RAM[0] = M[7] * M[9]
         multPosicoesRAM(ram, cpu, rascunho, 11, 17); // RAM[17] = RAM[0] * M[11]
 
         //  (M[5] * M[10] * M[12])
-        multPosicoesRAM(ram, cpu, 5, 10, rascunho);  // RAM[0] = M[5] * M[10]
+        multPosicoesRAM(ram, cpu, 5, 10, rascunho);        // RAM[0] = M[5] * M[10]
         multPosicoesRAM(ram, cpu, rascunho, 12, rascunho); // RAM[0] = RAM[0] * M[12]
-        Soma(ram, cpu, 17, rascunho, 17);            // RAM[17] += RAM[0]
+        Soma(ram, cpu, 17, rascunho, 17);                  // RAM[17] += RAM[0]
 
         //  (M[6] * M[8] * M[13])
-        multPosicoesRAM(ram, cpu, 6, 8, rascunho);   // RAM[0] = M[6] * M[8]
+        multPosicoesRAM(ram, cpu, 6, 8, rascunho);         // RAM[0] = M[6] * M[8]
         multPosicoesRAM(ram, cpu, rascunho, 13, rascunho); // RAM[0] = RAM[0] * M[13]
-        Soma(ram, cpu, 17, rascunho, 17);            // RAM[17] += RAM[0]
+        Soma(ram, cpu, 17, rascunho, 17);                  // RAM[17] += RAM[0]
 
         Subtrai(ram, cpu, 16, 17, 15); // RAM[15] = RAM[16] - RAM[17]
     }
@@ -1195,13 +1230,14 @@ void determinante(RAM *ram, CPU *cpu){
     printf("O determinante e: %d", pegarResultado(ram, cpu, 0));
 }
 
-void programaGrausRadianos(RAM *ram, CPU *cpu, int graus){
-    
+void programaGrausRadianos(RAM *ram, CPU *cpu, int graus)
+{
+
     /*
     0 - resultado
     5 - graus
 
-    
+
     */
 
     reinicializarRAM(ram, 6);
@@ -1214,18 +1250,17 @@ void programaGrausRadianos(RAM *ram, CPU *cpu, int graus){
 
     printf("Valor: %d", pegarDiv(ram, cpu));
     colocarNaRam(ram, cpu, 0, pegarDiv(ram, cpu));
-
 }
 
-
-void calcSeno(RAM *ram, CPU *cpu, int x){
-    //Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
-    // 4/Pi e 4/Pi^2
-    //programaDiv(ram, cpu, 4, PI);
-    //int div1 = pegarDiv(ram, cpu); // 4/Pi
-    //programaPotencia(ram, cpu, PI, 2); // Pi^2
-    //programaDiv(ram, cpu, 4, pegarMult(ram, cpu)); // 4/Pi^2
-    //int div2 = pegarDiv(ram, cpu);
+void calcSeno(RAM *ram, CPU *cpu, int x)
+{
+    // Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
+    //  4/Pi e 4/Pi^2
+    // programaDiv(ram, cpu, 4, PI);
+    // int div1 = pegarDiv(ram, cpu); // 4/Pi
+    // programaPotencia(ram, cpu, PI, 2); // Pi^2
+    // programaDiv(ram, cpu, 4, pegarMult(ram, cpu)); // 4/Pi^2
+    // int div2 = pegarDiv(ram, cpu);
 
     reinicializarRAM(ram, 10);
 
@@ -1233,28 +1268,30 @@ void calcSeno(RAM *ram, CPU *cpu, int x){
 
     int produto1 = abs(pegarMult(ram, cpu));
     // consertar base
-    programaDiv(ram, cpu,produto1,1000);
+    programaDiv(ram, cpu, produto1, 1000);
 
-    produto1 = pegarDiv(ram,cpu);
-    
-    programaRestoDiv(ram,cpu,produto1,1000);
-    
-    int resto = pegarResultado(ram,cpu,0);
+    produto1 = pegarDiv(ram, cpu);
 
-    printf("resto é %d\n",resto);
+    programaRestoDiv(ram, cpu, produto1, 1000);
 
-    if(resto > 500){ 
-        programaIncremento(ram,cpu,produto1);
-        produto1 = pegarResultado(ram,cpu,0);
+    int resto = pegarResultado(ram, cpu, 0);
+
+    printf("resto é %d\n", resto);
+
+    if (resto > 500)
+    {
+        programaIncremento(ram, cpu, produto1);
+        produto1 = pegarResultado(ram, cpu, 0);
     }
-    else if(resto == 272){
-        programaIncremento(ram,cpu,produto1);
-        produto1 = pegarResultado(ram,cpu,0);
+    else if (resto == 272)
+    {
+        programaIncremento(ram, cpu, produto1);
+        produto1 = pegarResultado(ram, cpu, 0);
     }
 
     reinicializarRAM(ram, 5);
 
-   //Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
+    // Calculo =  x . (4/Pi(1273) - (4/Pi^2(405) . |X|))   tudo base mill
     /*
     1 - resultado
     3 - div1
@@ -1265,22 +1302,23 @@ void calcSeno(RAM *ram, CPU *cpu, int x){
     colocarNaRam(ram, cpu, 4, produto1);
 
     Subtrai(ram, cpu, 3, 4, 5);
-   
+
     programaMult(ram, cpu, pegarResultado(ram, cpu, 5), x);
 
     int produto2 = pegarMult(ram, cpu);
-    programaDiv(ram,cpu,produto2,1000);
+    programaDiv(ram, cpu, produto2, 1000);
 
-    programaDivFloat2(ram,cpu,pegarDiv(ram, cpu),1000);
+    programaDivFloat2(ram, cpu, pegarDiv(ram, cpu), 1000);
 
     int resultado_int = pegarResultado(ram, cpu, 1);
-    int resultado_dec = pegarResultado(ram, cpu, 0); 
-    
-    printf("Resultado aproximado do Seno  e: %d.%02d\n", 
-             resultado_int, abs(resultado_dec));
+    int resultado_dec = pegarResultado(ram, cpu, 0);
+
+    printf("Resultado aproximado do Seno  e: %d.%02d\n",
+           resultado_int, abs(resultado_dec));
 }
-void calCosseno(RAM *ram, CPU *cpu, int x){
-    
+void calCosseno(RAM *ram, CPU *cpu, int x)
+{
+
     /*
     0 - resultado
     1 - x
@@ -1288,24 +1326,23 @@ void calCosseno(RAM *ram, CPU *cpu, int x){
     3 - soma
     */
 
-   // Cos(X) = sen(x + Pi/2)
+    // Cos(X) = sen(x + Pi/2)
     programaDiv(ram, cpu, PI, 2);
     int div1 = pegarDiv(ram, cpu);
     reinicializarRAM(ram, 4);
 
     colocarNaRam(ram, cpu, 1, x);
     colocarNaRam(ram, cpu, 2, div1);
-    
+
     Soma(ram, cpu, 1, 2, 3);
     calcSeno(ram, cpu, pegarResultado(ram, cpu, 3));
 
     colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 1));
     printf("Valor do cosseno: %d", pegarResultado(ram, cpu, 0));
-
 }
 
-
-void programaModulo(RAM *ram, CPU *cpu, int num){
+void programaModulo(RAM *ram, CPU *cpu, int num)
+{
 
     /*
     0 - resultado
@@ -1314,36 +1351,34 @@ void programaModulo(RAM *ram, CPU *cpu, int num){
     3 - 1
     */
 
-
     reinicializarRAM(ram, 10);
-    if(num >= 0){
+    if (num >= 0)
+    {
         colocarNaRam(ram, cpu, 0, num);
-    }else{
+    }
+    else
+    {
 
         int count = 0;
         colocarNaRam(ram, cpu, 5, num);
         colocarNaRam(ram, cpu, 4, count);
         colocarNaRam(ram, cpu, 3, 1);
 
-        while(pegarResultado(ram, cpu, 5) < 0){
+        while (pegarResultado(ram, cpu, 5) < 0)
+        {
             Soma(ram, cpu, 5, 3, 5); // somando x++
             Soma(ram, cpu, 4, 3, 4); // aumentando o contador
-        }   
-        
+        }
+
         colocarNaRam(ram, cpu, 0, pegarResultado(ram, cpu, 4));
-
-
     }
 
     printf("\nValor do módulo: %d", pegarResultado(ram, cpu, 0));
-
 }
-
-
 
 void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
 {
-    int b_positivo = abs(b); 
+    int b_positivo = abs(b);
     programaPotencia(ram, cpu, b_positivo, 2);
 
     int b2 = pegarMult(ram, cpu);
@@ -1363,7 +1398,7 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
 
     programaRaizQuadrada(ram, cpu, delta);
     int raiz_delta = pegarResultado(ram, cpu, 2);
-    
+
     // Verificação de segurança para raízes não-inteiras
     if (raiz_delta * raiz_delta != delta)
     {
@@ -1372,7 +1407,7 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
     }
 
     programaMult(ram, cpu, 2, a);
- 
+
     int denominador = pegarMult(ram, cpu);
 
     if (denominador == 0)
@@ -1395,21 +1430,19 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
     // RAM[8] = inteiro x2
     // RAM[9] = decimal x2
 
-
     // 1. Carregar valores na RAM
     colocarNaRam(ram, cpu, 0, 0);
     colocarNaRam(ram, cpu, 1, b);
     colocarNaRam(ram, cpu, 2, raiz_delta);
 
-    //  Calcular -b 
+    //  Calcular -b
     Subtrai(ram, cpu, 0, 1, 3); // RAM[3] = RAM[0] - RAM[1]
 
-    //Calcular num1 (RAM[4] = -b + raiz_delta)
+    // Calcular num1 (RAM[4] = -b + raiz_delta)
     Soma(ram, cpu, 3, 2, 4); // RAM[4] = RAM[3] + RAM[2]
 
-    //Calcular num2 (RAM[5] = -b - raiz_delta)
+    // Calcular num2 (RAM[5] = -b - raiz_delta)
     Subtrai(ram, cpu, 3, 2, 5); // RAM[5] = RAM[3] - RAM[2]
-
 
     int num1 = pegarResultado(ram, cpu, 4);
     int num2 = pegarResultado(ram, cpu, 5);
@@ -1422,7 +1455,7 @@ void programaBhaskara(RAM *ram, CPU *cpu, int a, int b, int c)
     int x2Int = pegarResultado(ram, cpu, 1);
     int x2Dec = abs(pegarResultado(ram, cpu, 0));
 
-    printf("As raizes sao: x1 = %d.%02d e x2 = %d.%02d\n", x1Int,x1Dec,x2Int,x2Dec);
+    printf("As raizes sao: x1 = %d.%02d e x2 = %d.%02d\n", x1Int, x1Dec, x2Int, x2Dec);
 }
 
 void programaPrimo(RAM *ram, CPU *cpu, int n)
@@ -1434,7 +1467,7 @@ void programaPrimo(RAM *ram, CPU *cpu, int n)
     }
     if (n <= 3)
     {
-        printf("%d e primo.\n", n); 
+        printf("%d e primo.\n", n);
         return;
     }
 
@@ -1445,7 +1478,7 @@ void programaPrimo(RAM *ram, CPU *cpu, int n)
     for (int i = 2; i <= limite; i++)
     {
         programaRestoDiv(ram, cpu, n, i);
-        
+
         int resto = pegarResultado(ram, cpu, 0);
 
         if (resto == 0)
@@ -1458,16 +1491,16 @@ void programaPrimo(RAM *ram, CPU *cpu, int n)
     printf("%d e primo.\n", n);
 }
 
-void programaIncremento(RAM *ram, CPU *cpu, int n){
-    
-    colocarNaRam(ram,cpu,1,1);
-    colocarNaRam(ram,cpu,0,n);
-    Soma(ram,cpu,0,1,0);
+void programaIncremento(RAM *ram, CPU *cpu, int n)
+{
 
-    int result = pegarResultado(ram,cpu,0);
+    colocarNaRam(ram, cpu, 1, 1);
+    colocarNaRam(ram, cpu, 0, n);
+    Soma(ram, cpu, 0, 1, 0);
 
-    printf("O resultado é %d\n",result);
+    int result = pegarResultado(ram, cpu, 0);
 
+    printf("O resultado é %d\n", result);
 }
 
 void programaDecremento(RAM *ram, CPU *cpu, int n)
@@ -1484,9 +1517,9 @@ void programaDecremento(RAM *ram, CPU *cpu, int n)
 
 void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem)
 {
-   
+
     programaMult(ram, cpu, valor, porcentagem);
-    int produto = pegarMult(ram, cpu); // 
+    int produto = pegarMult(ram, cpu); //
 
     programaDivFloat2(ram, cpu, produto, 100);
 
@@ -1496,49 +1529,52 @@ void programaPorcentagem(RAM *ram, CPU *cpu, int valor, int porcentagem)
     printf("O resultado e: %d.%02d\n", parte_inteira, abs(parte_decimal));
 }
 
-void programaCPF(RAM *ram, CPU *cpu, char *cpf) {
-    
+void programaCPF(RAM *ram, CPU *cpu, char *cpf)
+{
 
-    if (strlen(cpf) != 11) {
+    if (strlen(cpf) != 11)
+    {
         printf("CPF INVALIDO: Deve ter 11 digitos.\n");
         return;
     }
-    
+
     int digitos[11];
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 11; i++)
+    {
         digitos[i] = charParaInt(cpf[i]);
     }
-    
 
     int digito1Total = 0;
     int peso = 10;
-    
-    for (int i = 0; i < 9; i++) {
+
+    for (int i = 0; i < 9; i++)
+    {
 
         programaMult(ram, cpu, digitos[i], peso);
         int produto = pegarMult(ram, cpu);
-        
+
         colocarNaRam(ram, cpu, 0, digito1Total);
         colocarNaRam(ram, cpu, 1, produto);
 
         Soma(ram, cpu, 0, 1, 0);
 
-        digito1Total = pegarResultado(ram,cpu,0);
+        digito1Total = pegarResultado(ram, cpu, 0);
 
-        programaDecremento(ram, cpu, peso); 
+        programaDecremento(ram, cpu, peso);
 
-        peso = pegarResultado(ram, cpu, 0); 
+        peso = pegarResultado(ram, cpu, 0);
     }
-    
 
     programaRestoDiv(ram, cpu, digito1Total, 11);
     int resto1 = pegarResultado(ram, cpu, 0);
-    
 
     int digito1;
-    if (resto1 < 2) {
+    if (resto1 < 2)
+    {
         digito1 = 0;
-    } else {
+    }
+    else
+    {
         colocarNaRam(ram, cpu, 0, 11);
 
         colocarNaRam(ram, cpu, 1, resto1);
@@ -1548,42 +1584,47 @@ void programaCPF(RAM *ram, CPU *cpu, char *cpf) {
         digito1 = pegarResultado(ram, cpu, 2);
     }
 
-    
     int digito2Total = 0;
-    peso = 11; 
-    
-    for (int i = 0; i < 10; i++) { 
+    peso = 11;
+
+    for (int i = 0; i < 10; i++)
+    {
         int digito_atual;
-        
-        if (i < 9) {
-            digito_atual = digitos[i]; 
-        } else {
-            digito_atual = digito1; 
+
+        if (i < 9)
+        {
+            digito_atual = digitos[i];
         }
-        
+        else
+        {
+            digito_atual = digito1;
+        }
+
         programaMult(ram, cpu, digito_atual, peso);
         int produto = pegarMult(ram, cpu);
-        
+
         colocarNaRam(ram, cpu, 0, digito2Total);
         colocarNaRam(ram, cpu, 1, produto);
 
         Soma(ram, cpu, 0, 1, 0);
 
-        digito2Total = pegarResultado(ram,cpu,0);
+        digito2Total = pegarResultado(ram, cpu, 0);
 
-        programaDecremento(ram, cpu, peso); 
+        programaDecremento(ram, cpu, peso);
 
-        peso = pegarResultado(ram, cpu, 0); 
+        peso = pegarResultado(ram, cpu, 0);
     }
-    
+
     programaRestoDiv(ram, cpu, digito2Total, 11);
     int resto2 = pegarResultado(ram, cpu, 0);
-    
 
     int digito2;
-    if (resto2 < 2) {
+    if (resto2 < 2)
+    {
         digito2 = 0;
-    } else {
+    }
+    else
+    {
         colocarNaRam(ram, cpu, 0, 11);
 
         colocarNaRam(ram, cpu, 1, resto2);
@@ -1592,14 +1633,16 @@ void programaCPF(RAM *ram, CPU *cpu, char *cpf) {
 
         digito2 = pegarResultado(ram, cpu, 2);
     }
-    
 
-    int digito1V = digitos[9]; 
-    int digito2V = digitos[10]; 
-    
-    if (digito1 == digito1V && digito2 == digito2V) {
+    int digito1V = digitos[9];
+    int digito2V = digitos[10];
+
+    if (digito1 == digito1V && digito2 == digito2V)
+    {
         printf("CPF VALIDACAO: O CPF %s E VALIDO.\n", cpf);
-    } else {
+    }
+    else
+    {
         printf("CPF VALIDACAO: O CPF %s E INVALIDO.\n", cpf);
         printf("Digitos Verificadores Corretos Seriam: %d%d\n", digito1, digito2);
     }
