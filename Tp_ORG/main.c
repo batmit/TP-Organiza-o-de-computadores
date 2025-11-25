@@ -55,7 +55,8 @@ int main()
     // programaFibonacci(r, c, 0);
     // programaMultMatriz(r, c, 3)
     // programaIMC(r, c, 80, 177);
-    // fazer taxa metabolica basal
+    // programaTMB(r, c, 52, 160, 18, 2); // Mulher
+    // programaTMB(r, c, 60, 170, 19, 1); // Homem
 
     // programaModulo(r, c, -100);
     // calcSeno(r, c, 3142); / legal pra kct
@@ -72,7 +73,7 @@ int main()
 
     destroiRAM(r);
     destroiCPU(c);
-    printf("\n\nEXECUÇÃO ENCERRADA !!!\n\n");
+    printf("\n\nEXECUÇÃO ENCERRADA !!!\n");
 
     return 0;
 }

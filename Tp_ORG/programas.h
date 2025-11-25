@@ -52,6 +52,7 @@ void programaPotencia(RAM *ram, CPU *cpu, int base, int expoente);
 void programaFibonacci(RAM *ram, CPU *cpu, int n);
 void programaMultMatriz(RAM *ram, CPU *cpu, int N);
 void programaIMC(RAM *ram, CPU *cpu, int peso, int altura);
+void programaTMB(RAM *ram, CPU *cpu, int peso, int altura, int idade, int genero);
 
 // Daniel
 void programaPG(RAM *ram, CPU *cpu, int firstValue, int razao, int numValues);

@@ -986,6 +986,75 @@ void programaIMC(RAM *ram, CPU *cpu, int peso, int altura) // usando apenas nume
     }
 }
 
+void programaTMB(RAM *ram, CPU *cpu, int peso, int altura, int idade, int genero)
+{
+    printf("Calculo de Taxa Metabolica Basal (TMB)\n");
+    char *sGenero = (genero == 1) ? "Homem" : "Mulher"; // if/else com operador ternario pra definir o genero
+    printf("Dados: %s | %dkg | %dcm | %d anos\n", sGenero, peso, altura, idade);
+
+    int fator_base, fator_peso, fator_altura, fator_idade;
+
+    // constantes definidas por genero x10
+    if (genero == 1)
+    { // Homem
+        fator_base = 884;
+        fator_peso = 134;
+        fator_altura = 48;
+        fator_idade = 57;
+    }
+    else
+    { // Mulher
+        fator_base = 4476;
+        fator_peso = 92;
+        fator_altura = 31;
+        fator_idade = 43;
+    }
+
+    // Calcular peso
+    printf("Simulando termo peso...\n");
+    programaMult(ram, cpu, peso, fator_peso);
+    int termo_peso = pegarMult(ram, cpu);
+
+    // Calcular altura
+    printf("Simulando termo altura...\n");
+    programaMult(ram, cpu, altura, fator_altura);
+    int termo_altura = pegarMult(ram, cpu);
+
+    // Calcular idade
+    printf("Simulando termo idade...\n");
+    programaMult(ram, cpu, idade, fator_idade);
+    int termo_idade = pegarMult(ram, cpu);
+
+    // Soma e Subtração Final
+    // RAM[0] = Acumulador
+    // RAM[1] = Temporário para operação
+
+    reinicializarRAM(ram, 5);
+
+    colocarNaRam(ram, cpu, 0, fator_base); // coloca a base na RAM[0]
+
+    // (Base + TermoPeso)
+    colocarNaRam(ram, cpu, 1, termo_peso);
+    Soma(ram, cpu, 0, 1, 0);
+
+    // ((Base + TermoPeso) + TermoAltura)
+    colocarNaRam(ram, cpu, 1, termo_altura);
+    Soma(ram, cpu, 0, 1, 0);
+
+    // (Total - TermoIdade)
+    colocarNaRam(ram, cpu, 1, termo_idade);
+    Subtrai(ram, cpu, 0, 1, 0);
+
+    // Pegamos o resultado parcial na RAM[0]
+    int resultado = pegarResultado(ram, cpu, 0);
+
+    // Fazemos a divisão por 10 pra chegar ao resultado final
+    programaDiv(ram, cpu, resultado, 10);
+    resultado = pegarDiv(ram, cpu);
+
+    printf("Sua TMB: %d Kcal/dia\n", resultado);
+}
+
 // Daniel
 
 void programaMdc(RAM *ram, CPU *cpu, int a, int b)
