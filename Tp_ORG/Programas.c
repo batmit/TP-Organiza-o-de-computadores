@@ -988,6 +988,16 @@ void programaIMC(RAM *ram, CPU *cpu, int peso, int altura) // usando apenas nume
 
 void programaTMB(RAM *ram, CPU *cpu, int peso, int altura, int idade, int genero)
 {
+    /*
+     *  HOMENS
+     * Original: TMB = 88.36 + (13.4 * Peso) + (4.8 * Altura) - (5.7 * Idade)
+     * Adaptada: 10*TMB = 884 + (134 * Peso) + (48 * Altura) - (57 * Idade)
+     *  MULHERES
+     * Original: TMB = 447.6 + (9.2 * Peso) + (3.1 * Altura) - (4.3 * Idade)
+     * Adaptada: 10*TMB = 4476 + (92 * Peso) + (31 * Altura) - (43 * Idade)
+     * * O resultado final do acumulador é dividido por 10 para retornar à escala original.
+     */
+
     printf("Calculo de Taxa Metabolica Basal (TMB)\n");
     char *sGenero = (genero == 1) ? "Homem" : "Mulher"; // if/else com operador ternario pra definir o genero
     printf("Dados: %s | %dkg | %dcm | %d anos\n", sGenero, peso, altura, idade);
