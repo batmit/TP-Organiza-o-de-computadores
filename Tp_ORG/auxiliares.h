@@ -1,8 +1,9 @@
 #ifndef AUXILIARES_H
 #define AUXILIARES_H
 
+#include "ram.h"
+
 typedef struct cpu CPU;
-typedef struct ram RAM;
 
 typedef struct
 {

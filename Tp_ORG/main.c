@@ -71,6 +71,9 @@ int main()
     // programaGrausRadianos(r, c, 135);
     // determinante(r , c);
 
+    imprimirCaches(r);
+    imprimirRAM(r);
+
     destroiRAM(r);
     destroiCPU(c);
     printf("\n\nEXECUÇÃO ENCERRADA !!!\n");
