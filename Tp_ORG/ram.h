@@ -4,7 +4,7 @@
 // RAM
 #define TAM_RAM 50 // tamanho da RAM
 
-// CASH
+// CACHE
 #define TAM_L1 4
 #define TAM_L2 8
 #define TAM_L3 16

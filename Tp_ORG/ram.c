@@ -32,53 +32,118 @@ void iniciarCache(CacheLine *cache, int tamanho)
     }
 }
 
-void atualizarCacheLRU(CacheLine *cache, int tamCache, int endereco, int valor, long tempoAtual)
+// rebaixa a informacao da cache 2 pra 3 e passa da 3 pra ram caso a 3 esteja cheia
+void rebaixarParaL3(RAM *r, int endereco, int valor, long tempoOriginal)
 {
-
-    for (int i = 0; i < tamCache; i++) // procura o endereço por toda a cash
+    for (int i = 0; i < TAM_L3; i++) // percorre toda a cache 3
     {
-        if (cache[i].valido && cache[i].tag == endereco) // caso encontre
+        if (!r->cacheL3[i].valido) // verifica se esta ocupado
         {
-            cache[i].dado = valor;              // atualiza o valor
-            cache[i].ultimoAcesso = tempoAtual; // atualiza o tempo
+            r->cacheL3[i].tag = endereco;
+            r->cacheL3[i].dado = valor;
+            r->cacheL3[i].valido = 1;
+            r->cacheL3[i].ultimoAcesso = tempoOriginal; // guarda o tempo do ultimo acesso a celula
+            return;                                     // retorna apos preencher
+        }
+    }
+
+    // no caso de a cache 2 estar cheia
+    int id_vitima = 0;                            // celula a ser mandada pra cache 3
+    long menorTempo = r->cacheL3[0].ultimoAcesso; // pra procuar a que foi acessada a mais tempo
+
+    for (int i = 1; i < TAM_L3; i++) // percorre toda a cache 3
+    {
+        if (r->cacheL3[i].ultimoAcesso < menorTempo)
+        {
+            menorTempo = r->cacheL3[i].ultimoAcesso;
+            id_vitima = i; // a vitima passa a ser a memoria acessada a mais tempo
+        }
+    }
+
+    r->mem[r->cacheL3[id_vitima].tag] = r->cacheL3[id_vitima].dado; // a vitima eh enviada de volta pra ram
+
+    // coloca o novo dado na celula vazia (id_vitima)
+    r->cacheL3[id_vitima].tag = endereco;
+    r->cacheL3[id_vitima].dado = valor;
+    r->cacheL3[id_vitima].valido = 1;
+    r->cacheL3[id_vitima].ultimoAcesso = tempoOriginal;
+}
+
+void rebaixarParaL2(RAM *r, int endereco, int valor, long tempoOriginal) // passa da cache 1 pra 2
+{
+    for (int i = 0; i < TAM_L2; i++) // verifica se a 2 esta cheia
+    {
+        if (!r->cacheL2[i].valido) // se encontrar espaço preenche e retorna
+        {
+            r->cacheL2[i].tag = endereco;
+            r->cacheL2[i].dado = valor;
+            r->cacheL2[i].valido = 1;
+            r->cacheL2[i].ultimoAcesso = tempoOriginal;
             return;
         }
     }
 
-    // caso nao encontre na cash
-    for (int i = 0; i < tamCache; i++) // procura pela cash toda
+    // se estiver cheia procura a memoria(lru) e passa pra cache 3
+    int id_vitima = 0;
+    long menorTempo = r->cacheL2[0].ultimoAcesso;
+
+    for (int i = 1; i < TAM_L2; i++) // procura a vitima
     {
-        if (!cache[i].valido) // procura um enderco vazio
+        if (r->cacheL2[i].ultimoAcesso < menorTempo)
         {
-            // preenche com os dados
-            cache[i].tag = endereco;
-            cache[i].dado = valor;
-            cache[i].valido = 1;
-            cache[i].ultimoAcesso = tempoAtual;
+            menorTempo = r->cacheL2[i].ultimoAcesso;
+            id_vitima = i;
+        }
+    }
+
+    // move pra cache 3
+    rebaixarParaL3(r, r->cacheL2[id_vitima].tag, r->cacheL2[id_vitima].dado, r->cacheL2[id_vitima].ultimoAcesso);
+
+    // Ocupa a vaga na cache 2
+    r->cacheL2[id_vitima].tag = endereco;
+    r->cacheL2[id_vitima].dado = valor;
+    r->cacheL2[id_vitima].valido = 1;
+    r->cacheL2[id_vitima].ultimoAcesso = tempoOriginal;
+}
+
+void promoverParaL1(RAM *r, int endereco, int valor)
+{
+    r->relogioGlobal++; // atualiza o contador de tempo
+
+    // verifica se a cache 1 esta cheia
+    for (int i = 0; i < TAM_L1; i++)
+    {
+        if (!r->cacheL1[i].valido) // se tiver espaco preenche
+        {
+            r->cacheL1[i].tag = endereco;
+            r->cacheL1[i].dado = valor;
+            r->cacheL1[i].valido = 1;
+            r->cacheL1[i].ultimoAcesso = r->relogioGlobal;
             return;
         }
     }
 
-    // caso nao encontre o item e nao tenha mais espaco
+    // se estiver cheia procura uma vitima
+    int id_vitima = 0;
+    long menorTempo = r->cacheL1[0].ultimoAcesso;
 
-    int id_vitima = 0;                       // item que sera sobreescrito
-    long menorTempo = cache[0].ultimoAcesso; // guarda o tempo de acesso da primeira posição da cash
-
-    for (int i = 1; i < tamCache; i++) // percorre a cash toda
+    for (int i = 1; i < TAM_L1; i++) // encontra a (lru)
     {
-        if (cache[i].ultimoAcesso < menorTempo) // se encontrar um item que foi acessado a mais tempo
+        if (r->cacheL1[i].ultimoAcesso < menorTempo)
         {
-            menorTempo = cache[i].ultimoAcesso; // atualiza o menor tempo
-            id_vitima = i;                      // marca como item a ser sobreescrito
+            menorTempo = r->cacheL1[i].ultimoAcesso;
+            id_vitima = i;
         }
     }
 
-    // substitui o item que foi usado a mais tempo
+    // move pra cache 2
+    rebaixarParaL2(r, r->cacheL1[id_vitima].tag, r->cacheL1[id_vitima].dado, r->cacheL1[id_vitima].ultimoAcesso);
 
-    cache[id_vitima].tag = endereco;
-    cache[id_vitima].dado = valor;
-    cache[id_vitima].valido = 1;
-    cache[id_vitima].ultimoAcesso = tempoAtual;
+    // preenche a cache 1
+    r->cacheL1[id_vitima].tag = endereco;
+    r->cacheL1[id_vitima].dado = valor;
+    r->cacheL1[id_vitima].valido = 1;
+    r->cacheL1[id_vitima].ultimoAcesso = r->relogioGlobal;
 }
 
 RAM *criarRAM(int tam)
@@ -99,7 +164,7 @@ RAM *criarRAM(int tam)
     r->tamanho = tam;
     r->relogioGlobal = 0; // inicia o tempo
 
-    // alocacao de memoria das cash
+    // alocacao de memoria das cache
     r->cacheL1 = (CacheLine *)malloc(TAM_L1 * sizeof(CacheLine));
     r->cacheL2 = (CacheLine *)malloc(TAM_L2 * sizeof(CacheLine));
     r->cacheL3 = (CacheLine *)malloc(TAM_L3 * sizeof(CacheLine));
@@ -110,7 +175,7 @@ RAM *criarRAM(int tam)
         exit(1);
     }
 
-    // inicia todas as "linhas" das cash
+    // inicia todas as "linhas" das cache
     iniciarCache(r->cacheL1, TAM_L1);
     iniciarCache(r->cacheL2, TAM_L2);
     iniciarCache(r->cacheL3, TAM_L3);
@@ -181,71 +246,95 @@ int getDado(RAM *r, int endereco)
     if (endereco < 0 || endereco >= r->tamanho) // caso o endereco for invalido
         return 0;
 
-    r->relogioGlobal++; // o tempo global atualiza
-
-    for (int i = 0; i < TAM_L1; i++) // procura em toda a cash 1
+    for (int i = 0; i < TAM_L1; i++) // procura em toda a cache 1
     {
         if (r->cacheL1[i].valido && r->cacheL1[i].tag == endereco) // se o endereco nao for vazio e tiver a tag correta
         {
             r->hitsL1++;
+            r->relogioGlobal++;                            // aumenta o relogio global
             r->cacheL1[i].ultimoAcesso = r->relogioGlobal; // atualiza o tempo do ultimo acesso
             return r->cacheL1[i].dado;
         }
     }
 
-    for (int i = 0; i < TAM_L2; i++) // caso nao encontre na cash 1 procura na 2
+    for (int i = 0; i < TAM_L2; i++) // caso nao encontre na cache 1 procura na 2
     {
         if (r->cacheL2[i].valido && r->cacheL2[i].tag == endereco)
         {
             r->hitsL2++;
             int val = r->cacheL2[i].dado;
-            r->cacheL2[i].ultimoAcesso = r->relogioGlobal;
+            r->cacheL2[i].valido = 0;
 
-            atualizarCacheLRU(r->cacheL1, TAM_L1, endereco, val, r->relogioGlobal); // atualiza a cash 1
+            promoverParaL1(r, endereco, val);
+
             return val;
         }
     }
 
-    for (int i = 0; i < TAM_L3; i++) // caso nao encontre na cash 2 procura na 3
+    for (int i = 0; i < TAM_L3; i++) // caso nao encontre na cache 2 procura na 3
     {
         if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco)
         {
             r->hitsL3++;
             int val = r->cacheL3[i].dado;
-            r->cacheL3[i].ultimoAcesso = r->relogioGlobal;
+            r->cacheL3[i].valido = 0;
 
-            // atualiza as duas outras cash
-            atualizarCacheLRU(r->cacheL2, TAM_L2, endereco, val, r->relogioGlobal);
-            atualizarCacheLRU(r->cacheL1, TAM_L1, endereco, val, r->relogioGlobal);
+            promoverParaL1(r, endereco, val);
+
             return val;
         }
     }
 
-    // se nao encontrar na cash
+    // se nao encontrar na cache
     r->missRAM++;
     int val = r->mem[endereco];
 
-    // atualiza as 3 cash
-    atualizarCacheLRU(r->cacheL3, TAM_L3, endereco, val, r->relogioGlobal);
-    atualizarCacheLRU(r->cacheL2, TAM_L2, endereco, val, r->relogioGlobal);
-    atualizarCacheLRU(r->cacheL1, TAM_L1, endereco, val, r->relogioGlobal);
+    r->mem[endereco] = 0; // apaga da ram
+    promoverParaL1(r, endereco, val);
 
     return val;
 }
 
-void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e nas cash
+void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e nas cache
 {
-    if (endereco < 0 || endereco >= r->tamanho) // endereco invalido
+    if (endereco < 0 || endereco >= r->tamanho) // verifica se o endereco eh valido
         return;
 
-    r->relogioGlobal++; // atualiza contador de tempo
+    for (int i = 0; i < TAM_L1; i++) // procura na cache 1
+    {
+        if (r->cacheL1[i].valido && r->cacheL1[i].tag == endereco) // se achar preenche
+        {
+            r->cacheL1[i].dado = conteudo;
+            r->relogioGlobal++;
+            r->cacheL1[i].ultimoAcesso = r->relogioGlobal;
 
-    r->mem[endereco] = conteudo; // adiciona na ram
+            return;
+        }
+    }
 
-    // atualiza as 3 cash
-    atualizarCacheLRU(r->cacheL1, TAM_L1, endereco, conteudo, r->relogioGlobal);
-    atualizarCacheLRU(r->cacheL2, TAM_L2, endereco, conteudo, r->relogioGlobal);
-    atualizarCacheLRU(r->cacheL3, TAM_L3, endereco, conteudo, r->relogioGlobal);
+    for (int i = 0; i < TAM_L2; i++) // procura na cache 2
+    {
+        if (r->cacheL2[i].valido && r->cacheL2[i].tag == endereco)
+        {
+            r->cacheL2[i].valido = 0; // remove da L2
+            promoverParaL1(r, endereco, conteudo);
+
+            return;
+        }
+    }
+
+    for (int i = 0; i < TAM_L3; i++) // procura na cache 3
+    {
+        if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco)
+        {
+            r->cacheL3[i].valido = 0; // remove da L3
+            promoverParaL1(r, endereco, conteudo);
+
+            return;
+        }
+    }
+
+    promoverParaL1(r, endereco, conteudo);
 }
 
 void imprimirRAM(RAM *r)
@@ -283,7 +372,7 @@ void imprimirCaches(RAM *r)
 }
 
 void destroiRAM(RAM *r)
-{ // desalloca a memoria da ram e das cash
+{ // desalloca a memoria da ram e das cache
     free(r->mem);
     free(r->cacheL1);
     free(r->cacheL2);

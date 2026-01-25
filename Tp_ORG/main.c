@@ -56,7 +56,7 @@ int main()
     // programaMultMatriz(r, c, 3)
     // programaIMC(r, c, 80, 177);
     // programaTMB(r, c, 52, 160, 18, 2); // Mulher
-    // programaTMB(r, c, 60, 170, 19, 1); // Homem
+    // programaTMB(r, c, 70, 184, 18, 1); // Homem
 
     // programaModulo(r, c, -100);
     // calcSeno(r, c, 3142); / legal pra kct
