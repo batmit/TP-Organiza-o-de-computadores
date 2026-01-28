@@ -172,7 +172,6 @@ RAM *criarRAM(int tam)
     if (!r->cacheL1 || !r->cacheL2 || !r->cacheL3)
     {
         printf("ERRO: Falha ao alocar Caches\n");
-        exit(1);
     }
 
     // inicia todas as "linhas" das cache

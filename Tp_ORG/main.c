@@ -12,19 +12,19 @@ int main()
 
     srand(time(NULL));
 
-    RAM *r = criarRAM_vazia(50);
+    RAM *r = criarRAM_vazia(2000);
     CPU *c = criar_cpu();
 
     // programaAleatorio(r, c, 15);
-    // programaMult(r, c, 20, 5);
-    // programaDiv(r, c, 25, 3);
-    // programaFat(r, c, 4);
-    // programaSomaMatriz(r, c, 2);
-    // programaRaizQuadrada(r, c, 49);
-    // programaRaizCubica(r, c, 27);
-    // programaRaioEsfera(r, c, 108);
-    //  programaDivFloat2(r, c, 25, 3); // legal
-    // programaMMC(r, c, 15, 10);
+    //  programaMult(r, c, 20, 5);
+    //  programaDiv(r, c, 25, 3);
+    //  programaFat(r, c, 4);
+    //  programaSomaMatriz(r, c, 2);
+    //  programaRaizQuadrada(r, c, 49);
+    //  programaRaizCubica(r, c, 27);
+    //  programaRaioEsfera(r, c, 108);
+    //   programaDivFloat2(r, c, 25, 3); // legal
+    //  programaMMC(r, c, 15, 10);
 
     // programaBin_Dec(r, c, "1010");
     // programaDec_Bin(r, c, 5);
@@ -53,7 +53,7 @@ int main()
     // programaPA(r, c, 1, 2, 5);
     // programaPotencia(r, c, 3, 4);
     // programaFibonacci(r, c, 0);
-    // programaMultMatriz(r, c, 3)
+    // programaMultMatriz(r, c, 3);
     // programaIMC(r, c, 80, 177);
     // programaTMB(r, c, 52, 160, 18, 2); // Mulher
     // programaTMB(r, c, 70, 184, 18, 1); // Homem
@@ -70,6 +70,8 @@ int main()
     // programaMdc(r, c, 25, 60);
     // programaGrausRadianos(r, c, 135);
     // determinante(r , c);
+
+    // programaDoArquivo(r, c, "instructions2.txt");
 
     imprimirCaches(r);
     imprimirRAM(r);

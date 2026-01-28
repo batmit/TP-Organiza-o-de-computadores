@@ -65,4 +65,6 @@ void programaGrausRadianos(RAM *ram, CPU *cpu, int graus);
 void programaModulo(RAM *ram, CPU *cpu, int num);
 void calCosseno(RAM *ram, CPU *cpu, int x);
 
+void programaDoArquivo(RAM *ram, CPU *cpu, const char *nomeArquivo);
+
 #endif
