@@ -1,8 +1,10 @@
- - Gerador de funções
+Gerador de funções
 
-padrao dobro   quadruplo   oitoX
-21     43      8597       16737
-49    15939    8345         346
-16390  900     191          409
-3540  3038     2867        2508
+       |Padrao |Dobro |Quadruplo |Oito Vezes|
+Cache1 | 21    |43    |8597      |16737     |
+Cache2 | 49    |15939 |8345      |346       |
+Cache3 | 16390 |900   |191       |409       |
+RAM    | 3540  |3038  |2867      |2508      |
+
+
 

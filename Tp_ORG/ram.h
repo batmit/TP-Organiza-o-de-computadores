@@ -17,12 +17,20 @@ typedef struct
     int dado;          // valor guardado
     int valido;        // 0 = vazio, 1 = ocupado
     long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
+
 } CacheLine;
 
 RAM *criarRAM(int tam);
 RAM *criarRAM_vazia(int tam);
 RAM *criarRAM_aleatoria(int tam);
 void reinicializarRAM(RAM *r, int tam);
+
+//Cache
+void simularBuffer(RAM *r, CacheLine *Cache3, int id);
+int buscarNaRam(RAM *r, int endereco);
+void rebaixarParaL3(RAM *r, int endereco, int valor, long tempoOriginal);
+void rebaixarParaL2(RAM *r, int endereco, int valor, long tempoOriginal);
+void promoverParaL1(RAM *r, int endereco, int valor);
 
 void setDado(RAM *r, int endereco, int conteudo);
 int getDado(RAM *r, int endereco);
