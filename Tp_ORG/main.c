@@ -23,7 +23,7 @@ int main()
     //  programaRaizQuadrada(r, c, 49);
     //  programaRaizCubica(r, c, 27);
     //  programaRaioEsfera(r, c, 108);
-    //   programaDivFloat2(r, c, 25, 3); // legal
+    //  programaDivFloat2(r, c, 25, 3); // legal
     //  programaMMC(r, c, 15, 10);
 
     // programaBin_Dec(r, c, "1010");
@@ -56,7 +56,7 @@ int main()
     // programaMultMatriz(r, c, 3);
     // programaIMC(r, c, 80, 177);
     //programaTMB(r, c, 52, 160, 18, 2); // Mulher
-    // programaTMB(r, c, 70, 184, 18, 1); // Homem
+     programaTMB(r, c, 70, 184, 18, 1); // Homem
 
     // programaModulo(r, c, -100);
     // calcSeno(r, c, 3142); / legal pra kct
@@ -71,7 +71,7 @@ int main()
     // programaGrausRadianos(r, c, 135);
     // determinante(r , c);
 
-    programaDoArquivo(r, c, "instructions2.txt");
+    //programaDoArquivo(r, c, "instructions2.txt");
 
     imprimirCaches(r);
     imprimirRAM(r);

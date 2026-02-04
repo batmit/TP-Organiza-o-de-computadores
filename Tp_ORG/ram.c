@@ -153,7 +153,7 @@ void promoverParaL1(RAM *r, int endereco, int valor)
     {
         if (r->cacheL2[i].dado == valor)
         {
-            r->cacheL2[i].tag = r->cacheL1[id_vitima].dado;
+            r->cacheL2[i].tag = r->cacheL1[id_vitima].tag;
             r->cacheL2[i].dado = r->cacheL1[id_vitima].dado;
             r->cacheL2[i].valido = r->cacheL1[id_vitima].valido;
             r->cacheL2[i].ultimoAcesso = r->cacheL1[id_vitima].ultimoAcesso;
@@ -478,9 +478,12 @@ int buscarNaL1(RAM *r, int endereco)
             return r->cacheL1[i].dado;
         }
     }
-
+    
+    
     buscarNaL2(r, endereco);
-
+    
+    r->hitsL1--;
+    
     return buscarNaL1(r, endereco);
 }
 
@@ -498,9 +501,11 @@ void buscarNaL2(RAM *r, int endereco)
             return;
         }
     }
-
+    
     buscarNaL3(r, endereco);
-
+    
+    r->hitsL2--;
+    
     buscarNaL2(r, endereco);
 
     return;
@@ -523,6 +528,8 @@ void buscarNaL3(RAM *r, int endereco)
 
     buscarNaRam(r, endereco);
 
+    r->hitsL3--;
+    
     buscarNaL3(r, endereco);
 
     return;
@@ -535,7 +542,7 @@ void buscarNaRam(RAM *r, int endereco)
     int val = r->mem[endereco];
 
     promoverParaL3(r, endereco, val);
-    r->mem[endereco] = 0;
+    r->mem[endereco] = 0; 
 
     return;
 }
