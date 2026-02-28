@@ -402,6 +402,7 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
         }
     }
 
+    // se nao tiver na 1 ja chamo a função abaixo que vai mandar pra 1 independenetemnete de onde estiver
     buscarNaL1(r, endereco);
     for (int i = 0; i < TAM_L1; i++) // procura na cache 1
     {
@@ -498,6 +499,7 @@ void buscarNaL2(RAM *r, int endereco)
 
             int bloco = r->cacheL2[i].tagBloco;
 
+            //Movo todo o bloco para l1
             for(int j = 0; j < TAM_L2; j++){
 
                 if (r->cacheL2[j].tagBloco == bloco)
@@ -542,6 +544,7 @@ void buscarNaL3(RAM *r, int endereco)
 
             for(int j = 0; j < TAM_L3; j++){
 
+                // movo todo o bloco para a L2
                 if (r->cacheL3[j].tagBloco == bloco)
                 {
            
@@ -570,11 +573,7 @@ void buscarNaL3(RAM *r, int endereco)
 void buscarNaRam(RAM *r, int endereco)
 {
 
-    //endereço da ram
-    // 32 = 8 blocos
-    // 16 = bloco 1
-    // 0 a 31
-    // 0,1,2,3
+
     int bloco, resto;
 
     blocoTag(endereco,&resto,&bloco);
@@ -585,6 +584,7 @@ void buscarNaRam(RAM *r, int endereco)
 
 
     r->missRAM++;
+    //Descubro onde começa o bloco que vou promover para a l3
     int inicio = ((bloco -1) * 4) ;
     for(int i = inicio; i < inicio + 4; i++)
     {
@@ -604,6 +604,7 @@ void buscarNaRam(RAM *r, int endereco)
     return;
 }
 
+//Descobre em qual bloco está o endereço na RAM
 void blocoTag(int endereco, int *resto, int *bloco){
 
     
