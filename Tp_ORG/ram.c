@@ -24,12 +24,16 @@ struct ram
 
 void iniciarCache(CacheLine *cache, int tamanho)
 {
+    // 4 1 bloco
+    // 8 2 blocos
+    // 16 4 blocos
     for (int i = 0; i < tamanho; i++)
     {
         cache[i].tag = -1;         // inicia com endereco invalido da ram
         cache[i].dado = 0;         // inicia dados como 0
         cache[i].valido = 0;       // todos estao vazios
         cache[i].ultimoAcesso = 0; // o tempo de acesso de todos eh 0
+        cache[i].tagBloco = -1;
     }
 }
 
@@ -108,7 +112,7 @@ void rebaixarParaL2(RAM *r, int endereco, int valor, long tempoOriginal) // pass
     r->cacheL2[id_vitima].ultimoAcesso = tempoOriginal;
 }
 
-void promoverParaL1(RAM *r, int endereco, int valor)
+void promoverParaL1(RAM *r, int endereco, int valor, int tagBloco)
 {
     r->relogioGlobal++; // atualiza o contador de tempo
 
@@ -121,14 +125,16 @@ void promoverParaL1(RAM *r, int endereco, int valor)
             r->cacheL1[i].dado = valor;
             r->cacheL1[i].valido = 1;
             r->cacheL1[i].ultimoAcesso = r->relogioGlobal;
+            r->cacheL3[i].tagBloco = tagBloco;
             for (int j = 1; j < TAM_L2; j++)
             {
-                if (r->cacheL2[j].dado == valor)
+                if (r->cacheL2[j].tag == endereco)
                 {
                     r->cacheL2[j].tag = 0;
                     r->cacheL2[j].dado = 0;
                     r->cacheL2[j].valido = 0;
                     r->cacheL2[j].ultimoAcesso = 0;
+                    r->cacheL2[j].tagBloco = 0;
                 }
             }
             return;
@@ -157,6 +163,7 @@ void promoverParaL1(RAM *r, int endereco, int valor)
             r->cacheL2[i].dado = r->cacheL1[id_vitima].dado;
             r->cacheL2[i].valido = r->cacheL1[id_vitima].valido;
             r->cacheL2[i].ultimoAcesso = r->cacheL1[id_vitima].ultimoAcesso;
+            r->cacheL2[i].tagBloco = r->cacheL1[id_vitima].tagBloco;
         }
     }
 
@@ -165,9 +172,10 @@ void promoverParaL1(RAM *r, int endereco, int valor)
     r->cacheL1[id_vitima].dado = valor;
     r->cacheL1[id_vitima].valido = 1;
     r->cacheL1[id_vitima].ultimoAcesso = r->relogioGlobal;
+    r->cacheL2[id_vitima].tagBloco = tagBloco;
 }
 
-void promoverParaL2(RAM *r, int endereco, int valor)
+void promoverParaL2(RAM *r, int endereco, int valor, int tagBloco)
 {
     r->relogioGlobal++; // atualiza o contador de tempo
 
@@ -180,14 +188,16 @@ void promoverParaL2(RAM *r, int endereco, int valor)
             r->cacheL2[i].dado = valor;
             r->cacheL2[i].valido = 1;
             r->cacheL2[i].ultimoAcesso = r->relogioGlobal;
+            r->cacheL3[i].tagBloco = tagBloco;
             for (int j = 1; j < TAM_L3; j++) // encontra a (lru)
             {
-                if (r->cacheL3[j].dado == valor)
+                if (r->cacheL3[j].tag == endereco)
                 {
                     r->cacheL3[j].tag = 0;
                     r->cacheL3[j].dado = 0;
                     r->cacheL3[j].valido = 0;
                     r->cacheL3[j].ultimoAcesso = 0;
+                    r->cacheL3[j].tagBloco = 0;
                 }
             }
             return;
@@ -216,6 +226,7 @@ void promoverParaL2(RAM *r, int endereco, int valor)
             r->cacheL3[i].dado = r->cacheL2[id_vitima].dado;
             r->cacheL3[i].valido = r->cacheL2[id_vitima].valido;
             r->cacheL3[i].ultimoAcesso = r->cacheL2[id_vitima].ultimoAcesso;
+            r->cacheL3[i].tagBloco = r->cacheL2[id_vitima].tagBloco;
         }
     }
 
@@ -224,9 +235,10 @@ void promoverParaL2(RAM *r, int endereco, int valor)
     r->cacheL2[id_vitima].dado = valor;
     r->cacheL2[id_vitima].valido = 1;
     r->cacheL2[id_vitima].ultimoAcesso = r->relogioGlobal;
+    r->cacheL2[id_vitima].tagBloco = tagBloco;
 }
 
-void promoverParaL3(RAM *r, int endereco, int valor)
+void promoverParaL3(RAM *r, int endereco, int valor, int tagBloco)
 {
     r->relogioGlobal++; // atualiza o contador de tempo
 
@@ -239,6 +251,7 @@ void promoverParaL3(RAM *r, int endereco, int valor)
             r->cacheL3[i].dado = valor;
             r->cacheL3[i].valido = 1;
             r->cacheL3[i].ultimoAcesso = r->relogioGlobal;
+            r->cacheL3[i].tagBloco = tagBloco;
             return;
         }
     }
@@ -264,6 +277,8 @@ void promoverParaL3(RAM *r, int endereco, int valor)
     r->cacheL3[id_vitima].dado = valor;
     r->cacheL3[id_vitima].valido = 1;
     r->cacheL3[id_vitima].ultimoAcesso = r->relogioGlobal;
+    r->cacheL3[id_vitima].tagBloco = tagBloco;
+
 }
 
 RAM *criarRAM(int tam)
@@ -392,7 +407,24 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
         if (r->cacheL2[i].valido && r->cacheL2[i].tag == endereco)
         {
             r->cacheL2[i].valido = 0; // remove da L2
-            promoverParaL1(r, endereco, conteudo);
+
+            int bloco = r->cacheL2[i].tagBloco;
+            
+            for(int j = 0; j < TAM_L2; j++)
+            {
+                if (r->cacheL2[j].tagBloco == bloco)
+                {
+                    for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL2[k].dado;
+                        
+                        promoverParaL1(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
 
             return;
         }
@@ -403,17 +435,88 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
         if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco)
         {
             r->cacheL3[i].valido = 0; // remove da L3
-            promoverParaL2(r, endereco, conteudo);
-            promoverParaL1(r, endereco, conteudo);
+
+            int bloco = r->cacheL3[i].tagBloco;
+
+            for(int j = 0; j < TAM_L3; j++){
+
+                if (r->cacheL3[j].tagBloco == bloco)
+                {
+                    for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL3[k].dado;
+                        
+                        promoverParaL2(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
+
+            for(int j = 0; j < TAM_L2; j++){
+
+                if (r->cacheL2[j].tagBloco == bloco)
+                {
+                    for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL2[k].dado;
+                        
+                        promoverParaL1(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
 
             return;
         }
     }
-    promoverParaL3(r, endereco, conteudo);
+    
+    int bloco, resto;
 
-    promoverParaL2(r, endereco, conteudo);
+    blocoTag(endereco,&resto,&bloco);
+    int inicio = ((bloco - 1) * 4) -1;
+    for(int i = inicio +4; i > inicio; i--)
+    {
+        int val = r->mem[i];
 
-    promoverParaL1(r, endereco, conteudo);
+        promoverParaL3(r,i, val, bloco);
+    }
+
+    for(int j = 0; j < TAM_L3; j++){
+
+        if (r->cacheL3[j].tagBloco == bloco)
+            {
+                for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL3[k].dado;
+                        
+                        promoverParaL2(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
+
+    for(int j = 0; j < TAM_L2; j++){
+
+        if (r->cacheL2[j].tagBloco == bloco){
+            for (int k = j + 4; k > j; k--)
+                {
+
+                    int val = r->cacheL2[k].dado;
+                        
+                    promoverParaL1(r,k, val, bloco);
+                    
+                }
+        }
+        break;
+                
+    }
+
 }
 
 void imprimirRAM(RAM *r)
@@ -475,6 +578,7 @@ int buscarNaL1(RAM *r, int endereco)
             r->hitsL1++;
             r->relogioGlobal++;                            // aumenta o relogio global
             r->cacheL1[i].ultimoAcesso = r->relogioGlobal; // atualiza o tempo do ultimo acesso
+            
             return r->cacheL1[i].dado;
         }
     }
@@ -494,10 +598,26 @@ void buscarNaL2(RAM *r, int endereco)
         if (r->cacheL2[i].valido && r->cacheL2[i].tag == endereco)
         {
             r->hitsL2++;
-            int val = r->cacheL2[i].dado;
-            r->cacheL2[i].valido = 0;
 
-            promoverParaL1(r, endereco, val);
+            r->cacheL2[i].valido = 0;
+            int bloco = r->cacheL2[i].tagBloco;
+
+            for(int j = 0; j < TAM_L2; j++){
+
+                if (r->cacheL2[j].tagBloco == bloco)
+                {
+                    for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL2[k].dado;
+                        
+                        promoverParaL1(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
+
             return;
         }
     }
@@ -515,13 +635,32 @@ void buscarNaL3(RAM *r, int endereco)
 {
     for (int i = 0; i < TAM_L3; i++) // caso nao encontre na cache 2 procura na 3
     {
-        if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco)
-        {
+        if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco){
+
+
+
             r->hitsL3++;
-            int val = r->cacheL3[i].dado;
+
+
             r->cacheL3[i].valido = 0;
 
-            promoverParaL2(r, endereco, val);
+            int bloco = r->cacheL3[i].tagBloco;
+
+            for(int j = 0; j < TAM_L3; j++){
+
+                if (r->cacheL3[j].tagBloco == bloco)
+                {
+                    for (int k = j + 4; k > j; k--)
+                    {
+
+                        int val = r->cacheL3[k].dado;
+                        
+                        promoverParaL2(r,k, val, bloco);
+                    }
+                }
+                break;
+                
+            }
             return;
         }
     }
@@ -538,11 +677,40 @@ void buscarNaL3(RAM *r, int endereco)
 void buscarNaRam(RAM *r, int endereco)
 {
 
-    r->missRAM++;
-    int val = r->mem[endereco];
+    //endereço da ram
+    // 32 = 8 blocos
+    // 16 = bloco 1
+    // 0 a 31
+    // 0,1,2,3
+    int bloco, resto;
 
-    promoverParaL3(r, endereco, val);
-    r->mem[endereco] = 0; 
+    blocoTag(endereco,&resto,&bloco);
+// bloco 8
+// comeca em 28
+// (8-1)*4
+
+
+
+    r->missRAM++;
+    int inicio = ((bloco -1) * 4)-1;
+    for(int i = inicio + 4; i > inicio; i--)
+    {
+        int val = r->mem[i];
+
+        promoverParaL3(r,i, val, bloco);
+    }
+
+    // zerar memória ram
+    //r->mem[endereco] = 0; 
 
     return;
+}
+
+void blocoTag(int endereco, int *resto, int *bloco){
+
+    
+    *bloco = ((endereco + 1) / 4);
+    *resto = (endereco + 1) % 4;
+    if(*resto != 0)
+        (*bloco)++;
 }

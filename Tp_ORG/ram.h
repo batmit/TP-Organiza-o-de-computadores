@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 // RAM
-#define TAM_RAM 50 // tamanho da RAM
+#define TAM_RAM 32 // tamanho da RAM
 
 // CACHE
 #define TAM_L1 4
@@ -14,11 +14,11 @@ typedef struct ram RAM;
 
 typedef struct
 {
+    int tagBloco;      // qual bloco que pertence a cache
     int tag;           // endereço original da RAM
     int dado;          // valor guardado
     int valido;        // 0 = vazio, 1 = ocupado
     long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
-
 } CacheLine;
 
 RAM *criarRAM(int tam);
@@ -30,9 +30,9 @@ void reinicializarRAM(RAM *r, int tam);
 
 void rebaixarParaL3(RAM *r, int endereco, int valor, long tempoOriginal);
 void rebaixarParaL2(RAM *r, int endereco, int valor, long tempoOriginal);
-void promoverParaL1(RAM *r, int endereco, int valor);
-void promoverParaL2(RAM *r, int endereco, int valor);
-void promoverParaL3(RAM *r, int endereco, int valor);
+void promoverParaL1(RAM *r, int endereco, int valor, int blocoTag);
+void promoverParaL2(RAM *r, int endereco, int valor, int blocoTag);
+void promoverParaL3(RAM *r, int endereco, int valor, int blocoTag);
 
 void simularBuffer(RAM *r, CacheLine *Cache3, int id);
 void buscarNaRam(RAM *r, int endereco);
@@ -45,5 +45,7 @@ int getDado(RAM *r, int endereco);
 void imprimirRAM(RAM *r);
 void imprimirCaches(RAM *r);
 void destroiRAM(RAM *r);
+
+void blocoTag(int endereco, int *resto, int *bloco);
 
 #endif

@@ -7,7 +7,6 @@
 #include "programas.h"
 #include "auxiliares.h"
 #define PI 3
-#define TAM_RAM 50
 
 /* OPCODE
     -1 = Halt
