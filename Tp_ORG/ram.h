@@ -12,6 +12,13 @@
 
 typedef struct ram RAM;
 
+typedef struct {
+
+    int chave;
+    int valor;
+
+} RamVet;
+
 typedef struct
 {
     int tagBloco;      // qual bloco que pertence a cache

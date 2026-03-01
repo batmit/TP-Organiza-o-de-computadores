@@ -3,6 +3,7 @@
 
 #include "ram.h"
 #include "auxiliares.h"
+#include<time.h>
 
 typedef struct cpu CPU;
 
