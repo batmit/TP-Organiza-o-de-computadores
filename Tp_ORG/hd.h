@@ -13,7 +13,7 @@
 
 void escreverHD(void);
 int buscarHD(int n);
-void atualizarHD(RAM *r);
+void atualizarHD(int chave, int valor);
 
 
 #endif

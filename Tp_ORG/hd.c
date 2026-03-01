@@ -32,7 +32,7 @@ void escreverHD(){
 int buscarHD(int n){
     FILE *arq = fopen("hd.bin", "rb");
     if (arq == NULL) {
-        return;
+        return -1;
     } 
 
     int i, valor;
@@ -53,19 +53,41 @@ int buscarHD(int n){
 }
 
 //Atualiza o que está no HD considerando os valores da RAM
-void atualizarHD(RAM *r){
-    FILE *arq = fopen("hd.bin", "wb");
-    if (arq == NULL) {
-        return;
+void atualizarHD(int chave, int valor){
+
+    FILE *arq = fopen("hd.bin", "rb+"); // leitura e escrita sem apagar
+    if (!arq) return false;
+
+    int k, v;
+
+    while (1) {
+        // Lê a chave
+        if (fread(&k, sizeof(int), 1, arq) != 1) break;
+
+        // Lê o valor
+        if (fread(&v, sizeof(int), 1, arq) != 1) break;
+
+        if (k == chave) {
+            // Voltamos o cursor para "em cima" do valor que acabamos de ler
+            if (fseek(arq, -(long)sizeof(int), SEEK_CUR) != 0) {
+                fclose(arq);
+                return false;
+            }
+
+            // Sobrescreve somente o valor
+            if (fwrite(&valor, sizeof(int), 1, arq) != 1) {
+                fclose(arq);
+                return false;
+            }
+
+            fflush(arq);
+            fclose(arq);
+            return true;
+        }
     }
-    
-    while(fread(&i, sizeof(int), 1, arq) == 1){
 
-        for(int j = 0; j < )
-
-
-    }
-
+    fclose(arq);
+    return false;
 
 
 }

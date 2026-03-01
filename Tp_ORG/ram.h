@@ -1,6 +1,6 @@
 #ifndef RAM_H
 #define RAM_H
-
+#include "hd.h"
 #include <stdbool.h>
 // RAM
 #define TAM_RAM 32 // tamanho da RAM
@@ -16,6 +16,8 @@ typedef struct {
 
     int chave;
     int valor;
+    int ultimoAcesso;
+    int tagBloco;
 
 } RamVet;
 

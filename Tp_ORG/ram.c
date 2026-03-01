@@ -7,10 +7,15 @@
 #include "cpu.h"
 #include "programas.h"
 #include <stdbool.h>
+    
+//Ao iniciar o programa, a ram receberá alguns valores do HD
+//FAZER O TRATAMENTO COM A RAM PARA VER QUAL VALOR MANDAR PARA O HD(último acesso)
+//Contato RAM-HD deve ser em blocos
+//Lembrando que o simular buffer que faz o contato da L3 com a RAM
 
 struct ram
 {
-    int *mem;
+    RamVet *mem;
     int tamanho;
 
     CacheLine *cacheL1;
@@ -290,7 +295,11 @@ RAM *criarRAM(int tam)
         printf("ERRO: Falha ao alocar estrutura RAM\n");
         exit(1);
     }
-    r->mem = malloc(tam * sizeof(int)); // cria memoria com lixo
+    r->mem = malloc(tam * sizeof(RamVet)); // cria memoria com lixo
+    for(int i = 0; i < tam; i++){
+        r->mem[i].chave = i;
+        r->mem[i].valor = 0;
+    }
     if (r->mem == NULL)
     {
         printf("ERRO: Falha ao alocar vetor de memoria\n");
@@ -335,8 +344,11 @@ void reinicializarRAM(RAM *r, int tam)
     if (r->cacheL3 != NULL)
         free(r->cacheL3);
 
-    r->mem = calloc(tam, sizeof(int));
-
+    r->mem = calloc(tam, sizeof(RamVet));
+    for(int i = 0; i < tam; i++){
+        r->mem[i].chave = i;
+        r->mem[i].valor = 0;
+    }
     if (r->mem == NULL)
     {
         printf("ERRO FATAL: Falha ao alocar %d ints para a RAM.\n", tam);
@@ -361,7 +373,8 @@ RAM *criarRAM_vazia(int tam)
 
     for (int i = 0; i < tam; i++) // percorre a ram zerando todos os valores
     {
-        r->mem[i] = 0;
+        r->mem[i].chave = i;
+        r->mem[i].valor = 0;
     }
     return r;
 }
@@ -370,8 +383,10 @@ RAM *criarRAM_aleatoria(int tam)
 {
     srand(time(NULL));
     RAM *r = criarRAM(tam);
-    for (int i = 0; i < tam; i++)
-        r->mem[i] = rand() % 10; // cria memoria com endereco aleatorio
+    for (int i = 0; i < tam; i++){
+        r->mem[i].chave = i;
+        r->mem[i].valor = rand() % 10; // cria memoria com endereco aleatorio
+    } 
     return r;
 }
 
@@ -460,11 +475,35 @@ void destroiRAM(RAM *r)
     free(r);
 }
 
-void simularBuffer(RAM *r, CacheLine *Cache3, int id)
-{
+void simularBuffer(RAM *r, CacheLine *Cache3, int id){
+    for(int i = 0; i < r->tamanho; i++){
+        if(r->mem[i].valor == 0){
+            r->mem[i].chave = r->cacheL3[id].tag;
+            r->mem[i].valor = r->cacheL3[id].dado; // a vitima eh enviada de volta pra ram
+            return;
+        }
+    }
+    //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
+    int id_vitima = 0;
+    long menorTempo = r->mem[0].ultimoAcesso;
 
-    r->mem[r->cacheL3[id].tag] = r->cacheL3[id].dado; // a vitima eh enviada de volta pra ram
-}
+    for (int i = 1; i < r->tamanho; i++) // lru
+    {
+        if (r->mem[i].ultimoAcesso < menorTempo)
+        {
+            menorTempo = r->mem[i].ultimoAcesso;
+            id_vitima = i;
+        }
+    }
+
+    //a vítima é enviada para o HD
+    atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
+
+    r->mem[id_vitima].chave = r->cacheL3[id].tag;
+    r->mem[id_vitima].valor = r->cacheL3[id].dado; 
+
+
+  }
 
 int buscarNaL1(RAM *r, int endereco)
 {
@@ -585,21 +624,24 @@ void buscarNaRam(RAM *r, int endereco)
 
     r->missRAM++;
     //Descubro onde começa o bloco que vou promover para a l3
-    int inicio = ((bloco -1) * 4) ;
-    for(int i = inicio; i < inicio + 4; i++)
-    {
-        if(i >= 0 && i < r->tamanho){
+    int inicio = ((bloco -1) * 4);
+    int inicio1 = inicio + 1;
+    int inicio2 = inicio + 2;
+    int inicio3 = inicio + 3;
+    for(int i = 0; i < r->tamanho; i++){
+        
+        if(r->mem[i].chave == inicio || r->mem[i].chave == inicio1|| r->mem[i].chave == inicio2|| r->mem[i].chave == inicio3){
 
-            int val = r->mem[i];
+            int val = r->mem[i].valor;
 
-            promoverParaL3(r,i, val, bloco);
+            promoverParaL3(r,r->mem[i].chave, val, bloco);
 
         }
 
     }
 
     // zerar memória ram
-    r->mem[endereco] = 0; 
+    r->mem[endereco].valor = 0; 
 
     return;
 }

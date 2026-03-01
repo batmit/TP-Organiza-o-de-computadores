@@ -6,12 +6,12 @@
 #include "cpu.h"
 #include "programas.h"
 #include "auxiliares.h"
-
+#include "hd.h"
 int main()
 {
 
     srand(time(NULL));
-
+    escreverHD();
     RAM *r = criarRAM_vazia(4000);
     CPU *c = criar_cpu();
 
