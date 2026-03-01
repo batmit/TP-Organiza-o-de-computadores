@@ -8,6 +8,14 @@
 #include "programas.h"
 #include <stdbool.h>
 
+//                  Estrutura
+//{Chave palavra} sequencialmente, sem nenhum intermediário
+//A chave é o índice numérico do valor, que vai de 0 a 255
+//
+//
+//
+//
+//
 void escreverHD(RAM *r){
 
     FILE *arq = fopen("hd.bin", "ab");
