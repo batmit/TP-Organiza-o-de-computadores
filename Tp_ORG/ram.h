@@ -1,6 +1,5 @@
 #ifndef RAM_H
 #define RAM_H
-#include "hd.h"
 #include <stdbool.h>
 
 // RAM
@@ -11,13 +10,41 @@
 #define TAM_L2 8
 #define TAM_L3 16
 
-typedef struct ramvet RamVet;
 
-typedef struct cacheLine CacheLine;
+typedef struct{
+    int tagBloco;      // qual bloco que pertence a cache
+    int tag;           // endereço original da RAM
+    int dado;          // valor guardado
+    int valido;        // 0 = vazio, 1 = ocupado
+    long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
+}CacheLine;
 
-typedef struct ram RAM;
+typedef struct{
+
+    int chave;
+    int valor;
+    int ultimoAcesso;
+    //int tagBloco;
+    int ocupado;
+
+}RamVet;
+
+typedef struct{
+
+    RamVet *mem;
+    int tamanho;
+
+    CacheLine *cacheL1;
+    CacheLine *cacheL2;
+    CacheLine *cacheL3;
+
+    long relogioGlobal; // contador do tempo global
+
+    int hitsL1, hitsL2, hitsL3, hitsRAM, hitsHD; // contadores de acertos, vao mostrar a quantidade de itens encontrados em cada ram
+    int missL1, missL2, missL3, missRAM, missHD;
 
 
+}RAM;
 
 
 RAM *criarRAM(int tam);

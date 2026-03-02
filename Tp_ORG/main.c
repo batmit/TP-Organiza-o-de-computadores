@@ -15,7 +15,7 @@ int main()
     RAM *r = inicializarRAMdoHD(TAM_RAM);
     CPU *c = criar_cpu();
 
-    programaAleatorio(r, c, 15);
+    programaAleatorio(r, c, 1500);
     //  programaMult(r, c, 20, 5);
     //  programaDiv(r, c, 25, 3);
     //  programaFat(r, c, 4);

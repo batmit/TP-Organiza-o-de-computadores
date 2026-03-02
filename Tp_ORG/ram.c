@@ -7,49 +7,12 @@
 #include "cpu.h"
 #include "programas.h"
 #include <stdbool.h>
-    
+#include "hd.h"
+
 //Ao iniciar o programa, a ram receberá alguns valores do HD
 //FAZER O TRATAMENTO COM A RAM PARA VER QUAL VALOR MANDAR PARA O HD(último acesso)
 //Contato RAM-HD deve ser em blocos
 //Lembrando que o simular buffer que faz o contato da L3 com a RAM
-struct cacheLine{
-    int tagBloco;      // qual bloco que pertence a cache
-    int tag;           // endereço original da RAM
-    int dado;          // valor guardado
-    int valido;        // 0 = vazio, 1 = ocupado
-    long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
-};
-
-struct ramvet{
-
-    int chave;
-    int valor;
-    int ultimoAcesso;
-    //int tagBloco;
-    int ocupado;
-
-};
-
-struct ram {
-
-    RamVet *mem;
-    int tamanho;
-
-    CacheLine *cacheL1;
-    CacheLine *cacheL2;
-    CacheLine *cacheL3;
-
-    long relogioGlobal; // contador do tempo global
-
-    int hitsL1, hitsL2, hitsL3, hitsRAM, hitsHD; // contadores de acertos, vao mostrar a quantidade de itens encontrados em cada ram
-    int missL1, missL2, missL3, missRAM, missHD;
-
-
-};
-
-
-
-
 
 
 
@@ -186,7 +149,7 @@ void promoverParaL1(RAM *r, int endereco, int valor, int tagBloco)
     }
 
     // move pra L2
-    for (int i = 1; i < TAM_L2; i++) // encontra chave
+    for (int i = 0; i < TAM_L2; i++) // encontra chave
     {
         if (r->cacheL2[i].tag== endereco)
         {
@@ -249,7 +212,7 @@ void promoverParaL2(RAM *r, int endereco, int valor, int tagBloco)
     }
 
     // move pra L3
-    for (int i = 1; i < TAM_L3; i++) // encontra a (lru)
+    for (int i = 0; i < TAM_L3; i++) // encontra a (lru)
     {
         if (r->cacheL3[i].tag == endereco)
         {
@@ -324,7 +287,7 @@ RAM *inicializarRAMdoHD(int tam){
     int valor;
     r->mem = malloc(tam * sizeof(RamVet)); // cria memoria com lixo
     for(int i = 0; i < tam; i++){
-        bool deuBom = buscarNoHD(i, &valor);
+        buscarNoHD(i, &valor);
         r->mem[i].chave = i;
         r->mem[i].valor = valor;
         r->mem[i].ocupado = 1;
@@ -530,7 +493,7 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
 
 void imprimirRAM(RAM *r)
 {
-    printf("Hits L1: %d | Hits L2: %d | Hits L3: %d | Hits RAM: %d | Hits Hd: %d\n Miss L1: %d | Miss L2: %d | Miss L3: %d | Miss RAM: %d | Miss HD: %d\n",
+    printf("Hits L1: %d | Hits L2: %d | Hits L3: %d | Hits RAM: %d | Hits Hd: %d\nMiss L1: %d | Miss L2: %d | Miss L3: %d | Miss RAM: %d | Miss HD: %d\n",
            r->hitsL1, r->hitsL2, r->hitsL3, r->hitsRAM, r->hitsHD,
            r->missL1, r->missL2, r->missL3, r->missRAM, r->missHD);
 }
@@ -572,51 +535,112 @@ void destroiRAM(RAM *r)
     free(r);
 }
 
-void simularBuffer(RAM *r, CacheLine *Cache3, int id){
+// void simularBuffer(RAM *r, CacheLine *Cache3, int id){
+//     r->relogioGlobal++;
+
+//     int bloco = Cache3[id].tagBloco;
+//     int inicio = (bloco-1) * 4;
+
+//     for(int j = inicio; j < (inicio + 4); j++){
+//         int passou = 0;
+
+//         for(int i = 0; i < r->tamanho; i++){
+
+//             if(r->mem[i].ocupado == 0){
+//                 passou = 1;
+//                 r->mem[i].chave = r->cacheL3[j].tag;
+//                 r->mem[i].valor = r->cacheL3[j].dado; // a vitima eh enviada de volta pra ram
+//                 r->mem[i].ultimoAcesso = r->relogioGlobal;
+//                 r->mem[i].ocupado = 1;
+//                 break;
+//             }
+//         }
+//         if(passou == 0){
+
+//             //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
+//             int id_vitima = 0;
+//             long menorTempo = r->mem[0].ultimoAcesso;
+
+//             for (int i = 1; i < r->tamanho; i++) // lru
+//             {
+//                 if (r->mem[i].ultimoAcesso < menorTempo)
+//                 {
+//                     menorTempo = r->mem[i].ultimoAcesso;
+//                     id_vitima = i;
+                    
+//                 }
+//             }
+
+//             //a vítima é enviada para o HD
+//             atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
+
+//             r->mem[id_vitima].chave = r->cacheL3[j].tag;
+//             r->mem[id_vitima].valor = r->cacheL3[j].dado;
+//             r->mem[id_vitima].ultimoAcesso = r->relogioGlobal;
+        
+            
+//         }
+
+
+//     }
+
+// }
+
+void simularBuffer(RAM *r, CacheLine *Cache3, int id)
+{
     r->relogioGlobal++;
-    int bloco = Cache3[id].tagBloco;
-    int inicio = (bloco-1) * 4;
-    for(int j = inicio; j < (inicio + 4); j++){
-        int passou = 0;
-        for(int i = 0; i < r->tamanho; i++){
-            if(r->mem[i].ocupado == 0){
-                passou = 1;
-                r->mem[i].chave = r->cacheL3[j].tag;
-                r->mem[i].valor = r->cacheL3[j].dado; // a vitima eh enviada de volta pra ram
-                r->mem[i].ultimoAcesso = r->relogioGlobal;
-                r->mem[i].ocupado = 1;
-            }
-        }
-        if(passou == 0){
+    // Pegamos a tag do bloco da "vítima" da L3 que será rebaixada
+    int tagBlocoAlvo = Cache3[id].tagBloco;
 
-            //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
-            int id_vitima = 0;
-            long menorTempo = r->mem[0].ultimoAcesso;
+    // Percorremos a L3 inteira para achar as 4 palavras desse bloco
+    for (int k = 0; k < TAM_L3; k++)
+    {
+        if (Cache3[k].valido && Cache3[k].tagBloco == tagBlocoAlvo)
+        {
 
-            for (int i = 1; i < r->tamanho; i++) // lru
+            int passou = 0;
+            // Tenta achar um espaço vazio na RAM para esta palavra do bloco
+            for (int i = 0; i < r->tamanho; i++)
             {
-                if (r->mem[i].ultimoAcesso < menorTempo)
+                if (r->mem[i].ocupado == 0)
                 {
-                    menorTempo = r->mem[i].ultimoAcesso;
-                    id_vitima = i;
+                    r->mem[i].chave = Cache3[k].tag;
+                    r->mem[i].valor = Cache3[k].dado;
+                    r->mem[i].ultimoAcesso = r->relogioGlobal;
+                    r->mem[i].ocupado = 1;
+                    passou = 1;
+                    break; // Achou lugar, pula para a próxima palavra do bloco
                 }
             }
 
-            //a vítima é enviada para o HD
-            atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
+            // Se a RAM estiver cheia, aplica LRU para abrir vaga
+            if (passou == 0)
+            {
+                int id_vitima_ram = 0;
+                long menorTempo = r->mem[0].ultimoAcesso;
 
-            r->mem[id_vitima].chave = r->cacheL3[j].tag;
-            r->mem[id_vitima].valor = r->cacheL3[j].dado;
-            r->mem[id_vitima].ultimoAcesso = r->relogioGlobal;
-        
-            
+                for (int i = 1; i < r->tamanho; i++)
+                {
+                    if (r->mem[i].ultimoAcesso < menorTempo)
+                    {
+                        menorTempo = r->mem[i].ultimoAcesso;
+                        id_vitima_ram = i;
+                    }
+                }
+
+                // Sincroniza a vítima da RAM com o HD antes de sobrescrever
+                atualizarHD(r->mem[id_vitima_ram].chave, r->mem[id_vitima_ram].valor);
+
+                r->mem[id_vitima_ram].chave = Cache3[k].tag;
+                r->mem[id_vitima_ram].valor = Cache3[k].dado;
+                r->mem[id_vitima_ram].ultimoAcesso = r->relogioGlobal;
+                r->mem[id_vitima_ram].ocupado = 1;
+            }
+
+            // Após mover para a RAM, a linha na Cache L3 pode ser invalidada
+            Cache3[k].valido = 0;
         }
-
-
     }
-
-
-
 }
 
 int buscarNaL1(RAM *r, int endereco)
@@ -740,7 +764,7 @@ bool buscarNaRam(RAM *r, int endereco) {
             //r->mem[i].valor = 0;
             //r->mem[i].chave = -1;
             r->mem[i].ocupado = 0;
-        }
+        }   
         
     }
 
@@ -766,6 +790,7 @@ bool buscarNaRam(RAM *r, int endereco) {
     }
     
     r->hitsHD++;
+    r->hitsRAM--;
     return buscarNaRam(r,endereco);
 }
  

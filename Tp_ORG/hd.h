@@ -1,5 +1,5 @@
 #ifndef HD_H
-#define HD_h
+#define HD_H
 
 #include <stdio.h>
 #include <stdlib.h>

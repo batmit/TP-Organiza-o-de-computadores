@@ -1,4 +1,5 @@
 #include "hd.h"
+#include "ram.h"
 
 
 //                  Estrutura
@@ -29,7 +30,7 @@ void escreverHD(){
 }
 
 //Busca no HD o valor a partir do índice
-bool buscarNoHD(RAM *r,int endereco, int *procuradoHd){
+bool buscarNoHD(int endereco, int *procuradoHd){
     FILE *arq = fopen("hd.bin", "rb");
     if (arq == NULL) {
         return false;
@@ -44,7 +45,6 @@ bool buscarNoHD(RAM *r,int endereco, int *procuradoHd){
 
         if (i == endereco) {
             *procuradoHd = valor;
-            r->hitsHD++;
             fclose(arq);
             *procuradoHd = valor;
             return true;
@@ -59,7 +59,7 @@ bool buscarNoHD(RAM *r,int endereco, int *procuradoHd){
 void atualizarHD(int chave, int valor){
 
     FILE *arq = fopen("hd.bin", "rb+"); // leitura e escrita sem apagar
-    if (!arq) return -1;
+    if (!arq) return;
 
     int k, v;
 
@@ -74,23 +74,23 @@ void atualizarHD(int chave, int valor){
             // Voltamos o cursor para "em cima" do valor que acabamos de ler
             if (fseek(arq, -(long)sizeof(int), SEEK_CUR) != 0) {
                 fclose(arq);
-                return false;
+                return;
             }
 
             // Sobrescreve somente o valor
             if (fwrite(&valor, sizeof(int), 1, arq) != 1) {
                 fclose(arq);
-                return false;
+                return;
             }
 
             fflush(arq);
             fclose(arq);
-            return true;
+            return;
         }
     }
 
     fclose(arq);
-    return false;
+    return;
 
 
 }
