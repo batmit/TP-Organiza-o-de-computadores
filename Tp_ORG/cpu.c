@@ -7,6 +7,16 @@
 #include "auxiliares.h"
 #include "programas.h"
 
+struct interrupcao{
+
+	int pc;
+	Instrucao *instrucoes;
+	int valido;
+
+};
+
+
+
 struct cpu
 {
 	int registrador1;
@@ -14,6 +24,8 @@ struct cpu
 	int PC;
 	Instrucao *programa;
 	int opcode;
+
+	Interrupcao interromper[3];
 };
 
 void setPrograma(CPU *c, Instrucao *programaAux)
@@ -37,6 +49,9 @@ CPU *criar_cpu(void)
 	nova_cpu->opcode = 0;
 	nova_cpu->programa = NULL;
 
+	//nova_cpu->interromper = malloc(3 * sizeof(Interrupcao));
+	
+
 	return nova_cpu;
 }
 
@@ -49,8 +64,8 @@ void destroiCPU(CPU *c)
 	free(c);
 }
 
-void iniciar(RAM *r, CPU *c)
-{
+void iniciar(RAM *r, CPU *c){
+	
 	/* OPCODE
 	-1 = Halt
 	0 soma
@@ -60,25 +75,135 @@ void iniciar(RAM *r, CPU *c)
 	4 salva conteudo externo no registrador
 	5 obtem conteudo externo do registrador
 	*/
+	int interrompeOuNao = rand() % 1;
+	int quantasInstrucoes = 0;
+	int PCparada;
+
+	if(interrompeOuNao == 1&& c->programa != NULL){
+		while (c->programa[quantasInstrucoes].opcode != -1)
+		{
+				quantasInstrucoes++;
+		}
+		if (quantasInstrucoes > 0)
+		{
+				PCparada = rand() % quantasInstrucoes;
+		}
+	}
 
 	c->opcode = 0;
 	c->PC = 0;
 
+		while (c->opcode != -1)
+		{
+
+			if (interrompeOuNao == 1 && c->PC == PCparada)
+			{
+				printf("Interrupção detectada no PC: %d\n", c->PC);
+
+				c->interromper[0].pc = c->PC;
+				c->interromper[0].valido = 1;
+
+				// Trata a interrupção
+				tratarInterrupcao(r, c, 0);
+
+				// if (c->interromper[0].valido == 0 && c->interromper[1].valido == 0 && c->interromper[2].valido == 0)
+				// {
+				// 	for (int m = 0; m < 3; m++)
+				// 	{
+				// 		if (!c->interromper[m].valido)
+				// 		{
+				// 			tratarInterrupcao(r, c, m);
+				// 			c->interromper[m].valido = 1;
+				// 		}
+				// 	}
+
+				// 	c->interromper[0].instrucoes = c->programa;
+				// 	c->interromper[0].pc = PCparada;
+				// 	c->interromper[0].valido = 0;
+				// }
+
+				// 	for(int i = 0; i < 3; i++){
+
+				// 		if(c->interromper[i].valido == 1){
+
+				// 			c->interromper[i].instrucoes = c->programa;
+				// 			c->interromper[i].pc = PCparada;
+				// 			c->interromper[i].valido = 0;
+							
+				// 		}	
+				// 	}
+				// 	break;
+				// }
+			}
+
+			Instrucao inst = c->programa[c->PC]; /******** */
+
+			c->opcode = inst.opcode;
+
+			executarInstrucao(r, c, inst);
+
+			c->PC++;
+		}
+	}
+
+void tratarInterrupcao(RAM *r, CPU *c, int nivel)
+{
+	// EMPILHAR
+
+	int pcOriginal = c->PC;                     
+	Instrucao *programaOriginal = c->programa;
+	int r1Original = c->registrador1;
+	int r2Original = c->registrador2;
+
+	printf("\n[CPU] >>> Entrando no Tratador Nível %d <<<\n", nivel);
+
+	// carregar dados
+	c->programa = c->interromper[nivel].instrucoes;
+	c->PC = 0;
+	c->opcode = 0;
+	c->interromper[nivel].valido = 0;
+
 	while (c->opcode != -1)
 	{
+		// Se houver uma interrupção de maior prioridade (casa 0),
 
-		Instrucao inst = c->programa[c->PC]; /******** */
-
-		c->opcode = inst.opcode;
-		switch (c->opcode)
+		for (int j = 0; j < nivel; j++)
 		{
+			if (c->interromper[j].valido)
+			{
+				tratarInterrupcao(r, c, j);
+			}
+		}
+
+		Instrucao inst = c->programa[c->PC];
+		c->opcode = inst.opcode;
+
+		// Executa a instrução (Soma, Sub, etc.)
+		executarInstrucao(r, c, inst);
+
+		c->PC++;
+	}
+
+	// DESEMPILHAR
+	printf("[CPU] <<< Saindo do Nível %d. Voltando contexto anterior...\n", nivel);
+	c->programa = programaOriginal;
+	c->PC = pcOriginal;
+	c->registrador1 = r1Original;
+	c->registrador2 = r2Original;
+	c->opcode = 0;
+}
+
+void executarInstrucao(RAM *r, CPU *c, Instrucao inst)
+{
+	switch (c->opcode)
+	{
 		case -1:
 		{
-			// printf("Programa terminou!!\n");
+			printf("Programa terminou!!\n");
 			// imprimirRAM(r);
 			break;
 		}
-		// soma
+	// soma
 		case 0:
 		{
 			c->registrador1 = getDado(r, inst.add1);
@@ -89,7 +214,7 @@ void iniciar(RAM *r, CPU *c)
 			// printf("Inst sum -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
 			break;
 		}
-		// subtrai
+	// subtrai
 		case 1:
 		{
 			c->registrador1 = getDado(r, inst.add1);
@@ -168,7 +293,28 @@ void iniciar(RAM *r, CPU *c)
 
 			break;
 		}
-		}
-		c->PC++;
 	}
+}
+
+Instrucao *programaInt(RAM *ram, CPU *cpu, int qdeIntrucoes)
+{
+	destroiRAM(ram);
+
+	ram = criarRAM_aleatoria(TAM_RAM);
+
+	Instrucao *umPrograma = (Instrucao *)malloc(qdeIntrucoes * sizeof(Instrucao));
+
+	for (int i = 0; i < (qdeIntrucoes - 1); i++)
+	{
+		umPrograma[i].opcode = rand() % 2;
+		umPrograma[i].add1 = rand() % 256;
+		umPrograma[i].add2 = rand() % 256;
+		umPrograma[i].add3 = rand() % 256;
+	}
+
+	umPrograma[qdeIntrucoes - 1].opcode = -1;
+
+	setPrograma(cpu, umPrograma);
+
+	return umPrograma;
 }

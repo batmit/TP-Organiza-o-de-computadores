@@ -20,13 +20,9 @@ void escreverHD(){
         n = rand() % 1000;
         fwrite(&i, sizeof(int), 1, arq);
         fwrite(&n, sizeof(int), 1, arq);
-
-
     }
 
-
     fclose(arq);
-
 }
 
 //Busca no HD o valor a partir do índice
