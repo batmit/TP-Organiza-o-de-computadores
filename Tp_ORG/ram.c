@@ -713,13 +713,14 @@ bool buscarNaRam(RAM *r, int endereco) {
     r->missRAM++;
 
     int procuradoHD = 0;
+    
     for(int i = 0; i < 4; i++){
         
         if (buscarNoHD(endereco,&procuradoHD)){
-            colocarNaRAM(endereco,procuradoHD)
+            colocarNaRAM(r,endereco,procuradoHD);
             return buscarNaRam(r,endereco);
         }
-        endereço++;
+        endereco++;
 
     }
 
