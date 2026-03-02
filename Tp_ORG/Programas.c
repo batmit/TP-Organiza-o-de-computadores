@@ -29,9 +29,9 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
     for (int i = 0; i < (qdeIntrucoes - 1); i++)
     {
         umPrograma[i].opcode = rand() % 2;
-        umPrograma[i].add1 = rand() % 1000;
-        umPrograma[i].add2 = rand() % 1000;
-        umPrograma[i].add3 = rand() % 1000;
+        umPrograma[i].add1 = rand() % 256;
+        umPrograma[i].add2 = rand() % 256;
+        umPrograma[i].add3 = rand() % 256;
     }
 
     umPrograma[qdeIntrucoes - 1].opcode = -1;

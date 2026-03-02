@@ -151,14 +151,14 @@ void promoverParaL1(RAM *r, int endereco, int valor, int tagBloco)
     // move pra L2
     for (int i = 0; i < TAM_L2; i++) // encontra chave
     {
-        if (r->cacheL2[i].tag== endereco)
-        {
-            r->cacheL2[i].tag = r->cacheL1[id_vitima].tag;
-            r->cacheL2[i].dado = r->cacheL1[id_vitima].dado;
-            r->cacheL2[i].valido = r->cacheL1[id_vitima].valido;
-            r->cacheL2[i].ultimoAcesso = r->cacheL1[id_vitima].ultimoAcesso;
-            r->cacheL2[i].tagBloco = r->cacheL1[id_vitima].tagBloco;
-        }
+        if (r->cacheL2[i].valido && r->cacheL2[i].tag == endereco)
+            {
+                r->cacheL2[i].tag = r->cacheL1[id_vitima].tag;
+                r->cacheL2[i].dado = r->cacheL1[id_vitima].dado;
+                r->cacheL2[i].valido = r->cacheL1[id_vitima].valido;
+                r->cacheL2[i].ultimoAcesso = r->cacheL1[id_vitima].ultimoAcesso;
+                r->cacheL2[i].tagBloco = r->cacheL1[id_vitima].tagBloco;
+            }
     }
 
     // preenche a cache 1
@@ -214,7 +214,7 @@ void promoverParaL2(RAM *r, int endereco, int valor, int tagBloco)
     // move pra L3
     for (int i = 0; i < TAM_L3; i++) // encontra a (lru)
     {
-        if (r->cacheL3[i].tag == endereco)
+        if (r->cacheL3[i].valido && r->cacheL3[i].tag == endereco)
         {
             r->cacheL3[i].tag = r->cacheL2[id_vitima].tag;
             r->cacheL3[i].dado = r->cacheL2[id_vitima].dado;
@@ -525,57 +525,6 @@ void destroiRAM(RAM *r)
     free(r);
 }
 
-// void simularBuffer(RAM *r, CacheLine *Cache3, int id){
-//     r->relogioGlobal++;
-
-//     int bloco = Cache3[id].tagBloco;
-//     int inicio = (bloco-1) * 4;
-
-//     for(int j = inicio; j < (inicio + 4); j++){
-//         int passou = 0;
-
-//         for(int i = 0; i < r->tamanho; i++){
-
-//             if(r->mem[i].ocupado == 0){
-//                 passou = 1;
-//                 r->mem[i].chave = r->cacheL3[j].tag;
-//                 r->mem[i].valor = r->cacheL3[j].dado; // a vitima eh enviada de volta pra ram
-//                 r->mem[i].ultimoAcesso = r->relogioGlobal;
-//                 r->mem[i].ocupado = 1;
-//                 break;
-//             }
-//         }
-//         if(passou == 0){
-
-//             //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
-//             int id_vitima = 0;
-//             long menorTempo = r->mem[0].ultimoAcesso;
-
-//             for (int i = 1; i < r->tamanho; i++) // lru
-//             {
-//                 if (r->mem[i].ultimoAcesso < menorTempo)
-//                 {
-//                     menorTempo = r->mem[i].ultimoAcesso;
-//                     id_vitima = i;
-                    
-//                 }
-//             }
-
-//             //a vítima é enviada para o HD
-//             atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
-
-//             r->mem[id_vitima].chave = r->cacheL3[j].tag;
-//             r->mem[id_vitima].valor = r->cacheL3[j].dado;
-//             r->mem[id_vitima].ultimoAcesso = r->relogioGlobal;
-        
-            
-//         }
-
-
-//     }
-
-// }
-
 void simularBuffer(RAM *r, CacheLine *Cache3, int id)
 {
     r->relogioGlobal++;
@@ -676,7 +625,7 @@ bool buscarNaL2(RAM *r, int endereco)
 
 
                     int val = r->cacheL2[j].dado;
-                    r->cacheL2[j].valido = 0;
+                    //r->cacheL2[j].valido = 0;
                     int end = r->cacheL2[j].tag;
                     promoverParaL1(r,end, val, bloco);
                     
@@ -714,7 +663,7 @@ bool buscarNaL3(RAM *r, int endereco)
                 {
                     int val = r->cacheL3[j].dado;
                     int end = r->cacheL3[j].tag;
-                    r->cacheL3[j].valido = 0;
+                    //r->cacheL3[j].valido = 0;
 
                     promoverParaL2(r,end, val, bloco);
                 }
@@ -753,7 +702,7 @@ bool buscarNaRam(RAM *r, int endereco) {
        
             //r->mem[i].valor = 0;
             //r->mem[i].chave = -1;
-            r->mem[i].ocupado = 0;
+            //r->mem[i].ocupado = 0;
         }   
         
     }
