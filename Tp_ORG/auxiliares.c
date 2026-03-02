@@ -7,7 +7,6 @@
 #include "programas.h"
 #include "auxiliares.h"
 
-
 // /* OPCODE
 //     -1 = Halt
 //     0 soma
@@ -18,7 +17,8 @@
 //     5 obtem conteudo externo do registrador
 //     */
 
-void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal){
+void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal)
+{
 
     Instrucao *trecho_soma = (Instrucao *)malloc(2 * sizeof(Instrucao));
 

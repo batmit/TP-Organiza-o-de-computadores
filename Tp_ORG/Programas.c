@@ -25,7 +25,7 @@ void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes)
     ram = criarRAM_aleatoria(TAM_RAM);
 
     Instrucao *umPrograma = (Instrucao *)malloc(qdeIntrucoes * sizeof(Instrucao));
-    //tamanho do HD é 256
+    // tamanho do HD é 256
     for (int i = 0; i < (qdeIntrucoes - 1); i++)
     {
         umPrograma[i].opcode = rand() % 2;
@@ -1729,7 +1729,8 @@ void programaCPF(RAM *ram, CPU *cpu, char *cpf)
 void programaDoArquivo(RAM *ram, CPU *cpu, const char *nomeArquivo)
 {
     FILE *arquivo = fopen(nomeArquivo, "r");
-    if (arquivo == NULL) {
+    if (arquivo == NULL)
+    {
         printf("ERRO: Nao foi possivel abrir o arquivo %s\n", nomeArquivo);
         return;
     }
@@ -1737,16 +1738,18 @@ void programaDoArquivo(RAM *ram, CPU *cpu, const char *nomeArquivo)
     // 1. Contar linhas para alocar memoria
     int linhas = 0;
     char c;
-    while ((c = fgetc(arquivo)) != EOF) {
-        if (c == '\n') linhas++;
+    while ((c = fgetc(arquivo)) != EOF)
+    {
+        if (c == '\n')
+            linhas++;
     }
     rewind(arquivo);
 
     printf("Carregando %d instrucoes do arquivo...\n", linhas);
-    
+
     // Aloca instrucoes (+1 para o Halt final)
     Instrucao *programa = (Instrucao *)malloc((linhas + 1) * sizeof(Instrucao));
-    
+
     int op, a1, w1, a2, w2, a3, w3;
     int i = 0;
 
@@ -1754,13 +1757,13 @@ void programaDoArquivo(RAM *ram, CPU *cpu, const char *nomeArquivo)
     while (fscanf(arquivo, "%d:%d:%d:%d:%d:%d:%d", &op, &a1, &w1, &a2, &w2, &a3, &w3) == 7 && i < linhas)
     {
         // TRUQUE PARA ESTRESSE DE MEMORIA:
-        // O gerador cria Opcodes 0,1,2,3. Mas Opcodes 2 e 3 (Copias) usam 'add1' 
+        // O gerador cria Opcodes 0,1,2,3. Mas Opcodes 2 e 3 (Copias) usam 'add1'
         // como indice de registrador (1 ou 2). O arquivo traz enderecos de memoria (ex: 850).
         // Se passarmos 850 como registrador, vai dar erro ou nao fazer nada.
         // Por isso, forçamos Opcode 0 (Soma) ou 1 (Subtrai) usando % 2.
         // Isso garante que todas as instrucoes acessem a memoria 3 vezes (le, le, escreve).
-        
-        programa[i].opcode = op % 2; 
+
+        programa[i].opcode = op % 2;
         programa[i].add1 = a1;
         programa[i].add2 = a2;
         programa[i].add3 = a3;
@@ -1778,6 +1781,6 @@ void programaDoArquivo(RAM *ram, CPU *cpu, const char *nomeArquivo)
     // Executa
     setPrograma(cpu, programa);
     iniciar(ram, cpu);
-    
+
     printf("Execucao do arquivo finalizada.\n");
 }

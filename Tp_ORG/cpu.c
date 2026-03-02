@@ -7,15 +7,13 @@
 #include "auxiliares.h"
 #include "programas.h"
 
-struct interrupcao{
+struct interrupcao
+{
 
 	int pc;
 	Instrucao *instrucoes;
 	int valido;
-
 };
-
-
 
 struct cpu
 {
@@ -49,8 +47,7 @@ CPU *criar_cpu(void)
 	nova_cpu->opcode = 0;
 	nova_cpu->programa = NULL;
 
-	//nova_cpu->interromper = malloc(3 * sizeof(Interrupcao));
-	
+	// nova_cpu->interromper = malloc(3 * sizeof(Interrupcao));
 
 	return nova_cpu;
 }
@@ -64,93 +61,130 @@ void destroiCPU(CPU *c)
 	free(c);
 }
 
-void iniciar(RAM *r, CPU *c){
+void iniciar(RAM *r, CPU *c)
+{
 	
-	/* OPCODE
-	-1 = Halt
-	0 soma
-	1 subtrai
-	2 copia do registrador para RAM
-	3 copia da RAM para o registrador
-	4 salva conteudo externo no registrador
-	5 obtem conteudo externo do registrador
-	*/
-	int interrompeOuNao = rand() % 1;
-	int quantasInstrucoes = 0;
-	int PCparada;
-
-	if(interrompeOuNao == 1&& c->programa != NULL){
-		while (c->programa[quantasInstrucoes].opcode != -1)
-		{
-				quantasInstrucoes++;
-		}
-		if (quantasInstrucoes > 0)
-		{
-				PCparada = rand() % quantasInstrucoes;
-		}
-	}
-
-	c->opcode = 0;
 	c->PC = 0;
+	c->opcode = 0;
 
-		while (c->opcode != -1)
+	printf("[CPU] Iniciando execução do programa principal...\n");
+
+	while (c->opcode != -1)
+	{
+
+		if (c->programa == NULL)
 		{
+			printf("[ERRO] Nenhum programa carregado na CPU.\n");
+			break;
+		}
 
-			if (interrompeOuNao == 1 && c->PC == PCparada)
-			{
-				printf("Interrupção detectada no PC: %d\n", c->PC);
+		Instrucao inst = c->programa[c->PC];
+		c->opcode = inst.opcode;
 
-				c->interromper[0].pc = c->PC;
-				c->interromper[0].valido = 1;
-
-				// Trata a interrupção
-				tratarInterrupcao(r, c, 0);
-
-				// if (c->interromper[0].valido == 0 && c->interromper[1].valido == 0 && c->interromper[2].valido == 0)
-				// {
-				// 	for (int m = 0; m < 3; m++)
-				// 	{
-				// 		if (!c->interromper[m].valido)
-				// 		{
-				// 			tratarInterrupcao(r, c, m);
-				// 			c->interromper[m].valido = 1;
-				// 		}
-				// 	}
-
-				// 	c->interromper[0].instrucoes = c->programa;
-				// 	c->interromper[0].pc = PCparada;
-				// 	c->interromper[0].valido = 0;
-				// }
-
-				// 	for(int i = 0; i < 3; i++){
-
-				// 		if(c->interromper[i].valido == 1){
-
-				// 			c->interromper[i].instrucoes = c->programa;
-				// 			c->interromper[i].pc = PCparada;
-				// 			c->interromper[i].valido = 0;
-							
-				// 		}	
-				// 	}
-				// 	break;
-				// }
-			}
-
-			Instrucao inst = c->programa[c->PC]; /******** */
-
-			c->opcode = inst.opcode;
-
+		if (c->opcode != -1)
+		{
 			executarInstrucao(r, c, inst);
 
 			c->PC++;
 		}
+		else
+		{
+			// Se encontrou o HALT (-1), encerra o loop imediatamente
+			printf("[CPU] Comando HALT encontrado. Encerrando...\n");
+			break;
+		}
+
+		// 3. VERIFICAÇÃO DE INTERRUPÇÃO (Pós-instrução)
+		/* Simulamos uma chance de 5% de interrupção externa.
+		   Isso acontece entre as instruções, permitindo que o PC avance
+		   e evitando o travamento que vimos anteriormente.
+		*/
+		if ((rand() % 500) < 5)
+		{
+			printf("\n[SISTEMA] >>> Sinal de interrupção externa no PC: %d <<<\n", c->PC);
+
+			// Sinaliza a interrupção no hardware simulado
+			c->interromper[0].valido = 1;
+
+			/* CHAMADA DO TRATADOR (Context Switch):
+			   A função tratarInterrupcao vai salvar o estado atual,
+			   executar o programa de interrupção e restaurar tudo ao sair.
+			*/
+			tratarInterrupcao(r, c, 0);
+
+			// Garantia: Após o tratamento, resetamos o opcode para 0
+			// para que o loop continue caso o programa original não tenha acabado.
+			c->opcode = c->programa[c->PC].opcode;
+		}
 	}
+
+	printf("[CPU] Ciclo de execução finalizado.\n");
+}
+
+// void iniciar(RAM *r, CPU *c)
+// {
+
+// 	/* OPCODE
+// 	-1 = Halt
+// 	0 soma
+// 	1 subtrai
+// 	2 copia do registrador para RAM
+// 	3 copia da RAM para o registrador
+// 	4 salva conteudo externo no registrador
+// 	5 obtem conteudo externo do registrador
+// 	*/
+
+// 	int interrompeOuNao = rand() % 2;
+// 	int quantasInstrucoes = 0;
+// 	// int PCparada;
+
+// 	if (interrompeOuNao == 1 && c->programa != NULL)
+// 	{
+// 		while (c->programa[quantasInstrucoes].opcode != -1)
+// 		{
+// 			quantasInstrucoes++;
+// 		}
+// 		if (quantasInstrucoes > 0)
+// 		{
+// 			//	PCparada = rand() % quantasInstrucoes;
+// 		}
+// 	}
+
+// 	c->opcode = 0;
+// 	c->PC = 0;
+
+// 	while (c->opcode != -1)
+// 	{
+
+// 		if ((rand() % 100) < 5)
+// 		{
+// 			printf("\n[SISTEMA] Sinal de interrupção externa recebido no PC: %d\n", c->PC);
+
+// 			// Ativa o sinal de interrupção na CPU
+// 			c->interromper[0].valido = 1;
+
+// 			// Chamada do tratador (Kernel Mode)
+// 			tratarInterrupcao(r, c, 0);
+
+// 			// Após voltar do tratamento, o PC original foi restaurado
+// 			// e o loop continua de onde parou.
+// 		}
+
+// 		Instrucao inst = c->programa[c->PC]; /******** */
+
+// 		c->opcode = inst.opcode;
+
+// 		executarInstrucao(r, c, inst);
+
+// 		c->PC++;
+// 	}
+// }
 
 void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 {
 	// EMPILHAR
 
-	int pcOriginal = c->PC;                     
+	int pcOriginal = c->PC;
 	Instrucao *programaOriginal = c->programa;
 	int r1Original = c->registrador1;
 	int r2Original = c->registrador2;
@@ -162,6 +196,7 @@ void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 	c->PC = 0;
 	c->opcode = 0;
 	c->interromper[nivel].valido = 0;
+	c->programa = programaInt(r, c, 40);
 
 	while (c->opcode != -1)
 	{
@@ -184,6 +219,8 @@ void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 		c->PC++;
 	}
 
+	free(c->programa);
+
 	// DESEMPILHAR
 	printf("[CPU] <<< Saindo do Nível %d. Voltando contexto anterior...\n", nivel);
 	c->programa = programaOriginal;
@@ -197,110 +234,107 @@ void executarInstrucao(RAM *r, CPU *c, Instrucao inst)
 {
 	switch (c->opcode)
 	{
-		case -1:
-		{
-			printf("Programa terminou!!\n");
-			// imprimirRAM(r);
-			break;
-		}
-	// soma
-		case 0:
-		{
-			c->registrador1 = getDado(r, inst.add1);
-			c->registrador2 = getDado(r, inst.add2);
-			c->registrador1 += c->registrador2;
-			// salvar resultado
-			setDado(r, inst.add3, c->registrador1);
-			// printf("Inst sum -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
-			break;
-		}
-	// subtrai
-		case 1:
-		{
-			c->registrador1 = getDado(r, inst.add1);
-			c->registrador2 = getDado(r, inst.add2);
-			c->registrador1 -= c->registrador2;
-			// salvar resultado
-			setDado(r, inst.add3, c->registrador1);
-			// printf("Inst sub -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
+	case -1:
+	{
+		printf("Programa terminou!!\n");
+		// imprimirRAM(r);
+		break;
+	}
+		// soma
+	case 0:
+	{
+		c->registrador1 = getDado(r, inst.add1);
+		c->registrador2 = getDado(r, inst.add2);
+		c->registrador1 += c->registrador2;
+		// salvar resultado
+		setDado(r, inst.add3, c->registrador1);
+		// printf("Inst sum -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
+		break;
+	}
+		// subtrai
+	case 1:
+	{
+		c->registrador1 = getDado(r, inst.add1);
+		c->registrador2 = getDado(r, inst.add2);
+		c->registrador1 -= c->registrador2;
+		// salvar resultado
+		setDado(r, inst.add3, c->registrador1);
+		// printf("Inst sub -> RAM posicao %d com conteudo %d\n", inst.add3, c->registrador1);
 
-			break;
-		}
-		// copia do registrador para RAM
-		// formato da instrucao [opcode,qual_registrador,end_ram,-1]
-		case 2:
+		break;
+	}
+	// copia do registrador para RAM
+	// formato da instrucao [opcode,qual_registrador,end_ram,-1]
+	case 2:
+	{
+		if (inst.add1 == 1)
 		{
-			if (inst.add1 == 1)
-			{
-				setDado(r, inst.add2, c->registrador1);
-				// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador1);
-			}
-			else if (inst.add1 == 2)
-			{
-				setDado(r, inst.add2, c->registrador2);
-				// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador2);
-			}
-			break;
+			setDado(r, inst.add2, c->registrador1);
+			// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador1);
 		}
-		// copia da RAM para o registrador
-		// formato da instrucao [opcode,qual_registrador,end_ram,-1]
-		case 3:
+		else if (inst.add1 == 2)
 		{
-			if (inst.add1 == 1)
-			{
-				c->registrador1 = getDado(r, inst.add2);
-				// printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n", c->registrador1);
-			}
-			else if (inst.add1 == 2)
-			{
-				c->registrador2 = getDado(r, inst.add2);
-				// printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n", c->registrador2);
-			}
-			break;
+			setDado(r, inst.add2, c->registrador2);
+			// printf("Inst copy_reg_ram -> RAM posicao %d com conteudo %d\n", inst.add2, c->registrador2);
 		}
-		// salva conteudo externo no registrador
-		// formato da instrucao [opcode,qual_registrador,conteudo_externo,-1]
-		case 4:
+		break;
+	}
+	// copia da RAM para o registrador
+	// formato da instrucao [opcode,qual_registrador,end_ram,-1]
+	case 3:
+	{
+		if (inst.add1 == 1)
 		{
-			if (inst.add1 == 1)
-			{
-				c->registrador1 = inst.add2;
-				// printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n", c->registrador1);
-			}
-			else if (inst.add1 == 2)
-			{
-				c->registrador2 = inst.add2;
-				// printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n", c->registrador2);
-			}
-			break;
+			c->registrador1 = getDado(r, inst.add2);
+			// printf("Inst copy_ram_reg -> Registrador1 com conteudo %d\n", c->registrador1);
 		}
-		// obtem conteudo externo do registrador
-		// formato da instrucao [opcode,qual_registrador,-1,-1]
-		//  note que o conteudo do registrador vai ficar na inst
-		// na posicao do 2o endereco, ou seja, [opcode,qual_registrador,conteudo_reg,-1]
-		case 5:
+		else if (inst.add1 == 2)
 		{
-			if (inst.add1 == 1)
-			{
-				c->programa[c->PC].add2 = c->registrador1;
-				// printf("Inst obtain_reg -> Registrador1 com conteudo %d\n", c->registrador1);
-			}
-			else if (inst.add1 == 2)
-			{
-				c->programa[c->PC].add2 = c->registrador2;
-				// printf("Inst obtain_reg -> Registrador2 com conteudo %d\n", c->registrador2);
-			}
+			c->registrador2 = getDado(r, inst.add2);
+			// printf("Inst copy_ram_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+		}
+		break;
+	}
+	// salva conteudo externo no registrador
+	// formato da instrucao [opcode,qual_registrador,conteudo_externo,-1]
+	case 4:
+	{
+		if (inst.add1 == 1)
+		{
+			c->registrador1 = inst.add2;
+			// printf("Inst copy_ext_reg -> Registrador1 com conteudo %d\n", c->registrador1);
+		}
+		else if (inst.add1 == 2)
+		{
+			c->registrador2 = inst.add2;
+			// printf("Inst copy_ext_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+		}
+		break;
+	}
+	// obtem conteudo externo do registrador
+	// formato da instrucao [opcode,qual_registrador,-1,-1]
+	//  note que o conteudo do registrador vai ficar na inst
+	// na posicao do 2o endereco, ou seja, [opcode,qual_registrador,conteudo_reg,-1]
+	case 5:
+	{
+		if (inst.add1 == 1)
+		{
+			c->programa[c->PC].add2 = c->registrador1;
+			// printf("Inst obtain_reg -> Registrador1 com conteudo %d\n", c->registrador1);
+		}
+		else if (inst.add1 == 2)
+		{
+			c->programa[c->PC].add2 = c->registrador2;
+			// printf("Inst obtain_reg -> Registrador2 com conteudo %d\n", c->registrador2);
+		}
 
-			break;
-		}
+		break;
+	}
 	}
 }
 
 Instrucao *programaInt(RAM *ram, CPU *cpu, int qdeIntrucoes)
 {
-	destroiRAM(ram);
-
-	ram = criarRAM_aleatoria(TAM_RAM);
 
 	Instrucao *umPrograma = (Instrucao *)malloc(qdeIntrucoes * sizeof(Instrucao));
 
@@ -313,8 +347,6 @@ Instrucao *programaInt(RAM *ram, CPU *cpu, int qdeIntrucoes)
 	}
 
 	umPrograma[qdeIntrucoes - 1].opcode = -1;
-
-	setPrograma(cpu, umPrograma);
 
 	return umPrograma;
 }

@@ -5,7 +5,8 @@
 
 typedef struct cpu CPU;
 
-typedef struct{
+typedef struct
+{
     int add1, add2, add3, opcode;
 } Instrucao;
 

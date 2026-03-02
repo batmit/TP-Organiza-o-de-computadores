@@ -9,7 +9,7 @@
     e pra entendermos os codigos de todos
 */
 
-//programas de maior logica para utilizar em funções
+// programas de maior logica para utilizar em funções
 void programaAleatorio(RAM *ram, CPU *cpu, int qdeIntrucoes);
 void programaFat(RAM *ram, CPU *cpu, int fat);
 void programaMult(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
