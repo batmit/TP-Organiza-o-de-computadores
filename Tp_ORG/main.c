@@ -12,10 +12,10 @@ int main()
 
     srand(time(NULL));
     escreverHD();
-    RAM *r = criarRAM_vazia(4000);
+    RAM *r = inicializarRAMdoHD(TAM_RAM);
     CPU *c = criar_cpu();
 
-    // programaAleatorio(r, c, 15);
+    programaAleatorio(r, c, 15);
     //  programaMult(r, c, 20, 5);
     //  programaDiv(r, c, 25, 3);
     //  programaFat(r, c, 4);
@@ -56,7 +56,7 @@ int main()
     // programaMultMatriz(r, c, 3);
     // programaIMC(r, c, 80, 177);
     //programaTMB(r, c, 52, 160, 18, 2); // Mulher
-     programaTMB(r, c, 70, 184, 18, 1); // Homem
+    //programaTMB(r, c, 70, 184, 18, 1); // Homem
 
     // programaModulo(r, c, -100);
     // calcSeno(r, c, 3142); / legal pra kct

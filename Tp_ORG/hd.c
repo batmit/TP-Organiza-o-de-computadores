@@ -29,7 +29,7 @@ void escreverHD(){
 }
 
 //Busca no HD o valor a partir do índice
-int buscarHD(int n){
+bool buscarNoHD(int endereco, int *procuradoHd){
     FILE *arq = fopen("hd.bin", "rb");
     if (arq == NULL) {
         return -1;
@@ -42,14 +42,15 @@ int buscarHD(int n){
         if (fread(&valor, sizeof(int), 1, arq) != 1)
             break;
 
-        if (i == n) {
+        if (i == endereco) {
             fclose(arq);
-            return valor;
+            *procuradoHd = valor
+            return true;
         }
     }
 
     fclose(arq);
-    return -1; // não encontrado
+    return false; // não encontrado
 }
 
 //Atualiza o que está no HD considerando os valores da RAM

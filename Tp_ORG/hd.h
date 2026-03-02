@@ -12,7 +12,7 @@
 #include <stdbool.h>
 
 void escreverHD(void);
-int buscarHD(int n);
+bool buscarNoHD(int endereco, int *procuradoHd);
 void atualizarHD(int chave, int valor);
 
 
