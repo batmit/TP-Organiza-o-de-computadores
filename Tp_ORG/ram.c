@@ -474,17 +474,7 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
 
     // se nao tiver na 1 ja chamo a função abaixo que vai mandar pra 1 independenetemnete de onde estiver
     if(buscarNaL1(r, endereco) != -1){
-        for (int i = 0; i < TAM_L1; i++) // procura na cache 1
-        {
-            if (r->cacheL1[i].valido && r->cacheL1[i].tag == endereco) // se achar preenche
-            {
-                r->cacheL1[i].dado = conteudo;
-                r->relogioGlobal++;
-                r->cacheL1[i].ultimoAcesso = r->relogioGlobal;
-
-                return;
-            }
-        }
+        setDado(r, endereco, conteudo);
     }
     else {
         printf("Essa informação nao está continda em nossa memória");
