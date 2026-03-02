@@ -1,36 +1,34 @@
-// #ifndef AUXILIARES_H
-// #define AUXILIARES_H
+#ifndef AUXILIARES_H
+#define AUXILIARES_H
 
-// #include "ram.h"
+#include "ram.h"
 
-// typedef struct cpu CPU;
+typedef struct cpu CPU;
 
-// typedef struct
-// {
-//     int add1, add2, add3, opcode;
-
-// } Instrucao;
+typedef struct{
+    int add1, add2, add3, opcode;
+} Instrucao;
 
 // // Programas basicos mas de utilização pratica ATENÇÃO NA RAM
-// void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);    // conferir modo de usar daniel
-// void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal); // conferir modo de usar daniel
-// int pegarResultado(RAM *ram, CPU *cpu, int endereco);
-// void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor);
+void Soma(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);    // conferir modo de usar daniel
+void Subtrai(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal); // conferir modo de usar daniel
+int pegarResultado(RAM *ram, CPU *cpu, int endereco);
+void colocarNaRam(RAM *ram, CPU *cpu, int endereco, int valor);
 
-// void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
+void programaMultSemPrint(RAM *ram, CPU *cpu, int multiplicando, int multiplicador);
 
-// void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas]);
-// void inverterString(char *str);
+void imprimirMatriz(int linhas, int colunas, int matriz[linhas][colunas]);
+void inverterString(char *str);
 
-// int pegarMult(RAM *ram, CPU *cpu);
-// int pegarDiv(RAM *ram, CPU *cpu);
+int pegarMult(RAM *ram, CPU *cpu);
+int pegarDiv(RAM *ram, CPU *cpu);
 
-// void multPosicoesRAM(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);
+void multPosicoesRAM(RAM *ram, CPU *cpu, int pos1, int pos2, int posFinal);
 
-// char *HexParaBin(char hex);
-// char DecParaHex(int resto);
-// int maiusucla(int c);
-// int charParaInt(char c);
+char *HexParaBin(char hex);
+char DecParaHex(int resto);
+int maiusucla(int c);
+int charParaInt(char c);
 
-// void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp);
-// #endif
+void programaMultTresValores(RAM *ram, CPU *cpu, int pos1, int pos2, int pos3, int posFinal, int posTemp);
+#endif

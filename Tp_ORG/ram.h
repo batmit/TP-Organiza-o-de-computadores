@@ -11,26 +11,14 @@
 #define TAM_L2 8
 #define TAM_L3 16
 
+typedef struct ramvet RamVet;
+
+typedef struct cacheLine CacheLine;
+
 typedef struct ram RAM;
 
-typedef struct {
 
-    int chave;
-    int valor;
-    int ultimoAcesso;
-    //int tagBloco;
-    int ocupado;
 
-} RamVet;
-
-typedef struct
-{
-    int tagBloco;      // qual bloco que pertence a cache
-    int tag;           // endereço original da RAM
-    int dado;          // valor guardado
-    int valido;        // 0 = vazio, 1 = ocupado
-    long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
-} CacheLine;
 
 RAM *criarRAM(int tam);
 RAM *criarRAM_vazia(int tam);

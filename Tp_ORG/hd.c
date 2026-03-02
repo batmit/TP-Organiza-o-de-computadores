@@ -32,7 +32,7 @@ void escreverHD(){
 bool buscarNoHD(int endereco, int *procuradoHd){
     FILE *arq = fopen("hd.bin", "rb");
     if (arq == NULL) {
-        return -1;
+        return false;
     } 
 
     int i, valor;
@@ -44,7 +44,7 @@ bool buscarNoHD(int endereco, int *procuradoHd){
 
         if (i == endereco) {
             fclose(arq);
-            *procuradoHd = valor
+            *procuradoHd = valor;
             return true;
         }
     }
@@ -57,7 +57,7 @@ bool buscarNoHD(int endereco, int *procuradoHd){
 void atualizarHD(int chave, int valor){
 
     FILE *arq = fopen("hd.bin", "rb+"); // leitura e escrita sem apagar
-    if (!arq) return false;
+    if (!arq) return -1;
 
     int k, v;
 

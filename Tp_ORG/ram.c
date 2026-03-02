@@ -12,9 +12,26 @@
 //FAZER O TRATAMENTO COM A RAM PARA VER QUAL VALOR MANDAR PARA O HD(último acesso)
 //Contato RAM-HD deve ser em blocos
 //Lembrando que o simular buffer que faz o contato da L3 com a RAM
+struct cacheLine{
+    int tagBloco;      // qual bloco que pertence a cache
+    int tag;           // endereço original da RAM
+    int dado;          // valor guardado
+    int valido;        // 0 = vazio, 1 = ocupado
+    long ultimoAcesso; // contador que armazena o "tempo" do ultimo uso
+};
 
-struct ram
-{
+struct ramvet{
+
+    int chave;
+    int valor;
+    int ultimoAcesso;
+    //int tagBloco;
+    int ocupado;
+
+};
+
+struct ram {
+
     RamVet *mem;
     int tamanho;
 
@@ -26,7 +43,15 @@ struct ram
 
     int hitsL1, hitsL2, hitsL3, hitsRAM, hitsHD; // contadores de acertos, vao mostrar a quantidade de itens encontrados em cada ram
     int missL1, missL2, missL3, missRAM, missHD;
+
+
 };
+
+
+
+
+
+
 
 void iniciarCache(CacheLine *cache, int tamanho)
 {
@@ -296,10 +321,12 @@ RAM *inicializarRAMdoHD(int tam){
     }
     // tam % 4
     // 31
+    int valor;
     r->mem = malloc(tam * sizeof(RamVet)); // cria memoria com lixo
     for(int i = 0; i < tam; i++){
+        bool deuBom = buscarNoHD(i, &valor);
         r->mem[i].chave = i;
-        r->mem[i].valor = buscarNoHD(i);
+        r->mem[i].valor = valor;
         r->mem[i].ocupado = 1;
         r->mem[i].ultimoAcesso = 0;
     }
@@ -547,35 +574,47 @@ void destroiRAM(RAM *r)
 
 void simularBuffer(RAM *r, CacheLine *Cache3, int id){
     r->relogioGlobal++;
-    for(int i = 0; i < r->tamanho; i++){
-        if(r->mem[i].ocupado == 0){
-            r->mem[i].chave = r->cacheL3[id].tag;
-            r->mem[i].valor = r->cacheL3[id].dado; // a vitima eh enviada de volta pra ram
-            r->mem[i].ultimoAcesso = r->relogioGlobal;
-            r->mem[i].ocupado = 1;
-            return;
+    int bloco = Cache3[id].tagBloco;
+    int inicio = (bloco-1) * 4;
+    for(int j = inicio; j < (inicio + 4); j++){
+        int passou = 0;
+        for(int i = 0; i < r->tamanho; i++){
+            if(r->mem[i].ocupado == 0){
+                passou = 1;
+                r->mem[i].chave = r->cacheL3[j].tag;
+                r->mem[i].valor = r->cacheL3[j].dado; // a vitima eh enviada de volta pra ram
+                r->mem[i].ultimoAcesso = r->relogioGlobal;
+                r->mem[i].ocupado = 1;
+            }
         }
-    }
-    //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
-    int id_vitima = 0;
-    long menorTempo = r->mem[0].ultimoAcesso;
+        if(passou == 0){
 
-    for (int i = 1; i < r->tamanho; i++) // lru
-    {
-        if (r->mem[i].ultimoAcesso < menorTempo)
-        {
-            menorTempo = r->mem[i].ultimoAcesso;
-            id_vitima = i;
+            //Se passar aqui é porque a ram está cheia, então devemos procurar uma vítima
+            int id_vitima = 0;
+            long menorTempo = r->mem[0].ultimoAcesso;
+
+            for (int i = 1; i < r->tamanho; i++) // lru
+            {
+                if (r->mem[i].ultimoAcesso < menorTempo)
+                {
+                    menorTempo = r->mem[i].ultimoAcesso;
+                    id_vitima = i;
+                }
+            }
+
+            //a vítima é enviada para o HD
+            atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
+
+            r->mem[id_vitima].chave = r->cacheL3[j].tag;
+            r->mem[id_vitima].valor = r->cacheL3[j].dado;
+            r->mem[id_vitima].ultimoAcesso = r->relogioGlobal;
+        
+            
         }
+
+
     }
 
-    //a vítima é enviada para o HD
-    atualizarHD(r->mem[id_vitima].chave, r->mem[id_vitima].valor);
-
-    r->mem[id_vitima].chave = r->cacheL3[id].tag;
-    r->mem[id_vitima].valor = r->cacheL3[id].dado;
-    r->mem[id_vitima].ultimoAcesso = r->relogioGlobal;
- 
 
 
 }
@@ -690,7 +729,7 @@ bool buscarNaRam(RAM *r, int endereco) {
 
     for (int i = 0; i < r->tamanho; i++) {
 
-        if (r->mem[i].chave >= inicio && r->mem[i].chave < (inicio + 4) && r->mem[i].valor != 0) {
+        if (r->mem[i].chave >= inicio && r->mem[i].chave < (inicio + 4) && r->mem[i].ocupado == 1) {
             
             if (r->mem[i].chave == endereco) {
                 encontrado = true;
@@ -713,19 +752,23 @@ bool buscarNaRam(RAM *r, int endereco) {
     r->missRAM++;
 
     int procuradoHD = 0;
+
     for(int i = 0; i < 4; i++){
         
-        if (buscarNoHD(endereco,&procuradoHD)){
-            colocarNaRAM(endereco,procuradoHD)
-            return buscarNaRam(r,endereco);
+        if (buscarNoHD(inicio,&procuradoHD)){
+            colocarNaRAM(r, inicio,procuradoHD);
+            inicio++;
         }
-        endereço++;
-
+        else{
+            r->missHD++;
+            return false;
+        }
     }
-
-    return false;
+    
+    r->hitsHD++;
+    return buscarNaRam(r,endereco);
 }
-
+ 
 void colocarNaRAM(RAM *r, int chave, int valor){
 
     r->relogioGlobal++;
