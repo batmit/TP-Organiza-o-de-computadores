@@ -14,5 +14,7 @@
 void escreverHD(void);
 bool buscarNoHD(int endereco, int *procuradoHd);
 void atualizarHD(int chave, int valor);
+void imprimirHD();
+void imprimirDARAM(RAM *r);
 
 #endif

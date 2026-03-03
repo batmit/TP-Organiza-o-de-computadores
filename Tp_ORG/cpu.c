@@ -63,7 +63,16 @@ void destroiCPU(CPU *c)
 
 void iniciar(RAM *r, CPU *c)
 {
-	
+	// 	/* OPCODE
+	// 	-1 = Halt
+	// 	0 soma
+	// 	1 subtrai
+	// 	2 copia do registrador para RAM
+	// 	3 copia da RAM para o registrador
+	// 	4 salva conteudo externo no registrador
+	// 	5 obtem conteudo externo do registrador
+	// 	*/
+
 	c->PC = 0;
 	c->opcode = 0;
 
@@ -89,31 +98,25 @@ void iniciar(RAM *r, CPU *c)
 		}
 		else
 		{
-			// Se encontrou o HALT (-1), encerra o loop imediatamente
 			printf("[CPU] Comando HALT encontrado. Encerrando...\n");
 			break;
 		}
 
-		// 3. VERIFICAÇÃO DE INTERRUPÇÃO (Pós-instrução)
-		/* Simulamos uma chance de 5% de interrupção externa.
-		   Isso acontece entre as instruções, permitindo que o PC avance
-		   e evitando o travamento que vimos anteriormente.
-		*/
-		if ((rand() % 500) < 5)
+		if ((rand() % 300) < 5)
 		{
 			printf("\n[SISTEMA] >>> Sinal de interrupção externa no PC: %d <<<\n", c->PC);
 
-			// Sinaliza a interrupção no hardware simulado
-			c->interromper[0].valido = 1;
+			int i = rand() % 3;
 
-			/* CHAMADA DO TRATADOR (Context Switch):
-			   A função tratarInterrupcao vai salvar o estado atual,
-			   executar o programa de interrupção e restaurar tudo ao sair.
-			*/
-			tratarInterrupcao(r, c, 0);
+			c->interromper[i].instrucoes = c->programa;
+			c->interromper[i].pc = c->PC;
 
-			// Garantia: Após o tratamento, resetamos o opcode para 0
-			// para que o loop continue caso o programa original não tenha acabado.
+
+			c->interromper[i].valido = 1;
+
+			tratarInterrupcao(r, c, i);
+			c->interromper[i].valido = 0;
+
 			c->opcode = c->programa[c->PC].opcode;
 		}
 	}
@@ -121,64 +124,6 @@ void iniciar(RAM *r, CPU *c)
 	printf("[CPU] Ciclo de execução finalizado.\n");
 }
 
-// void iniciar(RAM *r, CPU *c)
-// {
-
-// 	/* OPCODE
-// 	-1 = Halt
-// 	0 soma
-// 	1 subtrai
-// 	2 copia do registrador para RAM
-// 	3 copia da RAM para o registrador
-// 	4 salva conteudo externo no registrador
-// 	5 obtem conteudo externo do registrador
-// 	*/
-
-// 	int interrompeOuNao = rand() % 2;
-// 	int quantasInstrucoes = 0;
-// 	// int PCparada;
-
-// 	if (interrompeOuNao == 1 && c->programa != NULL)
-// 	{
-// 		while (c->programa[quantasInstrucoes].opcode != -1)
-// 		{
-// 			quantasInstrucoes++;
-// 		}
-// 		if (quantasInstrucoes > 0)
-// 		{
-// 			//	PCparada = rand() % quantasInstrucoes;
-// 		}
-// 	}
-
-// 	c->opcode = 0;
-// 	c->PC = 0;
-
-// 	while (c->opcode != -1)
-// 	{
-
-// 		if ((rand() % 100) < 5)
-// 		{
-// 			printf("\n[SISTEMA] Sinal de interrupção externa recebido no PC: %d\n", c->PC);
-
-// 			// Ativa o sinal de interrupção na CPU
-// 			c->interromper[0].valido = 1;
-
-// 			// Chamada do tratador (Kernel Mode)
-// 			tratarInterrupcao(r, c, 0);
-
-// 			// Após voltar do tratamento, o PC original foi restaurado
-// 			// e o loop continua de onde parou.
-// 		}
-
-// 		Instrucao inst = c->programa[c->PC]; /******** */
-
-// 		c->opcode = inst.opcode;
-
-// 		executarInstrucao(r, c, inst);
-
-// 		c->PC++;
-// 	}
-// }
 
 void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 {
@@ -189,7 +134,7 @@ void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 	int r1Original = c->registrador1;
 	int r2Original = c->registrador2;
 
-	printf("\n[CPU] >>> Entrando no Tratador Nível %d <<<\n", nivel);
+	printf("\n[CPU] >>> Entrando no Tratador Nível %d <<<\n", nivel + 1);
 
 	// carregar dados
 	c->programa = c->interromper[nivel].instrucoes;
@@ -222,7 +167,7 @@ void tratarInterrupcao(RAM *r, CPU *c, int nivel)
 	free(c->programa);
 
 	// DESEMPILHAR
-	printf("[CPU] <<< Saindo do Nível %d. Voltando contexto anterior...\n", nivel);
+	printf("[CPU] <<< Saindo do Nível %d. Voltando contexto anterior...\n", nivel + 1);
 	c->programa = programaOriginal;
 	c->PC = pcOriginal;
 	c->registrador1 = r1Original;

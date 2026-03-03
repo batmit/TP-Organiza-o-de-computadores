@@ -13,9 +13,14 @@ int main()
     srand(time(NULL));
     escreverHD();
     RAM *r = inicializarRAMdoHD(TAM_RAM);
+    imprimirHD();
+    // Imprimir a RAM
+
+    // imprimirDARAM(r);
+
     CPU *c = criar_cpu();
 
-     programaAleatorio(r, c, 1500);
+    programaAleatorio(r, c, 1500);
     //   programaMult(r, c, 20, 5);
     //   programaDiv(r, c, 25, 3);
     //   programaFat(r, c, 4);
@@ -33,7 +38,7 @@ int main()
     // programaBin_Hex(r,c,"101000100101010");
     // programaDec_Hex(r, c, 20778); // legais
 
-    // programaSomaPA(r , c, 1,  1,  10);
+    // programaSomaPA(r, c, 1, 1, 10);
     // programaExpBinaria(r,c,2,5);
 
     // programaPrimo(r, c , 643);
@@ -73,7 +78,7 @@ int main()
 
     // programaDoArquivo(r, c, "instructions2.txt");
 
-    imprimirCaches(r);
+    // imprimirCaches(r);
     imprimirRAM(r);
 
     destroiRAM(r);

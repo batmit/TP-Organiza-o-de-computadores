@@ -482,6 +482,7 @@ void setDado(RAM *r, int endereco, int conteudo) // adiciona um dado na ram e na
     else
     {
         printf("Essa informação nao está contida memória\n");
+        r->missHD++;
     }
 }
 
@@ -783,8 +784,12 @@ void colocarNaRAM(RAM *r, int chave, int valor)
 void blocoTag(int endereco, int *resto, int *bloco)
 {
 
-    *bloco = ((endereco + 1) / 4);
+    *bloco = ((endereco + 1) / 4); 
     *resto = (endereco + 1) % 4;
     if (*resto != 0)
         (*bloco)++;
+
+    // *bloco = endereco / 4; 
+    // *resto = endereco % 4; 
+    // (*bloco)++; 
 }

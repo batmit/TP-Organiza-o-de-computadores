@@ -102,3 +102,64 @@ void atualizarHD(int chave, int valor)
     fclose(arq);
     return;
 }
+
+void imprimirHD() {
+    FILE *arq = fopen("hd.bin", "rb");
+    if (arq == NULL) {
+        perror("Erro ao abrir o arquivo do HD");
+        return;
+    }
+
+    int chave, valor;
+    int idx = 0;
+
+    printf("=== Conteudo de %s ===\n", "hd.bin");
+    printf("Formato: (chave -> valor)\n\n");
+
+    // lê pares (chave, valor) até acabar o arquivo
+    while (1) {
+        size_t l1 = fread(&chave, sizeof(int), 1, arq);
+        size_t l2 = fread(&valor, sizeof(int), 1, arq);
+
+        if (l1 == 1 && l2 == 1) {
+            printf("[%03d] %d -> %d\n", idx, chave, valor);
+            idx++;
+        } else {
+            break; // EOF ou arquivo truncado
+        }
+    }
+
+    if (!feof(arq)) {
+        // Se não foi EOF, pode ter dado erro de leitura ou arquivo corrompido/truncado
+        perror("Aviso: leitura interrompida (arquivo pode estar incompleto)");
+    }
+
+    printf("\nTotal de registros lidos: %d\n", idx);
+
+    fclose(arq);
+}
+
+void imprimirDARAM(RAM *r) {
+    if (r == NULL) {
+        printf("RAM nao inicializada.\n");
+        return;
+    }
+
+    printf("=========== RAM ===========\n");
+    printf("Tamanho: %d\n", r->tamanho);
+    printf("Relogio Global: %ld\n", r->relogioGlobal);
+    printf("Hits L1: %d | Hits L2: %d | Hits L3: %d\n",
+           r->hitsL1, r->hitsL2, r->hitsL3);
+    printf("----------------------------\n");
+
+    if (r->mem == NULL) {
+        printf("Memoria principal nao alocada.\n");
+        return;
+    }
+
+    for (int i = 0; i < r->tamanho; i++) {
+        printf("[%03d] = %d: %d\n", i, r->mem[i].chave, r->mem[i].valor);
+    }
+
+    printf("============================\n");
+}
